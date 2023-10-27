@@ -58,9 +58,27 @@ public class UserController {
     public ResponseEntity<User> getByEmail(@PathVariable("email") String email){
         return ResponseEntity.ok(userRepository.findByEmail(email).orElse(null));
     }
-    @PostMapping("save")
-    public ResponseEntity<User> save(@RequestBody User data){
-        return ResponseEntity.ok(userRepository.save(data));
+    @PostMapping("create")
+    public ResponseEntity<User> create(@RequestBody User data, @RequestHeader("User-Token") String token){
+        try {
+            if(authorizeUserService.authorize(new AuthorizeUserRequest(token, Collections.singletonList(new AuthorizeEntity(AuthorizeType.CREATE, Collections.singletonList(0L), Entity.USER, null))))){
+                return ResponseEntity.ok(userRepository.save(data));
+            }
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+    @PatchMapping("patch")
+    public ResponseEntity<User> patch(@RequestBody User data, @RequestHeader("User-Token") String token){
+        try {
+            if(authorizeUserService.authorize(new AuthorizeUserRequest(token, Collections.singletonList(new AuthorizeEntity(AuthorizeType.PATCH, Collections.singletonList(data.getId()), Entity.USER, null))))){
+                return ResponseEntity.ok(userRepository.save(data));
+            }
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
     @DeleteMapping("delete/{ids}")
     public ResponseEntity<Void> deleteById(@PathVariable("ids") String id, @RequestHeader("User-Token") String token){

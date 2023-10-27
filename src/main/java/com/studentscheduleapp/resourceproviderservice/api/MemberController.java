@@ -58,9 +58,27 @@ public class MemberController {
     public ResponseEntity<List<Member>> getByUserId(@PathVariable("id") long id){
         return ResponseEntity.ok(memberRepository.findByUserId(id));
     }
-    @PostMapping("save")
-    public ResponseEntity<Member> save(@RequestBody Member data){
-        return ResponseEntity.ok(memberRepository.save(data));
+    @PostMapping("create")
+    public ResponseEntity<Member> create(@RequestBody Member data, @RequestHeader("User-Token") String token){
+        try {
+            if(authorizeUserService.authorize(new AuthorizeUserRequest(token, Collections.singletonList(new AuthorizeEntity(AuthorizeType.CREATE, Collections.singletonList(data.getGroupId()), Entity.MEMBER, null))))){
+                return ResponseEntity.ok(memberRepository.save(data));
+            }
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+    @PatchMapping("patch")
+    public ResponseEntity<Member> patch(@RequestBody Member data, @RequestHeader("User-Token") String token){
+        try {
+            if(authorizeUserService.authorize(new AuthorizeUserRequest(token, Collections.singletonList(new AuthorizeEntity(AuthorizeType.PATCH, Collections.singletonList(data.getId()), Entity.MEMBER, null))))){
+                return ResponseEntity.ok(memberRepository.save(data));
+            }
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
     @DeleteMapping("delete/{ids}")
     public ResponseEntity<Void> deleteById(@PathVariable("ids") String id, @RequestHeader("User-Token") String token){

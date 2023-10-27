@@ -56,9 +56,27 @@ public class ScheduleTemplateController {
     public ResponseEntity<List<ScheduleTemplate>> getByGroupId(@PathVariable("id") long id){
         return ResponseEntity.ok(scheduleTemplateRepository.findByGroupId(id));
     }
-    @PostMapping("save")
-    public ResponseEntity<ScheduleTemplate> save(@RequestBody ScheduleTemplate data){
-        return ResponseEntity.ok(scheduleTemplateRepository.save(data));
+    @PostMapping("create")
+    public ResponseEntity<ScheduleTemplate> create(@RequestBody ScheduleTemplate data, @RequestHeader("User-Token") String token){
+        try {
+            if(authorizeUserService.authorize(new AuthorizeUserRequest(token, Collections.singletonList(new AuthorizeEntity(AuthorizeType.CREATE, Collections.singletonList(data.getGroupId()), Entity.SCHEDULE_TEMPLATE, null))))){
+                return ResponseEntity.ok(scheduleTemplateRepository.save(data));
+            }
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+    @PatchMapping("patch")
+    public ResponseEntity<ScheduleTemplate> patch(@RequestBody ScheduleTemplate data, @RequestHeader("User-Token") String token){
+        try {
+            if(authorizeUserService.authorize(new AuthorizeUserRequest(token, Collections.singletonList(new AuthorizeEntity(AuthorizeType.PATCH, Collections.singletonList(data.getId()), Entity.SCHEDULE_TEMPLATE, null))))){
+                return ResponseEntity.ok(scheduleTemplateRepository.save(data));
+            }
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
     @DeleteMapping("delete/{ids}")
     public ResponseEntity<Void> deleteById(@PathVariable("ids") String id, @RequestHeader("User-Token") String token){

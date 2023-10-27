@@ -57,9 +57,27 @@ public class OutlineController {
     public ResponseEntity<List<Outline>> getByUserId(@PathVariable("id") long id){
         return ResponseEntity.ok(outlineRepository.findByUserId(id));
     }
-    @PostMapping("save")
-    public ResponseEntity<Outline> save(@RequestBody Outline data){
-        return ResponseEntity.ok(outlineRepository.save(data));
+    @PostMapping("create")
+    public ResponseEntity<Outline> create(@RequestBody Outline data, @RequestHeader("User-Token") String token){
+        try {
+            if(authorizeUserService.authorize(new AuthorizeUserRequest(token, Collections.singletonList(new AuthorizeEntity(AuthorizeType.CREATE, Collections.singletonList(data.getSpecificLessonId()), Entity.LESSON_TEMPLATE, null))))){
+                return ResponseEntity.ok(outlineRepository.save(data));
+            }
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+    @PatchMapping("patch")
+    public ResponseEntity<Outline> patch(@RequestBody Outline data, @RequestHeader("User-Token") String token){
+        try {
+            if(authorizeUserService.authorize(new AuthorizeUserRequest(token, Collections.singletonList(new AuthorizeEntity(AuthorizeType.PATCH, Collections.singletonList(data.getId()), Entity.LESSON_TEMPLATE, null))))){
+                return ResponseEntity.ok(outlineRepository.save(data));
+            }
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
     @DeleteMapping("delete/{ids}")
     public ResponseEntity<Void> deleteById(@PathVariable("ids") String id, @RequestHeader("User-Token") String token){
