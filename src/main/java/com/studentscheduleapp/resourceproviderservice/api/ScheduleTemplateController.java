@@ -40,7 +40,7 @@ public class ScheduleTemplateController {
         ps.add("timeStop");
         ps.add("comment");
         try {
-            if (authorizeUserService.authorize(new AuthorizeUserRequest(token, Collections.singletonList(new AuthorizeEntity(AuthorizeType.GET, ids, Entity.CUSTOM_LESSON, ps))))) {
+            if (authorizeUserService.authorize(new AuthorizeUserRequest(token, Collections.singletonList(new AuthorizeEntity(AuthorizeType.GET, ids, Entity.SCHEDULE_TEMPLATE, ps))))) {
                 ArrayList<ScheduleTemplate> ls = new ArrayList<>();
                 for (Long l : ids) {
                     ls.add(scheduleTemplateRepository.getById(l));
@@ -60,9 +60,26 @@ public class ScheduleTemplateController {
     public ResponseEntity<ScheduleTemplate> save(@RequestBody ScheduleTemplate data){
         return ResponseEntity.ok(scheduleTemplateRepository.save(data));
     }
-    @DeleteMapping("delete/{id}")
-    public ResponseEntity<List<CustomLesson>> deleteById(@PathVariable("id") long id){
-        scheduleTemplateRepository.deleteById(id);
-        return ResponseEntity.ok().build();
+    @DeleteMapping("delete/{ids}")
+    public ResponseEntity<Void> deleteById(@PathVariable("ids") String id, @RequestHeader("User-Token") String token){
+        ArrayList<Long> ids = new ArrayList<>();
+        try {
+            for (int i = 0; i < id.split(",").length; i++) {
+                ids.add(Long.parseLong(id.split(",")[i]));
+            }
+        } catch (Exception e){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+        try {
+            if(authorizeUserService.authorize(new AuthorizeUserRequest(token, Collections.singletonList(new AuthorizeEntity(AuthorizeType.DELETE, ids, Entity.SCHEDULE_TEMPLATE, null))))){
+                for (Long l : ids) {
+                    scheduleTemplateRepository.delete(l);
+                }
+                return ResponseEntity.ok().build();
+            }
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 }

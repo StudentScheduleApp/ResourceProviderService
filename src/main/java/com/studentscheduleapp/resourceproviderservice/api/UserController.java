@@ -42,7 +42,7 @@ public class UserController {
         ps.add("avaUrl");
         ps.add("roles");
         try {
-            if (authorizeUserService.authorize(new AuthorizeUserRequest(token, Collections.singletonList(new AuthorizeEntity(AuthorizeType.GET, ids, Entity.CUSTOM_LESSON, ps))))) {
+            if (authorizeUserService.authorize(new AuthorizeUserRequest(token, Collections.singletonList(new AuthorizeEntity(AuthorizeType.GET, ids, Entity.USER, ps))))) {
                 ArrayList<User> ls = new ArrayList<>();
                 for (Long l : ids) {
                     ls.add(userRepository.getById(l));
@@ -62,9 +62,26 @@ public class UserController {
     public ResponseEntity<User> save(@RequestBody User data){
         return ResponseEntity.ok(userRepository.save(data));
     }
-    @DeleteMapping("delete/{id}")
-    public ResponseEntity<List<CustomLesson>> deleteById(@PathVariable("id") long id){
-        userRepository.deleteById(id);
-        return ResponseEntity.ok().build();
+    @DeleteMapping("delete/{ids}")
+    public ResponseEntity<Void> deleteById(@PathVariable("ids") String id, @RequestHeader("User-Token") String token){
+        ArrayList<Long> ids = new ArrayList<>();
+        try {
+            for (int i = 0; i < id.split(",").length; i++) {
+                ids.add(Long.parseLong(id.split(",")[i]));
+            }
+        } catch (Exception e){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+        try {
+            if(authorizeUserService.authorize(new AuthorizeUserRequest(token, Collections.singletonList(new AuthorizeEntity(AuthorizeType.DELETE, ids, Entity.USER, null))))){
+                for (Long l : ids) {
+                    userRepository.delete(l);
+                }
+                return ResponseEntity.ok().build();
+            }
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 }

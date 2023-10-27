@@ -39,7 +39,7 @@ public class LessonTemplateController {
         ps.add("time");
         ps.add("comment");
         try {
-            if (authorizeUserService.authorize(new AuthorizeUserRequest(token, Collections.singletonList(new AuthorizeEntity(AuthorizeType.GET, ids, Entity.CUSTOM_LESSON, ps))))) {
+            if (authorizeUserService.authorize(new AuthorizeUserRequest(token, Collections.singletonList(new AuthorizeEntity(AuthorizeType.GET, ids, Entity.LESSON_TEMPLATE, ps))))) {
                 ArrayList<LessonTemplate> ls = new ArrayList<>();
                 for (Long l : ids) {
                     ls.add(lessonTemplateRepository.getById(l));
@@ -59,9 +59,26 @@ public class LessonTemplateController {
     public ResponseEntity<LessonTemplate> save(@RequestBody LessonTemplate data){
         return ResponseEntity.ok(lessonTemplateRepository.save(data));
     }
-    @DeleteMapping("delete/{id}")
-    public ResponseEntity<List<CustomLesson>> deleteById(@PathVariable("id") long id){
-        lessonTemplateRepository.deleteById(id);
-        return ResponseEntity.ok().build();
+    @DeleteMapping("delete/{ids}")
+    public ResponseEntity<Void> deleteById(@PathVariable("ids") String id, @RequestHeader("User-Token") String token){
+        ArrayList<Long> ids = new ArrayList<>();
+        try {
+            for (int i = 0; i < id.split(",").length; i++) {
+                ids.add(Long.parseLong(id.split(",")[i]));
+            }
+        } catch (Exception e){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+        try {
+            if(authorizeUserService.authorize(new AuthorizeUserRequest(token, Collections.singletonList(new AuthorizeEntity(AuthorizeType.DELETE, ids, Entity.LESSON_TEMPLATE, null))))){
+                for (Long l : ids) {
+                    lessonTemplateRepository.delete(l);
+                }
+                return ResponseEntity.ok().build();
+            }
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 }

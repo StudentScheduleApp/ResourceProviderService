@@ -38,7 +38,7 @@ public class MemberController {
         ps.add("userId");
         ps.add("roles");
         try {
-            if (authorizeUserService.authorize(new AuthorizeUserRequest(token, Collections.singletonList(new AuthorizeEntity(AuthorizeType.GET, ids, Entity.CUSTOM_LESSON, ps))))) {
+            if (authorizeUserService.authorize(new AuthorizeUserRequest(token, Collections.singletonList(new AuthorizeEntity(AuthorizeType.GET, ids, Entity.MEMBER, ps))))) {
                 ArrayList<Member> ls = new ArrayList<>();
                 for (Long l : ids) {
                     ls.add(memberRepository.getById(l));
@@ -62,9 +62,26 @@ public class MemberController {
     public ResponseEntity<Member> save(@RequestBody Member data){
         return ResponseEntity.ok(memberRepository.save(data));
     }
-    @DeleteMapping("delete/{id}")
-    public ResponseEntity<List<CustomLesson>> deleteById(@PathVariable("id") long id){
-        memberRepository.deleteById(id);
-        return ResponseEntity.ok().build();
+    @DeleteMapping("delete/{ids}")
+    public ResponseEntity<Void> deleteById(@PathVariable("ids") String id, @RequestHeader("User-Token") String token){
+        ArrayList<Long> ids = new ArrayList<>();
+        try {
+            for (int i = 0; i < id.split(",").length; i++) {
+                ids.add(Long.parseLong(id.split(",")[i]));
+            }
+        } catch (Exception e){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+        try {
+            if(authorizeUserService.authorize(new AuthorizeUserRequest(token, Collections.singletonList(new AuthorizeEntity(AuthorizeType.DELETE, ids, Entity.MEMBER, null))))){
+                for (Long l : ids) {
+                    memberRepository.delete(l);
+                }
+                return ResponseEntity.ok().build();
+            }
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 }

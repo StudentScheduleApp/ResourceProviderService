@@ -38,7 +38,7 @@ public class OutlineMediaController {
         ps.add("outlineId");
         ps.add("imageUrl");
         try {
-            if (authorizeUserService.authorize(new AuthorizeUserRequest(token, Collections.singletonList(new AuthorizeEntity(AuthorizeType.GET, ids, Entity.CUSTOM_LESSON, ps))))) {
+            if (authorizeUserService.authorize(new AuthorizeUserRequest(token, Collections.singletonList(new AuthorizeEntity(AuthorizeType.GET, ids, Entity.OUTLINE_MEDIA, ps))))) {
                 ArrayList<OutlineMedia> ls = new ArrayList<>();
                 for (Long l : ids) {
                     ls.add(outlineMediaRepository.getById(l));
@@ -58,9 +58,26 @@ public class OutlineMediaController {
     public ResponseEntity<OutlineMedia> save(@RequestBody OutlineMedia data){
         return ResponseEntity.ok(outlineMediaRepository.save(data));
     }
-    @DeleteMapping("delete/{id}")
-    public ResponseEntity<List<CustomLesson>> deleteById(@PathVariable("id") long id){
-        outlineMediaRepository.deleteById(id);
-        return ResponseEntity.ok().build();
+    @DeleteMapping("delete/{ids}")
+    public ResponseEntity<Void> deleteById(@PathVariable("ids") String id, @RequestHeader("User-Token") String token){
+        ArrayList<Long> ids = new ArrayList<>();
+        try {
+            for (int i = 0; i < id.split(",").length; i++) {
+                ids.add(Long.parseLong(id.split(",")[i]));
+            }
+        } catch (Exception e){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+        try {
+            if(authorizeUserService.authorize(new AuthorizeUserRequest(token, Collections.singletonList(new AuthorizeEntity(AuthorizeType.DELETE, ids, Entity.OUTLINE_MEDIA, null))))){
+                for (Long l : ids) {
+                    outlineMediaRepository.delete(l);
+                }
+                return ResponseEntity.ok().build();
+            }
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 }

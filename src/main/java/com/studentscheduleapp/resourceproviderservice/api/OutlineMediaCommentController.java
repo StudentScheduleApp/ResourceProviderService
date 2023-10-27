@@ -40,7 +40,7 @@ public class OutlineMediaCommentController {
         ps.add("questionCommentId");
         ps.add("mediaId");
         try {
-            if (authorizeUserService.authorize(new AuthorizeUserRequest(token, Collections.singletonList(new AuthorizeEntity(AuthorizeType.GET, ids, Entity.CUSTOM_LESSON, ps))))) {
+            if (authorizeUserService.authorize(new AuthorizeUserRequest(token, Collections.singletonList(new AuthorizeEntity(AuthorizeType.GET, ids, Entity.OUTLINE_MEDIA_COMMENT, ps))))) {
                 ArrayList<OutlineMediaComment> ls = new ArrayList<>();
                 for (Long l : ids) {
                     ls.add(outlineMediaCommentRepository.getById(l));
@@ -60,9 +60,26 @@ public class OutlineMediaCommentController {
     public ResponseEntity<OutlineMediaComment> save(@RequestBody OutlineMediaComment data){
         return ResponseEntity.ok(outlineMediaCommentRepository.save(data));
     }
-    @DeleteMapping("delete/{id}")
-    public ResponseEntity<List<CustomLesson>> deleteById(@PathVariable("id") long id){
-        outlineMediaCommentRepository.deleteById(id);
-        return ResponseEntity.ok().build();
+    @DeleteMapping("delete/{ids}")
+    public ResponseEntity<Void> deleteById(@PathVariable("ids") String id, @RequestHeader("User-Token") String token){
+        ArrayList<Long> ids = new ArrayList<>();
+        try {
+            for (int i = 0; i < id.split(",").length; i++) {
+                ids.add(Long.parseLong(id.split(",")[i]));
+            }
+        } catch (Exception e){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+        try {
+            if(authorizeUserService.authorize(new AuthorizeUserRequest(token, Collections.singletonList(new AuthorizeEntity(AuthorizeType.DELETE, ids, Entity.OUTLINE_MEDIA_COMMENT, null))))){
+                for (Long l : ids) {
+                    outlineMediaCommentRepository.delete(l);
+                }
+                return ResponseEntity.ok().build();
+            }
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 }
