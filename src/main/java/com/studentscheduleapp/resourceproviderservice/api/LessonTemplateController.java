@@ -52,8 +52,31 @@ public class LessonTemplateController {
         }
     }
     @GetMapping("scheduleTemplate/{id}")
-    public ResponseEntity<List<LessonTemplate>> getByScheduleTemplateId(@PathVariable("id") long id){
-        return ResponseEntity.ok(lessonTemplateRepository.findByScheduleTemplateId(id));
+    public ResponseEntity<List<LessonTemplate>> getByScheduleTemplateId(@PathVariable("id") long id, @RequestHeader("User-Token") String token){
+        ArrayList<LessonTemplate> cs = new ArrayList<>();
+        ArrayList<Long> ids = new ArrayList<>();
+        try {
+            cs = (ArrayList<LessonTemplate>) lessonTemplateRepository.getByScheduleTemplateId(id);
+            for (LessonTemplate c : cs) {
+                ids.add(c.getId());
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+        ArrayList<String> ps = new ArrayList<>();
+        ps.add("id");
+        ps.add("scheduleTemplateId");
+        ps.add("lessonId");
+        ps.add("time");
+        ps.add("comment");
+        try {
+            if(authorizeUserService.authorize(new AuthorizeUserRequest(token, Collections.singletonList(new AuthorizeEntity(AuthorizeType.GET, ids, Entity.OUTLINE, ps))))){
+                return ResponseEntity.ok(cs);
+            }
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
     @PostMapping("create")
     public ResponseEntity<LessonTemplate> create(@RequestBody LessonTemplate data, @RequestHeader("User-Token") String token){

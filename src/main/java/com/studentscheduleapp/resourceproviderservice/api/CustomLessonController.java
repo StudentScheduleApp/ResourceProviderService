@@ -54,8 +54,30 @@ public class CustomLessonController {
         }
     }
     @GetMapping("group/{id}")
-    public ResponseEntity<List<CustomLesson>> getByGroupId(@PathVariable("id") long id){
-        return ResponseEntity.ok(customLessonRepository.findByGroupId(id));
+    public ResponseEntity<List<CustomLesson>> getByGroupId(@PathVariable("id") long id, @RequestHeader("User-Token") String token){
+        ArrayList<CustomLesson> cs = new ArrayList<>();
+        ArrayList<Long> ids = new ArrayList<>();
+        try {
+            cs = (ArrayList<CustomLesson>) customLessonRepository.getByGroupId(id);
+            for (CustomLesson c : cs) {
+                ids.add(c.getId());
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+        ArrayList<String> ps = new ArrayList<>();
+        ps.add("id");
+        ps.add("groupId");
+        ps.add("name");
+        ps.add("teacher");
+        try {
+            if(authorizeUserService.authorize(new AuthorizeUserRequest(token, Collections.singletonList(new AuthorizeEntity(AuthorizeType.GET, ids, Entity.CUSTOM_LESSON, ps))))){
+                return ResponseEntity.ok(cs);
+            }
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
     @PostMapping("create")
     public ResponseEntity<CustomLesson> create(@RequestBody CustomLesson data, @RequestHeader("User-Token") String token){

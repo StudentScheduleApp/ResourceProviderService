@@ -49,13 +49,55 @@ public class OutlineController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
-    @GetMapping("specificLesson/{id}")
-    public ResponseEntity<List<Outline>> getBySpecificLessonId(@PathVariable("id") long id){
-        return ResponseEntity.ok(outlineRepository.findBySpecificLessonId(id));
+    @GetMapping("user/{id}")
+    public ResponseEntity<List<Outline>> getBySpecificLessonId(@PathVariable("id") long id, @RequestHeader("User-Token") String token){
+        ArrayList<Outline> cs = new ArrayList<>();
+        ArrayList<Long> ids = new ArrayList<>();
+        try {
+            cs = (ArrayList<Outline>) outlineRepository.getBySpecificLessonId(id);
+            for (Outline c : cs) {
+                ids.add(c.getId());
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+        ArrayList<String> ps = new ArrayList<>();
+        ps.add("id");
+        ps.add("userId");
+        ps.add("specificLessonId");
+        try {
+            if(authorizeUserService.authorize(new AuthorizeUserRequest(token, Collections.singletonList(new AuthorizeEntity(AuthorizeType.GET, ids, Entity.OUTLINE, ps))))){
+                return ResponseEntity.ok(cs);
+            }
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
     @GetMapping("user/{id}")
-    public ResponseEntity<List<Outline>> getByUserId(@PathVariable("id") long id){
-        return ResponseEntity.ok(outlineRepository.findByUserId(id));
+    public ResponseEntity<List<Outline>> getByUserId(@PathVariable("id") long id, @RequestHeader("User-Token") String token){
+        ArrayList<Outline> cs = new ArrayList<>();
+        ArrayList<Long> ids = new ArrayList<>();
+        try {
+            cs = (ArrayList<Outline>) outlineRepository.getByUserId(id);
+            for (Outline c : cs) {
+                ids.add(c.getId());
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+        ArrayList<String> ps = new ArrayList<>();
+        ps.add("id");
+        ps.add("userId");
+        ps.add("specificLessonId");
+        try {
+            if(authorizeUserService.authorize(new AuthorizeUserRequest(token, Collections.singletonList(new AuthorizeEntity(AuthorizeType.GET, ids, Entity.OUTLINE, ps))))){
+                return ResponseEntity.ok(cs);
+            }
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
     @PostMapping("create")
     public ResponseEntity<Outline> create(@RequestBody Outline data, @RequestHeader("User-Token") String token){

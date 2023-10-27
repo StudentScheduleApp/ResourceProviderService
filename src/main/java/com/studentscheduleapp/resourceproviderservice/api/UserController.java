@@ -55,8 +55,30 @@ public class UserController {
         }
     }
     @GetMapping("email/{email}")
-    public ResponseEntity<User> getByEmail(@PathVariable("email") String email){
-        return ResponseEntity.ok(userRepository.findByEmail(email).orElse(null));
+    public ResponseEntity<User> getByEmail(@PathVariable("email") String email, @RequestHeader("User-Token") String token) {
+        User u;
+        try {
+            u = userRepository.getByEmail(email);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        ArrayList<String> ps = new ArrayList<>();
+        ps.add("id");
+        ps.add("email");
+        ps.add("password");
+        ps.add("firstName");
+        ps.add("lastName");
+        ps.add("banned");
+        ps.add("avaUrl");
+        ps.add("roles");
+        try {
+            if (authorizeUserService.authorize(new AuthorizeUserRequest(token, Collections.singletonList(new AuthorizeEntity(AuthorizeType.GET, Collections.singletonList(u.getId()), Entity.USER, ps))))) {
+                return ResponseEntity.ok(u);
+            }
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
     @PostMapping("create")
     public ResponseEntity<User> create(@RequestBody User data, @RequestHeader("User-Token") String token){

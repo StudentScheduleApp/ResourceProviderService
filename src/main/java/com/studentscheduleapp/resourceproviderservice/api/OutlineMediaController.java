@@ -51,8 +51,30 @@ public class OutlineMediaController {
         }
     }
     @GetMapping("outline/{id}")
-    public ResponseEntity<List<OutlineMedia>> getByOutlineId(@PathVariable("id") long id){
-        return ResponseEntity.ok(outlineMediaRepository.findByOutlineId(id));
+    public ResponseEntity<List<OutlineMedia>> getByOutlineId(@PathVariable("id") long id, @RequestHeader("User-Token") String token){
+        ArrayList<OutlineMedia> cs = new ArrayList<>();
+        ArrayList<Long> ids = new ArrayList<>();
+        try {
+            cs = (ArrayList<OutlineMedia>) outlineMediaRepository.getByOutlineId(id);
+            for (OutlineMedia c : cs) {
+                ids.add(c.getId());
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+        ArrayList<String> ps = new ArrayList<>();
+        ps.add("id");
+        ps.add("timestamp");
+        ps.add("outlineId");
+        ps.add("imageUrl");
+        try {
+            if(authorizeUserService.authorize(new AuthorizeUserRequest(token, Collections.singletonList(new AuthorizeEntity(AuthorizeType.GET, ids, Entity.OUTLINE_MEDIA, ps))))){
+                return ResponseEntity.ok(cs);
+            }
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
     @PostMapping("create")
     public ResponseEntity<OutlineMedia> create(@RequestBody OutlineMedia data, @RequestHeader("User-Token") String token){

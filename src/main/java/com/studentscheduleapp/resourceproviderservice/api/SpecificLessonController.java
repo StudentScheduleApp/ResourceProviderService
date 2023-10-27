@@ -53,8 +53,32 @@ public class SpecificLessonController {
         }
     }
     @GetMapping("group/{id}")
-    public ResponseEntity<List<SpecificLesson>> getByGroupId(@PathVariable("id") long id){
-        return ResponseEntity.ok(specificLessonRepository.findByGroupId(id));
+    public ResponseEntity<List<SpecificLesson>> getByGroupId(@PathVariable("id") long id, @RequestHeader("User-Token") String token){
+        ArrayList<SpecificLesson> cs = new ArrayList<>();
+        ArrayList<Long> ids = new ArrayList<>();
+        try {
+            cs = (ArrayList<SpecificLesson>) specificLessonRepository.getByGroupId(id);
+            for (SpecificLesson c : cs) {
+                ids.add(c.getId());
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+        ArrayList<String> ps = new ArrayList<>();
+        ps.add("id");
+        ps.add("groupId");
+        ps.add("lessonId");
+        ps.add("time");
+        ps.add("canceled");
+        ps.add("comment");
+        try {
+            if(authorizeUserService.authorize(new AuthorizeUserRequest(token, Collections.singletonList(new AuthorizeEntity(AuthorizeType.GET, ids, Entity.MEMBER, ps))))){
+                return ResponseEntity.ok(cs);
+            }
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
     @PostMapping("create")
     public ResponseEntity<SpecificLesson> create(@RequestBody SpecificLesson data, @RequestHeader("User-Token") String token){

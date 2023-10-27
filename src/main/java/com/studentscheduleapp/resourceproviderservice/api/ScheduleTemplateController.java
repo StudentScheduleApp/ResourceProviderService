@@ -53,8 +53,32 @@ public class ScheduleTemplateController {
         }
     }
     @GetMapping("group/{id}")
-    public ResponseEntity<List<ScheduleTemplate>> getByGroupId(@PathVariable("id") long id){
-        return ResponseEntity.ok(scheduleTemplateRepository.findByGroupId(id));
+    public ResponseEntity<List<ScheduleTemplate>> getByGroupId(@PathVariable("id") long id, @RequestHeader("User-Token") String token){
+        ArrayList<ScheduleTemplate> cs = new ArrayList<>();
+        ArrayList<Long> ids = new ArrayList<>();
+        try {
+            cs = (ArrayList<ScheduleTemplate>) scheduleTemplateRepository.getByGroupId(id);
+            for (ScheduleTemplate c : cs) {
+                ids.add(c.getId());
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+        ArrayList<String> ps = new ArrayList<>();
+        ps.add("id");
+        ps.add("groupId");
+        ps.add("name");
+        ps.add("timeStart");
+        ps.add("timeStop");
+        ps.add("comment");
+        try {
+            if(authorizeUserService.authorize(new AuthorizeUserRequest(token, Collections.singletonList(new AuthorizeEntity(AuthorizeType.GET, ids, Entity.MEMBER, ps))))){
+                return ResponseEntity.ok(cs);
+            }
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
     @PostMapping("create")
     public ResponseEntity<ScheduleTemplate> create(@RequestBody ScheduleTemplate data, @RequestHeader("User-Token") String token){
