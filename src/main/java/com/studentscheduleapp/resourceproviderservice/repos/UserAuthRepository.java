@@ -1,6 +1,5 @@
 package com.studentscheduleapp.resourceproviderservice.repos;
 
-import com.studentscheduleapp.resourceproviderservice.models.api.AuthorizeServiceRequest;
 import com.studentscheduleapp.resourceproviderservice.models.api.AuthorizeUserRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -10,7 +9,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.web.client.RestTemplate;
 
 @Repository
-public class UserTokenRepository {
+public class UserAuthRepository {
 
     @Value("${ip.identityservice}")
     private String identityService;
