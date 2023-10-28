@@ -2,12 +2,14 @@ package com.studentscheduleapp.resourceproviderservice.api;
 
 import com.studentscheduleapp.resourceproviderservice.models.*;
 import com.studentscheduleapp.resourceproviderservice.models.api.AuthorizeUserRequest;
+import com.studentscheduleapp.resourceproviderservice.repos.ImageRepository;
 import com.studentscheduleapp.resourceproviderservice.repos.OutlineMediaRepository;
 import com.studentscheduleapp.resourceproviderservice.services.AuthorizeUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -21,6 +23,8 @@ public class OutlineMediaController {
     private OutlineMediaRepository outlineMediaRepository;
     @Autowired
     private AuthorizeUserService authorizeUserService;
+    @Autowired
+    private ImageRepository imageRepository;
 
     @GetMapping("id/{ids}")
     public ResponseEntity<List<OutlineMedia>> getById(@PathVariable("ids") String id, @RequestHeader("User-Token") String token) {
@@ -77,9 +81,12 @@ public class OutlineMediaController {
         }
     }
     @PostMapping("create")
-    public ResponseEntity<OutlineMedia> create(@RequestBody OutlineMedia data, @RequestHeader("User-Token") String token){
+    public ResponseEntity<OutlineMedia> create(@RequestBody OutlineMedia data, @RequestHeader("User-Token") String token, @RequestParam("image") MultipartFile file){
+        if(file == null || file.isEmpty())
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         try {
             if(authorizeUserService.authorize(new AuthorizeUserRequest(token, Collections.singletonList(new AuthorizeEntity(AuthorizeType.CREATE, Collections.singletonList(data.getOutlineId()), Entity.OUTLINE_MEDIA, null))))){
+                data.setImageUrl(imageRepository.upload(file));
                 return ResponseEntity.ok(outlineMediaRepository.save(data));
             }
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
@@ -88,9 +95,11 @@ public class OutlineMediaController {
         }
     }
     @PatchMapping("patch")
-    public ResponseEntity<OutlineMedia> patch(@RequestBody OutlineMedia data, @RequestHeader("User-Token") String token){
+    public ResponseEntity<OutlineMedia> patch(@RequestBody OutlineMedia data, @RequestHeader("User-Token") String token, @RequestParam("image") MultipartFile file){
         try {
             if(authorizeUserService.authorize(new AuthorizeUserRequest(token, Collections.singletonList(new AuthorizeEntity(AuthorizeType.PATCH, Collections.singletonList(data.getId()), Entity.OUTLINE_MEDIA, null))))){
+                imageRepository.delete(Long.parseLong(data.getImageUrl().split("/")[data.getImageUrl().split("/").length - 1]));
+                data.setImageUrl(imageRepository.upload(file));
                 return ResponseEntity.ok(outlineMediaRepository.save(data));
             }
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
@@ -111,6 +120,8 @@ public class OutlineMediaController {
         try {
             if(authorizeUserService.authorize(new AuthorizeUserRequest(token, Collections.singletonList(new AuthorizeEntity(AuthorizeType.DELETE, ids, Entity.OUTLINE_MEDIA, null))))){
                 for (Long l : ids) {
+                    OutlineMedia m = outlineMediaRepository.getById(l);
+                    imageRepository.delete(Long.parseLong(m.getImageUrl().split("/")[m.getImageUrl().split("/").length - 1]));
                     outlineMediaRepository.delete(l);
                 }
                 return ResponseEntity.ok().build();
