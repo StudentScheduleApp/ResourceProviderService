@@ -72,7 +72,7 @@ public class OutlineMediaController {
         ps.add("outlineId");
         ps.add("imageUrl");
         try {
-            if(authorizeUserService.authorize(new AuthorizeUserRequest(token, Collections.singletonList(new AuthorizeEntity(AuthorizeType.GET, ids, Entity.OUTLINE_MEDIA, ps))))){
+            if(authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.GET, ids, Entity.OUTLINE_MEDIA, ps)))){
                 return ResponseEntity.ok(cs);
             }
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
@@ -85,7 +85,7 @@ public class OutlineMediaController {
         if(file == null || file.isEmpty())
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         try {
-            if(authorizeUserService.authorize(new AuthorizeUserRequest(token, Collections.singletonList(new AuthorizeEntity(AuthorizeType.CREATE, Collections.singletonList(data.getOutlineId()), Entity.OUTLINE_MEDIA, null))))){
+            if(authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.CREATE, Collections.singletonList(data.getOutlineId()), Entity.OUTLINE_MEDIA, null)))){
                 data.setImageUrl(imageRepository.upload(file));
                 return ResponseEntity.ok(outlineMediaRepository.save(data));
             }
@@ -97,7 +97,7 @@ public class OutlineMediaController {
     @PatchMapping("patch")
     public ResponseEntity<OutlineMedia> patch(@RequestBody OutlineMedia data, @RequestHeader("User-Token") String token, @RequestParam("image") MultipartFile file){
         try {
-            if(authorizeUserService.authorize(new AuthorizeUserRequest(token, Collections.singletonList(new AuthorizeEntity(AuthorizeType.PATCH, Collections.singletonList(data.getId()), Entity.OUTLINE_MEDIA, null))))){
+            if(authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.PATCH, Collections.singletonList(data.getId()), Entity.OUTLINE_MEDIA, null)))){
                 imageRepository.delete(Long.parseLong(data.getImageUrl().split("/")[data.getImageUrl().split("/").length - 1]));
                 data.setImageUrl(imageRepository.upload(file));
                 return ResponseEntity.ok(outlineMediaRepository.save(data));
@@ -118,7 +118,7 @@ public class OutlineMediaController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
         try {
-            if(authorizeUserService.authorize(new AuthorizeUserRequest(token, Collections.singletonList(new AuthorizeEntity(AuthorizeType.DELETE, ids, Entity.OUTLINE_MEDIA, null))))){
+            if(authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.DELETE, ids, Entity.OUTLINE_MEDIA, null)))){
                 for (Long l : ids) {
                     OutlineMedia m = outlineMediaRepository.getById(l);
                     imageRepository.delete(Long.parseLong(m.getImageUrl().split("/")[m.getImageUrl().split("/").length - 1]));

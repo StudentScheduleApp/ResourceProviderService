@@ -38,7 +38,7 @@ public class GroupController {
         ps.add("avaUrl");
         ps.add("name");
         try {
-            if (authorizeUserService.authorize(new AuthorizeUserRequest(token, Collections.singletonList(new AuthorizeEntity(AuthorizeType.GET, ids, Entity.GROUP, ps))))) {
+            if (authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.GET, ids, Entity.GROUP, ps)))) {
                 ArrayList<Group> ls = new ArrayList<>();
                 for (Long l : ids) {
                     ls.add(groupRepository.getById(l));
@@ -53,7 +53,7 @@ public class GroupController {
     @PostMapping("create")
     public ResponseEntity<Group> create(@RequestBody Group data, @RequestHeader("User-Token") String token){
         try {
-            if(authorizeUserService.authorize(new AuthorizeUserRequest(token, Collections.singletonList(new AuthorizeEntity(AuthorizeType.CREATE, Collections.singletonList(0L), Entity.GROUP, null))))){
+            if(authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.CREATE, Collections.singletonList(0L), Entity.GROUP, null)))){
                 return ResponseEntity.ok(groupRepository.save(data));
             }
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
@@ -64,7 +64,7 @@ public class GroupController {
     @PatchMapping("patch")
     public ResponseEntity<Group> patch(@RequestBody Group data, @RequestHeader("User-Token") String token){
         try {
-            if(authorizeUserService.authorize(new AuthorizeUserRequest(token, Collections.singletonList(new AuthorizeEntity(AuthorizeType.PATCH, Collections.singletonList(data.getId()), Entity.GROUP, null))))){
+            if(authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.PATCH, Collections.singletonList(data.getId()), Entity.GROUP, null)))){
 
                 return ResponseEntity.ok(groupRepository.save(data));
             }
@@ -84,7 +84,7 @@ public class GroupController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
         try {
-            if(authorizeUserService.authorize(new AuthorizeUserRequest(token, Collections.singletonList(new AuthorizeEntity(AuthorizeType.DELETE, ids, Entity.GROUP, null))))){
+            if(authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.DELETE, ids, Entity.GROUP, null)))){
                 for (Long l : ids) {
                     groupRepository.delete(l);
                 }

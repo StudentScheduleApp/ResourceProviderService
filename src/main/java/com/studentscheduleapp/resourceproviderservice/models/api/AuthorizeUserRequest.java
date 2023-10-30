@@ -13,6 +13,6 @@ import java.util.List;
 public class AuthorizeUserRequest {
 
     private String userToken;
-    private List<AuthorizeEntity> authorizeEntities;
+    private AuthorizeEntity authorizeEntity;
 
 }
