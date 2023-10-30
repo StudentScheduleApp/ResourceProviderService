@@ -64,6 +64,11 @@ public class GroupController {
     @PatchMapping("patch")
     public ResponseEntity<Group> patch(@RequestBody Group data, @RequestHeader("User-Token") String token){
         try {
+            Group cl = groupRepository.getById(data.getId());
+            if (cl == null)
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            data.setAvaUrl(cl.getAvaUrl());
+            data.setChatId(cl.getChatId());
             if(authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.PATCH, Collections.singletonList(data.getId()), Entity.GROUP, null)))){
 
                 return ResponseEntity.ok(groupRepository.save(data));

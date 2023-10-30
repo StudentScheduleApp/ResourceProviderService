@@ -94,6 +94,10 @@ public class SpecificLessonController {
     @PatchMapping("patch")
     public ResponseEntity<SpecificLesson> patch(@RequestBody SpecificLesson data, @RequestHeader("User-Token") String token){
         try {
+            SpecificLesson cl = specificLessonRepository.getById(data.getId());
+            if (cl == null)
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            data.setGroupId(cl.getGroupId());
             if(authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.PATCH, Collections.singletonList(data.getId()), Entity.SPECIFIC_LESSON, null)))){
                 return ResponseEntity.ok(specificLessonRepository.save(data));
             }

@@ -94,6 +94,12 @@ public class OutlineMediaCommentController {
     @PatchMapping("patch")
     public ResponseEntity<OutlineMediaComment> patch(@RequestBody OutlineMediaComment data, @RequestHeader("User-Token") String token){
         try {
+            OutlineMediaComment cl = outlineMediaCommentRepository.getById(data.getId());
+            if (cl == null)
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            data.setMediaId(cl.getMediaId());
+            data.setTimestamp(cl.getTimestamp());
+            data.setUserId(cl.getUserId());
             if(authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.PATCH, Collections.singletonList(data.getId()), Entity.OUTLINE_MEDIA_COMMENT, null)))){
                 return ResponseEntity.ok(outlineMediaCommentRepository.save(data));
             }

@@ -94,6 +94,10 @@ public class CustomLessonController {
     @PatchMapping("patch")
     public ResponseEntity<CustomLesson> patch(@RequestBody CustomLesson data, @RequestHeader("User-Token") String token){
         try {
+            CustomLesson cl = customLessonRepository.getById(data.getId());
+            if (cl == null)
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            data.setGroupId(cl.getGroupId());
             if(authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.PATCH, Collections.singletonList(data.getId()), Entity.CUSTOM_LESSON, null)))){
                 return ResponseEntity.ok(customLessonRepository.save(data));
             }

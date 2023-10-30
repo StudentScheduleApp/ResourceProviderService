@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 
 @RestController
@@ -34,8 +35,6 @@ public class UserController {
         }
         ArrayList<String> ps = new ArrayList<>();
         ps.add("id");
-        ps.add("email");
-        ps.add("password");
         ps.add("firstName");
         ps.add("lastName");
         ps.add("banned");
@@ -45,7 +44,10 @@ public class UserController {
             if (authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.GET, ids, Entity.USER, ps)))) {
                 ArrayList<User> ls = new ArrayList<>();
                 for (Long l : ids) {
-                    ls.add(userRepository.getById(l));
+                    User u = userRepository.getById(l);
+                    u.setEmail(null);
+                    u.setPassword(null);
+                    ls.add(u);
                 }
                 return ResponseEntity.ok(ls);
             }
@@ -59,13 +61,13 @@ public class UserController {
         User u;
         try {
             u = userRepository.getByEmail(email);
+            u.setEmail(null);
+            u.setPassword(null);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
         ArrayList<String> ps = new ArrayList<>();
         ps.add("id");
-        ps.add("email");
-        ps.add("password");
         ps.add("firstName");
         ps.add("lastName");
         ps.add("banned");
@@ -84,6 +86,9 @@ public class UserController {
     public ResponseEntity<User> create(@RequestBody User data, @RequestHeader("User-Token") String token){
         try {
             if(authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.CREATE, Collections.singletonList(0L), Entity.USER, null)))){
+                data.setBanned(false);
+                data.setRoles(Collections.singletonList(Role.USER));
+                data.setAvaUrl(null);
                 return ResponseEntity.ok(userRepository.save(data));
             }
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
@@ -94,7 +99,22 @@ public class UserController {
     @PatchMapping("patch")
     public ResponseEntity<User> patch(@RequestBody User data, @RequestHeader("User-Token") String token){
         try {
-            if(authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.PATCH, Collections.singletonList(data.getId()), Entity.USER, null)))){
+            User u = userRepository.getById(data.getId());
+            if (u == null)
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            data.setEmail(u.getEmail());
+            data.setAvaUrl(u.getAvaUrl());
+            data.setPassword(u.getPassword());
+            ArrayList<String> ps = new ArrayList<>();
+            if (!data.getBanned().equals(u.getBanned()))
+                ps.add("banned");
+            if (!data.getRoles().equals(u.getRoles()))
+                ps.add("roles");
+            if (!data.getFirstName().equals(u.getFirstName()))
+                ps.add("firstName");
+            if (!data.getLastName().equals(u.getLastName()))
+                ps.add("lastName");
+            if(authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.PATCH, Collections.singletonList(data.getId()), Entity.USER, ps)))){
                 return ResponseEntity.ok(userRepository.save(data));
             }
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();

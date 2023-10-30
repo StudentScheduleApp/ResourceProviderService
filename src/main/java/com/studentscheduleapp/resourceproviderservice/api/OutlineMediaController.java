@@ -42,7 +42,7 @@ public class OutlineMediaController {
         ps.add("outlineId");
         ps.add("imageUrl");
         try {
-            if (authorizeUserService.authorize(new AuthorizeUserRequest(token, Collections.singletonList(new AuthorizeEntity(AuthorizeType.GET, ids, Entity.OUTLINE_MEDIA, ps))))) {
+            if (authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.GET, ids, Entity.OUTLINE_MEDIA, ps)))) {
                 ArrayList<OutlineMedia> ls = new ArrayList<>();
                 for (Long l : ids) {
                     ls.add(outlineMediaRepository.getById(l));
@@ -97,6 +97,12 @@ public class OutlineMediaController {
     @PatchMapping("patch")
     public ResponseEntity<OutlineMedia> patch(@RequestBody OutlineMedia data, @RequestHeader("User-Token") String token, @RequestParam("image") MultipartFile file){
         try {
+            OutlineMedia cl = outlineMediaRepository.getById(data.getId());
+            if (cl == null)
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            data.setImageUrl(cl.getImageUrl());
+            data.setTimestamp(cl.getTimestamp());
+            data.setOutlineId(cl.getOutlineId());
             if(authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.PATCH, Collections.singletonList(data.getId()), Entity.OUTLINE_MEDIA, null)))){
                 imageRepository.delete(Long.parseLong(data.getImageUrl().split("/")[data.getImageUrl().split("/").length - 1]));
                 data.setImageUrl(imageRepository.upload(file));

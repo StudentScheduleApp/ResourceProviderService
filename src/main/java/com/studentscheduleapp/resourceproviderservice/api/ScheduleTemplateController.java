@@ -40,7 +40,7 @@ public class ScheduleTemplateController {
         ps.add("timeStop");
         ps.add("comment");
         try {
-            if (authorizeUserService.authorize(new AuthorizeUserRequest(token, Collections.singletonList(new AuthorizeEntity(AuthorizeType.GET, ids, Entity.SCHEDULE_TEMPLATE, ps))))) {
+            if (authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.GET, ids, Entity.SCHEDULE_TEMPLATE, ps)))) {
                 ArrayList<ScheduleTemplate> ls = new ArrayList<>();
                 for (Long l : ids) {
                     ls.add(scheduleTemplateRepository.getById(l));
@@ -94,6 +94,10 @@ public class ScheduleTemplateController {
     @PatchMapping("patch")
     public ResponseEntity<ScheduleTemplate> patch(@RequestBody ScheduleTemplate data, @RequestHeader("User-Token") String token){
         try {
+            ScheduleTemplate cl = scheduleTemplateRepository.getById(data.getId());
+            if (cl == null)
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            data.setGroupId(cl.getGroupId());
             if(authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.PATCH, Collections.singletonList(data.getId()), Entity.SCHEDULE_TEMPLATE, null)))){
                 return ResponseEntity.ok(scheduleTemplateRepository.save(data));
             }
