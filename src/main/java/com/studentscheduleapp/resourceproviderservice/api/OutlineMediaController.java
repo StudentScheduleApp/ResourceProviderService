@@ -97,12 +97,16 @@ public class OutlineMediaController {
     @PatchMapping("patch")
     public ResponseEntity<OutlineMedia> patch(@RequestBody OutlineMedia data, @RequestHeader("User-Token") String token, @RequestParam("image") MultipartFile file){
         try {
-            OutlineMedia cl = outlineMediaRepository.getById(data.getId());
-            if (cl == null)
+            OutlineMedia u = outlineMediaRepository.getById(data.getId());
+            if (u == null)
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-            data.setImageUrl(cl.getImageUrl());
-            data.setTimestamp(cl.getTimestamp());
-            data.setOutlineId(cl.getOutlineId());
+            ArrayList<String> ps = new ArrayList<>();
+            if (data.getOutlineId() != u.getOutlineId())
+                ps.add("outlineId");
+            if (data.getTimestamp() != u.getTimestamp())
+                ps.add("timestamp");
+            if (data.getImageUrl().equals(u.getImageUrl()))
+                ps.add("text");
             if(authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.PATCH, Collections.singletonList(data.getId()), Entity.OUTLINE_MEDIA, null)))){
                 imageRepository.delete(Long.parseLong(data.getImageUrl().split("/")[data.getImageUrl().split("/").length - 1]));
                 data.setImageUrl(imageRepository.upload(file));

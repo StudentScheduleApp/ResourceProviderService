@@ -116,11 +116,16 @@ public class MemberController {
     @PatchMapping("patch")
     public ResponseEntity<Member> patch(@RequestBody Member data, @RequestHeader("User-Token") String token){
         try {
-            Member cl = memberRepository.getById(data.getId());
-            if (cl == null)
+            Member u = memberRepository.getById(data.getId());
+            if (u == null)
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-            data.setGroupId(cl.getGroupId());
-            data.setUserId(cl.getUserId());
+            ArrayList<String> ps = new ArrayList<>();
+            if (data.getGroupId() != u.getGroupId())
+                ps.add("groupId");
+            if (data.getUserId() != u.getUserId())
+                ps.add("userId");
+            if (!data.getRoles().equals(u.getRoles()))
+                ps.add("roles");
             if(authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.PATCH, Collections.singletonList(data.getId()), Entity.MEMBER, null)))){
                 return ResponseEntity.ok(memberRepository.save(data));
             }

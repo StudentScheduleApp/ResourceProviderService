@@ -92,10 +92,18 @@ public class LessonTemplateController {
     @PatchMapping("patch")
     public ResponseEntity<LessonTemplate> patch(@RequestBody LessonTemplate data, @RequestHeader("User-Token") String token){
         try {
-            LessonTemplate cl = lessonTemplateRepository.getById(data.getId());
-            if (cl == null)
+            LessonTemplate u = lessonTemplateRepository.getById(data.getId());
+            if (u == null)
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-            data.setScheduleTemplateId(cl.getScheduleTemplateId());
+            ArrayList<String> ps = new ArrayList<>();
+            if (data.getLessonId() != u.getLessonId())
+                ps.add("lessonId");
+            if (!data.getComment().equals(u.getComment()))
+                ps.add("comment");
+            if (data.getScheduleTemplateId() != u.getScheduleTemplateId())
+                ps.add("scheduleTemplate");
+            if (data.getTime() != u.getTime())
+                ps.add("time");
             if(authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.PATCH, Collections.singletonList(data.getId()), Entity.LESSON_TEMPLATE, null)))){
                 return ResponseEntity.ok(lessonTemplateRepository.save(data));
             }

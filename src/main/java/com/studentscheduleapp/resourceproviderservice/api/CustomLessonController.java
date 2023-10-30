@@ -1,11 +1,8 @@
 package com.studentscheduleapp.resourceproviderservice.api;
 
-import com.studentscheduleapp.resourceproviderservice.models.AuthorizeEntity;
-import com.studentscheduleapp.resourceproviderservice.models.AuthorizeType;
-import com.studentscheduleapp.resourceproviderservice.models.Entity;
+import com.studentscheduleapp.resourceproviderservice.models.*;
 import com.studentscheduleapp.resourceproviderservice.models.api.AuthorizeUserRequest;
 import com.studentscheduleapp.resourceproviderservice.repos.CustomLessonRepository;
-import com.studentscheduleapp.resourceproviderservice.models.CustomLesson;
 import com.studentscheduleapp.resourceproviderservice.services.AuthorizeUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -94,10 +91,16 @@ public class CustomLessonController {
     @PatchMapping("patch")
     public ResponseEntity<CustomLesson> patch(@RequestBody CustomLesson data, @RequestHeader("User-Token") String token){
         try {
-            CustomLesson cl = customLessonRepository.getById(data.getId());
-            if (cl == null)
+            CustomLesson u = customLessonRepository.getById(data.getId());
+            if (u == null)
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-            data.setGroupId(cl.getGroupId());
+            ArrayList<String> ps = new ArrayList<>();
+            if (data.getGroupId() != u.getGroupId())
+                ps.add("groupId");
+            if (!data.getName().equals(u.getName()))
+                ps.add("name");
+            if (!data.getTeacher().equals(u.getTeacher()))
+                ps.add("teacher");
             if(authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.PATCH, Collections.singletonList(data.getId()), Entity.CUSTOM_LESSON, null)))){
                 return ResponseEntity.ok(customLessonRepository.save(data));
             }

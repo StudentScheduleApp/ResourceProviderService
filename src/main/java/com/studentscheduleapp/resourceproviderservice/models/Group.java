@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 public class Group {
     private long id;
     private long chatId;
-    private long avaUrl;
+    private String avaUrl;
     private String name;
 
 }

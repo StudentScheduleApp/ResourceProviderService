@@ -94,10 +94,20 @@ public class ScheduleTemplateController {
     @PatchMapping("patch")
     public ResponseEntity<ScheduleTemplate> patch(@RequestBody ScheduleTemplate data, @RequestHeader("User-Token") String token){
         try {
-            ScheduleTemplate cl = scheduleTemplateRepository.getById(data.getId());
-            if (cl == null)
+            ScheduleTemplate u = scheduleTemplateRepository.getById(data.getId());
+            if (u == null)
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-            data.setGroupId(cl.getGroupId());
+            ArrayList<String> ps = new ArrayList<>();
+            if (data.getGroupId() != u.getGroupId())
+                ps.add("groupId");
+            if (data.getTimeStart() != u.getTimeStart())
+                ps.add("timeStart");
+            if (data.getTimeStop() != u.getTimeStop())
+                ps.add("timeStop");
+            if (data.getName().equals(u.getName()))
+                ps.add("name");
+            if (data.getComment().equals(u.getComment()))
+                ps.add("comment");
             if(authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.PATCH, Collections.singletonList(data.getId()), Entity.SCHEDULE_TEMPLATE, null)))){
                 return ResponseEntity.ok(scheduleTemplateRepository.save(data));
             }

@@ -102,12 +102,13 @@ public class UserController {
             User u = userRepository.getById(data.getId());
             if (u == null)
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-            data.setEmail(u.getEmail());
-            data.setAvaUrl(u.getAvaUrl());
-            data.setPassword(u.getPassword());
             ArrayList<String> ps = new ArrayList<>();
-            if (!data.getBanned().equals(u.getBanned()))
-                ps.add("banned");
+            if (!data.getAvaUrl().equals(u.getAvaUrl()))
+                ps.add("avaUrl");
+            if (!data.getPassword().equals(u.getPassword()))
+                ps.add("password");
+            if (!data.getEmail().equals(u.getEmail()))
+                ps.add("email");
             if (!data.getRoles().equals(u.getRoles()))
                 ps.add("roles");
             if (!data.getFirstName().equals(u.getFirstName()))

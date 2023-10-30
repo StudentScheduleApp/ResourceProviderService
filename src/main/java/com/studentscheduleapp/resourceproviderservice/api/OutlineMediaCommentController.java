@@ -94,12 +94,20 @@ public class OutlineMediaCommentController {
     @PatchMapping("patch")
     public ResponseEntity<OutlineMediaComment> patch(@RequestBody OutlineMediaComment data, @RequestHeader("User-Token") String token){
         try {
-            OutlineMediaComment cl = outlineMediaCommentRepository.getById(data.getId());
-            if (cl == null)
+            OutlineMediaComment u = outlineMediaCommentRepository.getById(data.getId());
+            if (u == null)
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-            data.setMediaId(cl.getMediaId());
-            data.setTimestamp(cl.getTimestamp());
-            data.setUserId(cl.getUserId());
+            ArrayList<String> ps = new ArrayList<>();
+            if (data.getMediaId() != u.getMediaId())
+                ps.add("mediaId");
+            if (data.getUserId() != u.getUserId())
+                ps.add("userId");
+            if (data.getQuestionCommentId() != u.getQuestionCommentId())
+                ps.add("questionCommentId");
+            if (data.getTimestamp() != u.getTimestamp())
+                ps.add("timestamp");
+            if (data.getText().equals(u.getText()))
+                ps.add("text");
             if(authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.PATCH, Collections.singletonList(data.getId()), Entity.OUTLINE_MEDIA_COMMENT, null)))){
                 return ResponseEntity.ok(outlineMediaCommentRepository.save(data));
             }

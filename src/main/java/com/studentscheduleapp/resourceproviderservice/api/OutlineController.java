@@ -113,11 +113,14 @@ public class OutlineController {
     @PatchMapping("patch")
     public ResponseEntity<Outline> patch(@RequestBody Outline data, @RequestHeader("User-Token") String token){
         try {
-            Outline cl = outlineRepository.getById(data.getId());
-            if (cl == null)
+            Outline u = outlineRepository.getById(data.getId());
+            if (u == null)
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-            data.setUserId(cl.getUserId());
-            data.setSpecificLessonId(cl.getSpecificLessonId());
+            ArrayList<String> ps = new ArrayList<>();
+            if (data.getSpecificLessonId() != u.getSpecificLessonId())
+                ps.add("specificLessonId");
+            if (data.getUserId() != u.getUserId())
+                ps.add("userId");
             if(authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.PATCH, Collections.singletonList(data.getId()), Entity.LESSON_TEMPLATE, null)))){
                 return ResponseEntity.ok(outlineRepository.save(data));
             }
