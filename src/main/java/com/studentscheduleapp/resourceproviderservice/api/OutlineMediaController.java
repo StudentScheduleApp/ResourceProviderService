@@ -105,11 +105,14 @@ public class OutlineMediaController {
                 ps.add("outlineId");
             if (data.getTimestamp() != u.getTimestamp())
                 ps.add("timestamp");
-            if (data.getImageUrl().equals(u.getImageUrl()))
-                ps.add("text");
+            if (file != null && !file.isEmpty())
+                ps.add("imageUrl");
             if(authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.PATCH, Collections.singletonList(data.getId()), Entity.OUTLINE_MEDIA, null)))){
                 imageRepository.delete(Long.parseLong(data.getImageUrl().split("/")[data.getImageUrl().split("/").length - 1]));
-                data.setImageUrl(imageRepository.upload(file));
+                if (file != null && !file.isEmpty()) {
+                    if (imageRepository.delete(Long.parseLong(data.getImageUrl().split("/")[data.getImageUrl().split("/").length - 1])))
+                        data.setImageUrl(imageRepository.upload(file));
+                }
                 return ResponseEntity.ok(outlineMediaRepository.save(data));
             }
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
