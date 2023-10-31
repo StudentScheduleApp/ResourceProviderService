@@ -2,7 +2,7 @@ package com.studentscheduleapp.resourceproviderservice.api;
 
 import com.studentscheduleapp.resourceproviderservice.models.*;
 import com.studentscheduleapp.resourceproviderservice.models.api.AuthorizeUserRequest;
-import com.studentscheduleapp.resourceproviderservice.repos.GroupRepository;
+import com.studentscheduleapp.resourceproviderservice.repos.*;
 import com.studentscheduleapp.resourceproviderservice.services.AuthorizeUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,6 +19,22 @@ public class GroupController {
 
     @Autowired
     private GroupRepository groupRepository;
+    @Autowired
+    private LessonTemplateRepository lessonTemplateRepository;
+    @Autowired
+    private CustomLessonRepository customLessonRepository;
+    @Autowired
+    private SpecificLessonRepository specificLessonRepository;
+    @Autowired
+    private ScheduleTemplateRepository scheduleTemplateRepository;
+    @Autowired
+    private MemberRepository memberRepository;
+    @Autowired
+    private OutlineRepository outlineRepository;
+    @Autowired
+    private OutlineMediaRepository outlineMediaRepository;
+    @Autowired
+    private OutlineMediaCommentRepository outlineMediaCommentRepository;
     @Autowired
     private AuthorizeUserService authorizeUserService;
 
@@ -96,6 +112,27 @@ public class GroupController {
         try {
             if(authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.DELETE, ids, Entity.GROUP, null)))){
                 for (Long l : ids) {
+                    for (CustomLesson lt : customLessonRepository.getByGroupId(l))
+                        customLessonRepository.delete(lt.getId());
+                    for (Member m : memberRepository.getByGroupId(l))
+                        memberRepository.delete(m.getId());
+                    for (ScheduleTemplate st : scheduleTemplateRepository.getByGroupId(l)) {
+                        for (LessonTemplate lt : lessonTemplateRepository.getByScheduleTemplateId(st.getId()))
+                            lessonTemplateRepository.delete(lt.getId());
+                        scheduleTemplateRepository.delete(st.getId());
+                    }
+                    for (SpecificLesson sl : specificLessonRepository.getByGroupId(l)) {
+                        for (Outline o : outlineRepository.getBySpecificLessonId(sl.getId())) {
+                            for (OutlineMedia om : outlineMediaRepository.getByOutlineId(o.getId())){
+                                for (OutlineMediaComment omc : outlineMediaCommentRepository.getByOutlineMediaId(om.getId())){
+                                    outlineMediaCommentRepository.delete(omc.getId());
+                                }
+                                outlineMediaRepository.delete(om.getId());
+                            }
+                            outlineRepository.delete(o.getId());
+                        }
+                        specificLessonRepository.delete(sl.getId());
+                    }
                     groupRepository.delete(l);
                 }
                 return ResponseEntity.ok().build();

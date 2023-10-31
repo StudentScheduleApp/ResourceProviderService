@@ -2,7 +2,7 @@ package com.studentscheduleapp.resourceproviderservice.api;
 
 import com.studentscheduleapp.resourceproviderservice.models.*;
 import com.studentscheduleapp.resourceproviderservice.models.api.AuthorizeUserRequest;
-import com.studentscheduleapp.resourceproviderservice.repos.ScheduleTemplateRepository;
+import com.studentscheduleapp.resourceproviderservice.repos.*;
 import com.studentscheduleapp.resourceproviderservice.services.AuthorizeUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -16,7 +16,10 @@ import java.util.List;
 @RestController
 @RequestMapping("api/scheduleTemplates")
 public class ScheduleTemplateController {
-
+    @Autowired
+    private LessonTemplateRepository lessonTemplateRepository;
+    @Autowired
+    private CustomLessonRepository customLessonRepository;
     @Autowired
     private ScheduleTemplateRepository scheduleTemplateRepository;
     @Autowired
@@ -129,6 +132,8 @@ public class ScheduleTemplateController {
         try {
             if(authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.DELETE, ids, Entity.SCHEDULE_TEMPLATE, null)))){
                 for (Long l : ids) {
+                    for (LessonTemplate lt : lessonTemplateRepository.getByScheduleTemplateId(l))
+                        lessonTemplateRepository.delete(lt.getId());
                     scheduleTemplateRepository.delete(l);
                 }
                 return ResponseEntity.ok().build();

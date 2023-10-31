@@ -2,8 +2,7 @@ package com.studentscheduleapp.resourceproviderservice.api;
 
 import com.studentscheduleapp.resourceproviderservice.models.*;
 import com.studentscheduleapp.resourceproviderservice.models.api.AuthorizeUserRequest;
-import com.studentscheduleapp.resourceproviderservice.repos.ImageRepository;
-import com.studentscheduleapp.resourceproviderservice.repos.OutlineMediaRepository;
+import com.studentscheduleapp.resourceproviderservice.repos.*;
 import com.studentscheduleapp.resourceproviderservice.services.AuthorizeUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,9 +17,12 @@ import java.util.List;
 @RestController
 @RequestMapping("api/outlineMedias")
 public class OutlineMediaController {
-
+    @Autowired
+    private OutlineRepository outlineRepository;
     @Autowired
     private OutlineMediaRepository outlineMediaRepository;
+    @Autowired
+    private OutlineMediaCommentRepository outlineMediaCommentRepository;
     @Autowired
     private AuthorizeUserService authorizeUserService;
     @Autowired
@@ -133,7 +135,11 @@ public class OutlineMediaController {
             if(authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.DELETE, ids, Entity.OUTLINE_MEDIA, null)))){
                 for (Long l : ids) {
                     OutlineMedia m = outlineMediaRepository.getById(l);
-                    imageRepository.delete(Long.parseLong(m.getImageUrl().split("/")[m.getImageUrl().split("/").length - 1]));
+                    try {
+                        imageRepository.delete(Long.parseLong(m.getImageUrl().split("/")[m.getImageUrl().split("/").length - 1]));
+                    } catch (Exception e) { }
+                    for (OutlineMediaComment omc : outlineMediaCommentRepository.getByOutlineMediaId(m.getId()))
+                        outlineMediaCommentRepository.delete(omc.getMediaId());
                     outlineMediaRepository.delete(l);
                 }
                 return ResponseEntity.ok().build();

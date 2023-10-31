@@ -2,7 +2,7 @@ package com.studentscheduleapp.resourceproviderservice.api;
 
 import com.studentscheduleapp.resourceproviderservice.models.*;
 import com.studentscheduleapp.resourceproviderservice.models.api.AuthorizeUserRequest;
-import com.studentscheduleapp.resourceproviderservice.repos.UserRepository;
+import com.studentscheduleapp.resourceproviderservice.repos.*;
 import com.studentscheduleapp.resourceproviderservice.services.AuthorizeUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,6 +17,8 @@ import java.util.List;
 @RestController
 @RequestMapping("api/users")
 public class UserController {
+    @Autowired
+    private MemberRepository memberRepository;
 
     @Autowired
     private UserRepository userRepository;
@@ -136,6 +138,8 @@ public class UserController {
         try {
             if(authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.DELETE, ids, Entity.USER, null)))){
                 for (Long l : ids) {
+                    for (Member m : memberRepository.getByUserId(l))
+                        memberRepository.delete(m.getId());
                     userRepository.delete(l);
                 }
                 return ResponseEntity.ok().build();
