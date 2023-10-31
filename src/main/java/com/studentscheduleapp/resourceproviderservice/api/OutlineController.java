@@ -56,7 +56,7 @@ public class OutlineController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
-    @GetMapping("user/{id}")
+    @GetMapping("specificLesson/{id}")
     public ResponseEntity<List<Outline>> getBySpecificLessonId(@PathVariable("id") long id, @RequestHeader("User-Token") String token){
         ArrayList<Outline> cs = new ArrayList<>();
         ArrayList<Long> ids = new ArrayList<>();

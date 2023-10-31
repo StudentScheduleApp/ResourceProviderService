@@ -4,6 +4,7 @@ import com.studentscheduleapp.resourceproviderservice.models.*;
 import com.studentscheduleapp.resourceproviderservice.models.api.AuthorizeUserRequest;
 import com.studentscheduleapp.resourceproviderservice.repos.LessonTemplateRepository;
 import com.studentscheduleapp.resourceproviderservice.services.AuthorizeUserService;
+import com.studentscheduleapp.resourceproviderservice.services.ScheduleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +20,8 @@ public class LessonTemplateController {
 
     @Autowired
     private LessonTemplateRepository lessonTemplateRepository;
+    @Autowired
+    private ScheduleService scheduleService;
     @Autowired
     private AuthorizeUserService authorizeUserService;
 
@@ -82,7 +85,9 @@ public class LessonTemplateController {
     public ResponseEntity<LessonTemplate> create(@RequestBody LessonTemplate data, @RequestHeader("User-Token") String token){
         try {
             if(authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.CREATE, Collections.singletonList(data.getScheduleTemplateId()), Entity.LESSON_TEMPLATE, null)))){
-                return ResponseEntity.ok(lessonTemplateRepository.save(data));
+                LessonTemplate lt = lessonTemplateRepository.save(data);
+                scheduleService.updateSchedule(data.getScheduleTemplateId());
+                return ResponseEntity.ok(lt);
             }
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         } catch (Exception e) {
@@ -105,7 +110,9 @@ public class LessonTemplateController {
             if (data.getTime() != u.getTime())
                 ps.add("time");
             if(authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.PATCH, Collections.singletonList(data.getId()), Entity.LESSON_TEMPLATE, null)))){
-                return ResponseEntity.ok(lessonTemplateRepository.save(data));
+                LessonTemplate lt = lessonTemplateRepository.save(data);
+                scheduleService.updateSchedule(data.getScheduleTemplateId());
+                return ResponseEntity.ok(lt);
             }
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         } catch (Exception e) {
@@ -125,7 +132,9 @@ public class LessonTemplateController {
         try {
             if(authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.DELETE, ids, Entity.LESSON_TEMPLATE, null)))){
                 for (Long l : ids) {
+                    LessonTemplate lt = lessonTemplateRepository.getById(l);
                     lessonTemplateRepository.delete(l);
+                    scheduleService.updateSchedule(lt.getScheduleTemplateId());
                 }
                 return ResponseEntity.ok().build();
             }
