@@ -136,7 +136,7 @@ public class OutlineMediaController {
                 for (Long l : ids) {
                     OutlineMedia m = outlineMediaRepository.getById(l);
                     try {
-                        imageRepository.delete(Long.parseLong(m.getImageUrl().split("/")[m.getImageUrl().split("/").length - 1]));
+                        imageRepository.delete(m.getImageUrl().split("/")[m.getImageUrl().split("/").length - 1]);
                     } catch (Exception e) { }
                     for (OutlineMediaComment omc : outlineMediaCommentRepository.getByOutlineMediaId(m.getId()))
                         outlineMediaCommentRepository.delete(omc.getMediaId());

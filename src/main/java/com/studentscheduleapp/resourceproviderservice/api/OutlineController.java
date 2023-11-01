@@ -155,7 +155,7 @@ public class OutlineController {
                         }
                         if (om.getImageUrl() != null && !om.getImageUrl().isEmpty())
                             try {
-                                imageRepository.delete(Long.parseLong(om.getImageUrl().split("/")[om.getImageUrl().split("/").length - 1]));
+                                imageRepository.delete(om.getImageUrl().split("/")[om.getImageUrl().split("/").length - 1]);
                             } catch (Exception e){ }
                         outlineMediaRepository.delete(om.getId());
                     }
