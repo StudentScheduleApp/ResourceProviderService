@@ -111,8 +111,8 @@ public class OutlineMediaController {
                 ps.add("imageUrl");
             if(authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.PATCH, Collections.singletonList(data.getId()), Entity.OUTLINE_MEDIA, null)))){
                 if (file != null && !file.isEmpty()) {
-                    if (imageRepository.delete(Long.parseLong(data.getImageUrl().split("/")[data.getImageUrl().split("/").length - 1])))
-                        data.setImageUrl(imageRepository.upload(file));
+                    imageRepository.delete(data.getImageUrl().split("/")[data.getImageUrl().split("/").length - 1]);
+                    data.setImageUrl(imageRepository.upload(file));
                 }
                 return ResponseEntity.ok(outlineMediaRepository.save(data));
             }

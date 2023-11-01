@@ -31,7 +31,7 @@ public class ImageRepository {
             return null;
         throw new Exception("request to " + imageService + " return code " + r.getStatusCode());
     }
-    public boolean delete(long id) throws Exception {
+    public boolean delete(String id) throws Exception {
         ResponseEntity<Void> r = restTemplate.exchange(imageService + "/api/" + id, HttpMethod.DELETE, null, Void.class);
         if(r.getStatusCode().is2xxSuccessful())
             return true;
