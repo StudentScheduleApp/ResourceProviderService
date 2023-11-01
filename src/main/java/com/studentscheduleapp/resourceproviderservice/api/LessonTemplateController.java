@@ -10,9 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 @RestController
 @RequestMapping("api/lessonTemplates")
@@ -131,10 +129,14 @@ public class LessonTemplateController {
         }
         try {
             if(authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.DELETE, ids, Entity.LESSON_TEMPLATE, null)))){
+                Set<Long> is = new HashSet<>();
                 for (Long l : ids) {
                     LessonTemplate lt = lessonTemplateRepository.getById(l);
                     lessonTemplateRepository.delete(l);
-                    scheduleService.updateSchedule(lt.getScheduleTemplateId());
+                    is.add(lt.getScheduleTemplateId());
+                }
+                for (Long l : is) {
+                    scheduleService.updateSchedule(l);
                 }
                 return ResponseEntity.ok().build();
             }

@@ -1,9 +1,7 @@
 package com.studentscheduleapp.resourceproviderservice.services;
 
+import com.studentscheduleapp.resourceproviderservice.models.*;
 import com.studentscheduleapp.resourceproviderservice.repos.*;
-import com.studentscheduleapp.resourceproviderservice.models.LessonTemplate;
-import com.studentscheduleapp.resourceproviderservice.models.ScheduleTemplate;
-import com.studentscheduleapp.resourceproviderservice.models.SpecificLesson;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -57,23 +55,27 @@ public class ScheduleService {
     }
 
     public void updateSchedule(long scheduleId) throws Exception {
-      //  ScheduleTemplate st = scheduleTemplateRepository.getById(scheduleId);
-      //  ArrayList<LessonTemplate> lts = (ArrayList<LessonTemplate>) lessonTemplateRepository.getByScheduleTemplateId(st.getId());
-      //  ArrayList<SpecificLesson> sls = scheduleLessons(st.getTimeStart(), st.getTimeStop(), lts, st.getGroupId());
-      //  ArrayList<SpecificLesson> slsold = (ArrayList<SpecificLesson>) specificLessonRepository.getByGroupId(st.getGroupId());
-      //  for (SpecificLesson sl : slsold){
-      //      if(sl.getTime() > System.currentTimeMillis()) {
-      //          specificLessonRepository.delete(sl.getId());
-      //          ArrayList<SpecificLessonMedia> slms = (ArrayList<SpecificLessonMedia>) specificLessonMediaRepository.findSpecificLessonMediaBySpecificLessonId(sl.getId()).get();
-      //          for (SpecificLessonMedia slm : slms){
-      //              specificLessonMediaCommentRepository.deleteByMediaId(slm.getId());
-      //          }
-      //          specificLessonMediaRepository.deleteSpecificLessonMediaBySpecificLessonId(sl.getId());
-      //      }
-      //  }
-      //  for (SpecificLesson sl : sls){
-      //      specificLessonRepository.save(sl);
-      //  }
+        ScheduleTemplate st = scheduleTemplateRepository.getById(scheduleId);
+        ArrayList<LessonTemplate> lts = (ArrayList<LessonTemplate>) lessonTemplateRepository.getByScheduleTemplateId(st.getId());
+        ArrayList<SpecificLesson> sls = scheduleLessons(st.getTimeStart(), st.getTimeStop(), lts, st.getGroupId());
+        ArrayList<SpecificLesson> slsold = (ArrayList<SpecificLesson>) specificLessonRepository.getByGroupId(st.getGroupId());
+        for (SpecificLesson sl : slsold){
+            if(sl.getTime() > System.currentTimeMillis()) {
+                for (Outline o : outlineRepository.getBySpecificLessonId(sl.getId())){
+                    for (OutlineMedia om : outlineMediaRepository.getByOutlineId(o.getId())){
+                        for (OutlineMediaComment omc : outlineMediaCommentRepository.getByOutlineMediaId(om.getId())){
+                            outlineMediaCommentRepository.delete(omc.getId());
+                        }
+                        outlineMediaRepository.delete(om.getId());
+                    }
+                    outlineRepository.delete(o.getId());
+                }
+                specificLessonRepository.delete(sl.getId());
+            }
+        }
+        for (SpecificLesson sl : sls){
+            specificLessonRepository.save(sl);
+        }
     }
 
 }
