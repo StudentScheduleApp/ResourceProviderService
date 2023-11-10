@@ -1,7 +1,6 @@
 package com.studentscheduleapp.resourceproviderservice.services;
 
 import com.studentscheduleapp.resourceproviderservice.models.api.AuthorizeUserRequest;
-import com.studentscheduleapp.resourceproviderservice.repos.ServiceAuthRepository;
 import com.studentscheduleapp.resourceproviderservice.repos.UserAuthRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
