@@ -83,6 +83,10 @@ public class GroupController {
             Logger.getGlobal().info("bad request: token is null or empty");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
+        if(data.getName() == null || data.getName().isEmpty()) {
+            Logger.getGlobal().info("bad request: name is null or empty");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
         try {
             if(authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.CREATE, Collections.singletonList(0L), Entity.GROUP, null)))){
                 return ResponseEntity.ok(groupRepository.save(data));
@@ -98,6 +102,10 @@ public class GroupController {
             Logger.getGlobal().info("bad request: token is null or empty");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
+        if(data.getName() == null || data.getName().isEmpty()) {
+            Logger.getGlobal().info("bad request: name is null or empty");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
         try {
             Group u = groupRepository.getById(data.getId());
             if (u == null)
@@ -109,10 +117,13 @@ public class GroupController {
                 ps.add("name");
             if (file != null && !file.isEmpty())
                 ps.add("avaUrl");
+            else if (data.getAvaUrl() == null || data.getAvaUrl().isEmpty())
+                ps.add("avaUrl");
             if(authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.PATCH, Collections.singletonList(data.getId()), Entity.GROUP, null)))){
                 if (u.getAvaUrl() != null && !u.getAvaUrl().isEmpty())
                     imageRepository.delete(urlService.getNameFromImageUrl(u.getAvaUrl()));
-                data.setAvaUrl(imageRepository.upload(file));
+                if (file != null && !file.isEmpty())
+                    data.setAvaUrl(imageRepository.upload(file));
                 return ResponseEntity.ok(groupRepository.save(data));
             }
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();

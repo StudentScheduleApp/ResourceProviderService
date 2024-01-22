@@ -104,6 +104,22 @@ public class UserController {
             Logger.getGlobal().info("bad request: token is null or empty");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
+        if(data.getEmail() == null || data.getEmail().isEmpty()) {
+            Logger.getGlobal().info("bad request: email is null or empty");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+        if(data.getPassword() == null || data.getPassword().isEmpty()) {
+            Logger.getGlobal().info("bad request: password is null or empty");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+        if(data.getFirstName() == null || data.getFirstName().isEmpty()) {
+            Logger.getGlobal().info("bad request: firstName is null or empty");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+        if(data.getLastName() == null || data.getLastName().isEmpty()) {
+            Logger.getGlobal().info("bad request: lastName is null or empty");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
         try {
             if(authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.CREATE, Collections.singletonList(0L), Entity.USER, null)))){
                 data.setBanned(false);
@@ -122,6 +138,18 @@ public class UserController {
             Logger.getGlobal().info("bad request: token is null or empty");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
+        if(data.getEmail() == null || data.getEmail().isEmpty()) {
+            Logger.getGlobal().info("bad request: email is null or empty");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+        if(data.getFirstName() == null || data.getFirstName().isEmpty()) {
+            Logger.getGlobal().info("bad request: firstName is null or empty");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+        if(data.getLastName() == null || data.getLastName().isEmpty()) {
+            Logger.getGlobal().info("bad request: lastName is null or empty");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
         try {
             User u = userRepository.getById(data.getId());
             if (u == null)
@@ -129,7 +157,7 @@ public class UserController {
             ArrayList<String> ps = new ArrayList<>();
             if (file != null && !file.isEmpty())
                 ps.add("avaUrl");
-            if (!data.getPassword().equals(u.getPassword()))
+            if (data.getPassword() != null && !data.getPassword().isEmpty())
                 ps.add("password");
             if (!data.getEmail().equals(u.getEmail()))
                 ps.add("email");
