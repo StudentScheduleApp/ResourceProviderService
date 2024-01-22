@@ -4,10 +4,12 @@ import com.studentscheduleapp.resourceproviderservice.models.*;
 import com.studentscheduleapp.resourceproviderservice.models.api.AuthorizeUserRequest;
 import com.studentscheduleapp.resourceproviderservice.repos.*;
 import com.studentscheduleapp.resourceproviderservice.services.AuthorizeUserService;
+import com.studentscheduleapp.resourceproviderservice.services.UrlService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -20,11 +22,14 @@ import java.util.logging.Logger;
 public class UserController {
     @Autowired
     private MemberRepository memberRepository;
-
+    @Autowired
+    private ImageRepository imageRepository;
     @Autowired
     private UserRepository userRepository;
     @Autowired
     private AuthorizeUserService authorizeUserService;
+    @Autowired
+    private UrlService urlService;
 
     @GetMapping("id/{ids}")
     public ResponseEntity<List<User>> getById(@PathVariable("ids") String id, @RequestHeader("User-Token") String token) {
@@ -112,7 +117,7 @@ public class UserController {
         }
     }
     @PatchMapping("patch")
-    public ResponseEntity<User> patch(@RequestBody User data, @RequestHeader("User-Token") String token){
+    public ResponseEntity<User> patch(@RequestBody User data, @RequestHeader("User-Token") String token, @RequestParam("image") MultipartFile file){
         if(token == null || token.isEmpty()) {
             Logger.getGlobal().info("bad request: token is null or empty");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
@@ -122,7 +127,7 @@ public class UserController {
             if (u == null)
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
             ArrayList<String> ps = new ArrayList<>();
-            if (!data.getAvaUrl().equals(u.getAvaUrl()))
+            if (file != null && !file.isEmpty())
                 ps.add("avaUrl");
             if (!data.getPassword().equals(u.getPassword()))
                 ps.add("password");
@@ -135,6 +140,9 @@ public class UserController {
             if (!data.getLastName().equals(u.getLastName()))
                 ps.add("lastName");
             if(authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.PATCH, Collections.singletonList(data.getId()), Entity.USER, ps)))){
+                if (u.getAvaUrl() != null && !u.getAvaUrl().isEmpty())
+                    imageRepository.delete(urlService.getNameFromImageUrl(u.getAvaUrl()));
+                data.setAvaUrl(imageRepository.upload(file));
                 return ResponseEntity.ok(userRepository.save(data));
             }
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
@@ -159,6 +167,9 @@ public class UserController {
         try {
             if(authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.DELETE, ids, Entity.USER, null)))){
                 for (Long l : ids) {
+                    User u = userRepository.getById(l);
+                    if (u.getAvaUrl() != null && !u.getAvaUrl().isEmpty())
+                        imageRepository.delete(urlService.getNameFromImageUrl(u.getAvaUrl()));
                     for (Member m : memberRepository.getByUserId(l))
                         memberRepository.delete(m.getId());
                     userRepository.delete(l);

@@ -4,10 +4,12 @@ import com.studentscheduleapp.resourceproviderservice.models.*;
 import com.studentscheduleapp.resourceproviderservice.models.api.AuthorizeUserRequest;
 import com.studentscheduleapp.resourceproviderservice.repos.*;
 import com.studentscheduleapp.resourceproviderservice.services.AuthorizeUserService;
+import com.studentscheduleapp.resourceproviderservice.services.UrlService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -20,6 +22,8 @@ public class GroupController {
 
     @Autowired
     private GroupRepository groupRepository;
+    @Autowired
+    private ImageRepository imageRepository;
     @Autowired
     private LessonTemplateRepository lessonTemplateRepository;
     @Autowired
@@ -38,6 +42,8 @@ public class GroupController {
     private OutlineMediaCommentRepository outlineMediaCommentRepository;
     @Autowired
     private AuthorizeUserService authorizeUserService;
+    @Autowired
+    private UrlService urlService;
 
     @GetMapping("id/{ids}")
     public ResponseEntity<List<Group>> getById(@PathVariable("ids") String id, @RequestHeader("User-Token") String token) {
@@ -87,7 +93,7 @@ public class GroupController {
         }
     }
     @PatchMapping("patch")
-    public ResponseEntity<Group> patch(@RequestBody Group data, @RequestHeader("User-Token") String token){
+    public ResponseEntity<Group> patch(@RequestBody Group data, @RequestHeader("User-Token") String token, @RequestParam("image") MultipartFile file){
         if(token == null || token.isEmpty()) {
             Logger.getGlobal().info("bad request: token is null or empty");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
@@ -101,10 +107,12 @@ public class GroupController {
                 ps.add("chatId");
             if (!data.getName().equals(u.getName()))
                 ps.add("name");
-            if (!data.getAvaUrl().equals(u.getAvaUrl()))
+            if (file != null && !file.isEmpty())
                 ps.add("avaUrl");
             if(authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.PATCH, Collections.singletonList(data.getId()), Entity.GROUP, null)))){
-
+                if (u.getAvaUrl() != null && !u.getAvaUrl().isEmpty())
+                    imageRepository.delete(urlService.getNameFromImageUrl(u.getAvaUrl()));
+                data.setAvaUrl(imageRepository.upload(file));
                 return ResponseEntity.ok(groupRepository.save(data));
             }
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
@@ -129,6 +137,9 @@ public class GroupController {
         try {
             if(authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.DELETE, ids, Entity.GROUP, null)))){
                 for (Long l : ids) {
+                    Group u = groupRepository.getById(l);
+                    if (u.getAvaUrl() != null && !u.getAvaUrl().isEmpty())
+                        imageRepository.delete(urlService.getNameFromImageUrl(u.getAvaUrl()));
                     for (CustomLesson lt : customLessonRepository.getByGroupId(l))
                         customLessonRepository.delete(lt.getId());
                     for (Member m : memberRepository.getByGroupId(l))

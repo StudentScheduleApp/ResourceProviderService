@@ -4,6 +4,7 @@ import com.studentscheduleapp.resourceproviderservice.models.*;
 import com.studentscheduleapp.resourceproviderservice.models.api.AuthorizeUserRequest;
 import com.studentscheduleapp.resourceproviderservice.repos.*;
 import com.studentscheduleapp.resourceproviderservice.services.AuthorizeUserService;
+import com.studentscheduleapp.resourceproviderservice.services.UrlService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,6 +29,8 @@ public class OutlineMediaController {
     private AuthorizeUserService authorizeUserService;
     @Autowired
     private ImageRepository imageRepository;
+    @Autowired
+    private UrlService urlService;
 
     @GetMapping("id/{ids}")
     public ResponseEntity<List<OutlineMedia>> getById(@PathVariable("ids") String id, @RequestHeader("User-Token") String token) {
@@ -128,7 +131,7 @@ public class OutlineMediaController {
                 ps.add("imageUrl");
             if(authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.PATCH, Collections.singletonList(data.getId()), Entity.OUTLINE_MEDIA, null)))){
                 if (file != null && !file.isEmpty()) {
-                    imageRepository.delete(data.getImageUrl().split("/")[data.getImageUrl().split("/").length - 1]);
+                    imageRepository.delete(urlService.getNameFromImageUrl(data.getImageUrl()));
                     data.setImageUrl(imageRepository.upload(file));
                 }
                 return ResponseEntity.ok(outlineMediaRepository.save(data));
@@ -156,9 +159,7 @@ public class OutlineMediaController {
             if(authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.DELETE, ids, Entity.OUTLINE_MEDIA, null)))){
                 for (Long l : ids) {
                     OutlineMedia m = outlineMediaRepository.getById(l);
-                    try {
-                        imageRepository.delete(m.getImageUrl().split("/")[m.getImageUrl().split("/").length - 1]);
-                    } catch (Exception e) { }
+                    imageRepository.delete(urlService.getNameFromImageUrl(m.getImageUrl()));
                     for (OutlineMediaComment omc : outlineMediaCommentRepository.getByOutlineMediaId(m.getId()))
                         outlineMediaCommentRepository.delete(omc.getMediaId());
                     outlineMediaRepository.delete(l);
