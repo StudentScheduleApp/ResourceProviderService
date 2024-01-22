@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.logging.Logger;
 
 @RestController
-@RequestMapping("api/members")
 public class MemberController {
 
     @Autowired

@@ -14,7 +14,6 @@ import java.util.*;
 import java.util.logging.Logger;
 
 @RestController
-@RequestMapping("api/lessonTemplates")
 public class LessonTemplateController {
 
     @Autowired

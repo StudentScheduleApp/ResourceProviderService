@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.logging.Logger;
 
 @RestController
-@RequestMapping("api/specificLessons")
 public class SpecificLessonController {
 
     @Autowired

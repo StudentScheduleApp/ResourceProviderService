@@ -18,7 +18,6 @@ import java.util.List;
 import java.util.logging.Logger;
 
 @RestController
-@RequestMapping("api/users")
 public class UserController {
     @Autowired
     private MemberRepository memberRepository;

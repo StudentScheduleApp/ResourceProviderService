@@ -17,7 +17,6 @@ import java.util.List;
 import java.util.logging.Logger;
 
 @RestController
-@RequestMapping("api/outlineMedias")
 public class OutlineMediaController {
     @Autowired
     private OutlineRepository outlineRepository;

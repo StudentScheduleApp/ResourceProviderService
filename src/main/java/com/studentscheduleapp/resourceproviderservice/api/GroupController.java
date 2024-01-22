@@ -17,7 +17,6 @@ import java.util.List;
 import java.util.logging.Logger;
 
 @RestController
-@RequestMapping("api/groups")
 public class GroupController {
 
     @Autowired
