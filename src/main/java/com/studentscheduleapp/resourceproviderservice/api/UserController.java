@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.logging.Logger;
 
 @RestController
 @RequestMapping("api/users")
@@ -27,6 +28,10 @@ public class UserController {
 
     @GetMapping("id/{ids}")
     public ResponseEntity<List<User>> getById(@PathVariable("ids") String id, @RequestHeader("User-Token") String token) {
+        if(token == null || token.isEmpty()) {
+            Logger.getGlobal().info("bad request: token is null or empty");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
         ArrayList<Long> ids = new ArrayList<>();
         try {
             for (int i = 0; i < id.split(",").length; i++) {
@@ -60,6 +65,10 @@ public class UserController {
     }
     @GetMapping("email/{email}")
     public ResponseEntity<User> getByEmail(@PathVariable("email") String email, @RequestHeader("User-Token") String token) {
+        if(token == null || token.isEmpty()) {
+            Logger.getGlobal().info("bad request: token is null or empty");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
         User u;
         try {
             u = userRepository.getByEmail(email);
@@ -86,6 +95,10 @@ public class UserController {
     }
     @PostMapping("create")
     public ResponseEntity<User> create(@RequestBody User data, @RequestHeader("User-Token") String token){
+        if(token == null || token.isEmpty()) {
+            Logger.getGlobal().info("bad request: token is null or empty");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
         try {
             if(authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.CREATE, Collections.singletonList(0L), Entity.USER, null)))){
                 data.setBanned(false);
@@ -100,6 +113,10 @@ public class UserController {
     }
     @PatchMapping("patch")
     public ResponseEntity<User> patch(@RequestBody User data, @RequestHeader("User-Token") String token){
+        if(token == null || token.isEmpty()) {
+            Logger.getGlobal().info("bad request: token is null or empty");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
         try {
             User u = userRepository.getById(data.getId());
             if (u == null)
@@ -127,6 +144,10 @@ public class UserController {
     }
     @DeleteMapping("delete/{ids}")
     public ResponseEntity<Void> deleteById(@PathVariable("ids") String id, @RequestHeader("User-Token") String token){
+        if(token == null || token.isEmpty()) {
+            Logger.getGlobal().info("bad request: token is null or empty");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
         ArrayList<Long> ids = new ArrayList<>();
         try {
             for (int i = 0; i < id.split(",").length; i++) {

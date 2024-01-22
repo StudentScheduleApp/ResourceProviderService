@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.logging.Logger;
 
 @RestController
 @RequestMapping("api/scheduleTemplates")
@@ -30,6 +31,10 @@ public class ScheduleTemplateController {
 
     @GetMapping("id/{ids}")
     public ResponseEntity<List<ScheduleTemplate>> getById(@PathVariable("ids") String id, @RequestHeader("User-Token") String token) {
+        if(token == null || token.isEmpty()) {
+            Logger.getGlobal().info("bad request: token is null or empty");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
         ArrayList<Long> ids = new ArrayList<>();
         try {
             for (int i = 0; i < id.split(",").length; i++) {
@@ -60,6 +65,10 @@ public class ScheduleTemplateController {
     }
     @GetMapping("group/{id}")
     public ResponseEntity<List<ScheduleTemplate>> getByGroupId(@PathVariable("id") long id, @RequestHeader("User-Token") String token){
+        if(token == null || token.isEmpty()) {
+            Logger.getGlobal().info("bad request: token is null or empty");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
         ArrayList<ScheduleTemplate> cs = new ArrayList<>();
         ArrayList<Long> ids = new ArrayList<>();
         try {
@@ -88,6 +97,10 @@ public class ScheduleTemplateController {
     }
     @PostMapping("create")
     public ResponseEntity<ScheduleTemplate> create(@RequestBody ScheduleTemplate data, @RequestHeader("User-Token") String token){
+        if(token == null || token.isEmpty()) {
+            Logger.getGlobal().info("bad request: token is null or empty");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
         try {
             if(authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.CREATE, Collections.singletonList(data.getGroupId()), Entity.SCHEDULE_TEMPLATE, null)))){
                 ScheduleTemplate t = scheduleTemplateRepository.save(data);
@@ -101,6 +114,10 @@ public class ScheduleTemplateController {
     }
     @PatchMapping("patch")
     public ResponseEntity<ScheduleTemplate> patch(@RequestBody ScheduleTemplate data, @RequestHeader("User-Token") String token){
+        if(token == null || token.isEmpty()) {
+            Logger.getGlobal().info("bad request: token is null or empty");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
         try {
             ScheduleTemplate u = scheduleTemplateRepository.getById(data.getId());
             if (u == null)
@@ -128,6 +145,10 @@ public class ScheduleTemplateController {
     }
     @DeleteMapping("delete/{ids}")
     public ResponseEntity<Void> deleteById(@PathVariable("ids") String id, @RequestHeader("User-Token") String token){
+        if(token == null || token.isEmpty()) {
+            Logger.getGlobal().info("bad request: token is null or empty");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
         ArrayList<Long> ids = new ArrayList<>();
         try {
             for (int i = 0; i < id.split(",").length; i++) {

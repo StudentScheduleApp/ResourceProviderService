@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.logging.Logger;
 
 @RestController
 @RequestMapping("api/outlineMediaComments")
@@ -24,6 +25,10 @@ public class OutlineMediaCommentController {
 
     @GetMapping("id/{ids}")
     public ResponseEntity<List<OutlineMediaComment>> getById(@PathVariable("ids") String id, @RequestHeader("User-Token") String token) {
+        if(token == null || token.isEmpty()) {
+            Logger.getGlobal().info("bad request: token is null or empty");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
         ArrayList<Long> ids = new ArrayList<>();
         try {
             for (int i = 0; i < id.split(",").length; i++) {
@@ -54,6 +59,10 @@ public class OutlineMediaCommentController {
     }
     @GetMapping("outlineMedia/{id}")
     public ResponseEntity<List<OutlineMediaComment>> getByOutlineMediaId(@PathVariable("id") long id, @RequestHeader("User-Token") String token){
+        if(token == null || token.isEmpty()) {
+            Logger.getGlobal().info("bad request: token is null or empty");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
         ArrayList<OutlineMediaComment> cs = new ArrayList<>();
         ArrayList<Long> ids = new ArrayList<>();
         try {
@@ -82,6 +91,10 @@ public class OutlineMediaCommentController {
     }
     @PostMapping("create")
     public ResponseEntity<OutlineMediaComment> create(@RequestBody OutlineMediaComment data, @RequestHeader("User-Token") String token){
+        if(token == null || token.isEmpty()) {
+            Logger.getGlobal().info("bad request: token is null or empty");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
         try {
             if(authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.CREATE, Collections.singletonList(data.getMediaId()), Entity.OUTLINE_MEDIA_COMMENT, null)))){
                 return ResponseEntity.ok(outlineMediaCommentRepository.save(data));
@@ -93,6 +106,10 @@ public class OutlineMediaCommentController {
     }
     @PatchMapping("patch")
     public ResponseEntity<OutlineMediaComment> patch(@RequestBody OutlineMediaComment data, @RequestHeader("User-Token") String token){
+        if(token == null || token.isEmpty()) {
+            Logger.getGlobal().info("bad request: token is null or empty");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
         try {
             OutlineMediaComment u = outlineMediaCommentRepository.getById(data.getId());
             if (u == null)
@@ -118,6 +135,10 @@ public class OutlineMediaCommentController {
     }
     @DeleteMapping("delete/{ids}")
     public ResponseEntity<Void> deleteById(@PathVariable("ids") String id, @RequestHeader("User-Token") String token){
+        if(token == null || token.isEmpty()) {
+            Logger.getGlobal().info("bad request: token is null or empty");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
         ArrayList<Long> ids = new ArrayList<>();
         try {
             for (int i = 0; i < id.split(",").length; i++) {

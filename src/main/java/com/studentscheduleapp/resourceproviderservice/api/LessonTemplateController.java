@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
+import java.util.logging.Logger;
 
 @RestController
 @RequestMapping("api/lessonTemplates")
@@ -25,6 +26,10 @@ public class LessonTemplateController {
 
     @GetMapping("id/{ids}")
     public ResponseEntity<List<LessonTemplate>> getById(@PathVariable("ids") String id, @RequestHeader("User-Token") String token) {
+        if(token == null || token.isEmpty()) {
+            Logger.getGlobal().info("bad request: token is null or empty");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
         ArrayList<Long> ids = new ArrayList<>();
         try {
             for (int i = 0; i < id.split(",").length; i++) {
@@ -54,6 +59,10 @@ public class LessonTemplateController {
     }
     @GetMapping("scheduleTemplate/{id}")
     public ResponseEntity<List<LessonTemplate>> getByScheduleTemplateId(@PathVariable("id") long id, @RequestHeader("User-Token") String token){
+        if(token == null || token.isEmpty()) {
+            Logger.getGlobal().info("bad request: token is null or empty");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
         ArrayList<LessonTemplate> cs = new ArrayList<>();
         ArrayList<Long> ids = new ArrayList<>();
         try {
@@ -81,6 +90,10 @@ public class LessonTemplateController {
     }
     @PostMapping("create")
     public ResponseEntity<LessonTemplate> create(@RequestBody LessonTemplate data, @RequestHeader("User-Token") String token){
+        if(token == null || token.isEmpty()) {
+            Logger.getGlobal().info("bad request: token is null or empty");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
         try {
             if(authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.CREATE, Collections.singletonList(data.getScheduleTemplateId()), Entity.LESSON_TEMPLATE, null)))){
                 LessonTemplate lt = lessonTemplateRepository.save(data);
@@ -94,6 +107,10 @@ public class LessonTemplateController {
     }
     @PatchMapping("patch")
     public ResponseEntity<LessonTemplate> patch(@RequestBody LessonTemplate data, @RequestHeader("User-Token") String token){
+        if(token == null || token.isEmpty()) {
+            Logger.getGlobal().info("bad request: token is null or empty");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
         try {
             LessonTemplate u = lessonTemplateRepository.getById(data.getId());
             if (u == null)
@@ -119,6 +136,10 @@ public class LessonTemplateController {
     }
     @DeleteMapping("delete/{ids}")
     public ResponseEntity<Void> deleteById(@PathVariable("ids") String id, @RequestHeader("User-Token") String token){
+        if(token == null || token.isEmpty()) {
+            Logger.getGlobal().info("bad request: token is null or empty");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
         ArrayList<Long> ids = new ArrayList<>();
         try {
             for (int i = 0; i < id.split(",").length; i++) {
