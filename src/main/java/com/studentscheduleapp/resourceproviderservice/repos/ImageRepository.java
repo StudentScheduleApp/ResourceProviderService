@@ -33,7 +33,7 @@ public class ImageRepository {
         throw new Exception("request to " + imageServiceProperties.getUri() + " return code " + r.getStatusCode());
     }
     public boolean delete(String id) throws Exception {
-        ResponseEntity<Void> r = restTemplate.exchange(imageServiceProperties.getUri() + imageServiceProperties.getGetDeletePath() + id, HttpMethod.DELETE, null, Void.class);
+        ResponseEntity<Void> r = restTemplate.exchange(imageServiceProperties.getUri() + imageServiceProperties.getGetDeletePath() + "/" + id, HttpMethod.DELETE, null, Void.class);
         if(r.getStatusCode().is2xxSuccessful())
             return true;
         throw new Exception("request to " + imageServiceProperties.getUri() + " return code " + r.getStatusCode());

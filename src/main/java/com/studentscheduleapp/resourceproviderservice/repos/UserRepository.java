@@ -22,7 +22,7 @@ public class UserRepository {
     private RestTemplate restTemplate;
 
     public User getById(long id) throws Exception {
-        ResponseEntity<User> r = restTemplate.getForEntity(databaseServiceProperties.getUri() + databaseServiceProperties.getGetUserByIdPath() + id, User.class);
+        ResponseEntity<User> r = restTemplate.getForEntity(databaseServiceProperties.getUri() + databaseServiceProperties.getGetUserByIdPath() + "/" + id, User.class);
         if(r.getStatusCode().is2xxSuccessful())
             return r.getBody();
         if(r.getStatusCode().equals(HttpStatus.NOT_FOUND))
@@ -30,7 +30,7 @@ public class UserRepository {
         throw new Exception("request to " + databaseServiceProperties.getUri() + " return code " + r.getStatusCode());
     }
     public User getByEmail(String email) throws Exception {
-        ResponseEntity<User> r = restTemplate.getForEntity(databaseServiceProperties.getUri() + databaseServiceProperties.getGetUserByEmailPath() + email, User.class);
+        ResponseEntity<User> r = restTemplate.getForEntity(databaseServiceProperties.getUri() + databaseServiceProperties.getGetUserByEmailPath() + "/" + email, User.class);
         if(r.getStatusCode().is2xxSuccessful())
             return r.getBody();
         if(r.getStatusCode().equals(HttpStatus.NOT_FOUND))
@@ -46,7 +46,7 @@ public class UserRepository {
         throw new Exception("request to " + databaseServiceProperties.getUri() + " return code " + r.getStatusCode());
     }
     public boolean delete(long id) throws Exception {
-        ResponseEntity<Void> r = restTemplate.exchange(databaseServiceProperties.getUri() + databaseServiceProperties.getDeleteUserPath() + id, HttpMethod.DELETE, null, Void.class);
+        ResponseEntity<Void> r = restTemplate.exchange(databaseServiceProperties.getUri() + databaseServiceProperties.getDeleteUserPath() + "/" + id, HttpMethod.DELETE, null, Void.class);
         if(r.getStatusCode().is2xxSuccessful())
             return true;
         throw new Exception("request to " + databaseServiceProperties.getUri() + " return code " + r.getStatusCode());

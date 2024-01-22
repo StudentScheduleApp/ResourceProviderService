@@ -24,7 +24,7 @@ public class OutlineMediaRepository {
     private RestTemplate restTemplate;
 
     public OutlineMedia getById(long id) throws Exception {
-        ResponseEntity<OutlineMedia> r = restTemplate.getForEntity(databaseServiceProperties.getUri() + databaseServiceProperties.getGetOutlineMediaByIdPath() + id, OutlineMedia.class);
+        ResponseEntity<OutlineMedia> r = restTemplate.getForEntity(databaseServiceProperties.getUri() + databaseServiceProperties.getGetOutlineMediaByIdPath() + "/" + id, OutlineMedia.class);
         if(r.getStatusCode().is2xxSuccessful())
             return r.getBody();
         if(r.getStatusCode().equals(HttpStatus.NOT_FOUND))
@@ -32,7 +32,7 @@ public class OutlineMediaRepository {
         throw new Exception("request to " + databaseServiceProperties.getUri() + " return code " + r.getStatusCode());
     }
     public List<OutlineMedia> getByOutlineId(long id) throws Exception {
-        ResponseEntity<List> r = restTemplate.getForEntity(databaseServiceProperties.getUri() + databaseServiceProperties.getGetOutlineMediaByOutlineIdPath() + id, List.class);
+        ResponseEntity<List> r = restTemplate.getForEntity(databaseServiceProperties.getUri() + databaseServiceProperties.getGetOutlineMediaByOutlineIdPath() + "/" + id, List.class);
         if(r.getStatusCode().is2xxSuccessful())
             return r.getBody();
         if(r.getStatusCode().equals(HttpStatus.NOT_FOUND))
@@ -48,7 +48,7 @@ public class OutlineMediaRepository {
         throw new Exception("request to " + databaseServiceProperties.getUri() + " return code " + r.getStatusCode());
     }
     public boolean delete(long id) throws Exception {
-        ResponseEntity<Void> r = restTemplate.exchange(databaseServiceProperties.getUri() + databaseServiceProperties.getDeleteOutlineMediaPath() + id, HttpMethod.DELETE, null, Void.class);
+        ResponseEntity<Void> r = restTemplate.exchange(databaseServiceProperties.getUri() + databaseServiceProperties.getDeleteOutlineMediaPath() + "/" + id, HttpMethod.DELETE, null, Void.class);
         if(r.getStatusCode().is2xxSuccessful())
             return true;
         throw new Exception("request to " + databaseServiceProperties.getUri() + " return code " + r.getStatusCode());
