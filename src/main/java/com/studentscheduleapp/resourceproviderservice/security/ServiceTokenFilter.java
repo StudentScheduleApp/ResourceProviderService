@@ -1,6 +1,7 @@
 package com.studentscheduleapp.resourceproviderservice.security;
 
 
+import com.studentscheduleapp.resourceproviderservice.properties.GlobalProperties;
 import com.studentscheduleapp.resourceproviderservice.services.AuthorizeServiceService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,8 +24,9 @@ import java.util.logging.Logger;
 @RequiredArgsConstructor
 public class ServiceTokenFilter extends GenericFilterBean {
 
-    private static final String AUTHORIZATION = "Service-Token";
+
     @Autowired
+    private GlobalProperties globalProperties;    @Autowired
     private AuthorizeServiceService authorizeServiceService;
 
     @Override
@@ -47,7 +49,7 @@ public class ServiceTokenFilter extends GenericFilterBean {
     }
 
     private String getTokenFromRequest(HttpServletRequest request) {
-        final String token = request.getHeader(AUTHORIZATION);
+        final String token = request.getHeader(globalProperties.getServiceTokenHeader());
         if (StringUtils.hasText(token)) {
             return token;
         }

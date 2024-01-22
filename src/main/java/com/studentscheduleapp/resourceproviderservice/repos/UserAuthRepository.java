@@ -1,6 +1,7 @@
 package com.studentscheduleapp.resourceproviderservice.repos;
 
 import com.studentscheduleapp.resourceproviderservice.models.api.AuthorizeUserRequest;
+import com.studentscheduleapp.resourceproviderservice.properties.services.IdentityServiceProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -11,18 +12,18 @@ import org.springframework.web.client.RestTemplate;
 @Repository
 public class UserAuthRepository {
 
-    @Value("${ip.identityservice}")
-    private String identityService;
+    @Autowired
+    private IdentityServiceProperties identityServiceProperties;
 
     @Autowired
     private RestTemplate restTemplate;
 
     public boolean authorize(AuthorizeUserRequest request) throws Exception{
-        ResponseEntity<Void> r = restTemplate.postForEntity(identityService + "/api/user/authorize", request, Void.class);
+        ResponseEntity<Void> r = restTemplate.postForEntity(identityServiceProperties.getUri() + identityServiceProperties.getGetAuthorizePath(), request, Void.class);
         if(r.getStatusCode().is2xxSuccessful())
             return true;
         if(r.getStatusCode().equals(HttpStatus.UNAUTHORIZED))
             return false;
-        throw new Exception("request to " + identityService + " return code " + r.getStatusCode());
+        throw new Exception("request to " + identityServiceProperties.getUri() + " return code " + r.getStatusCode());
     }
 }
