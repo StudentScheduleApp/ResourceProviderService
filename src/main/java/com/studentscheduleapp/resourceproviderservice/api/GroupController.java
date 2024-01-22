@@ -45,7 +45,7 @@ public class GroupController {
     @Autowired
     private UrlService urlService;
 
-    @GetMapping("id/{ids}")
+    @GetMapping("${mapping.group.getById}/{ids}")
     public ResponseEntity<List<Group>> getById(@PathVariable("ids") String id, @RequestHeader("User-Token") String token) {
         if(token == null || token.isEmpty()) {
             Logger.getGlobal().info("bad request: token is null or empty");
@@ -77,7 +77,7 @@ public class GroupController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
-    @PostMapping("create")
+    @PostMapping("${mapping.group.create}")
     public ResponseEntity<Group> create(@RequestBody Group data, @RequestHeader("User-Token") String token){
         if(token == null || token.isEmpty()) {
             Logger.getGlobal().info("bad request: token is null or empty");
@@ -92,7 +92,7 @@ public class GroupController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
-    @PatchMapping("patch")
+    @PatchMapping("${mapping.group.patch}")
     public ResponseEntity<Group> patch(@RequestBody Group data, @RequestHeader("User-Token") String token, @RequestParam("image") MultipartFile file){
         if(token == null || token.isEmpty()) {
             Logger.getGlobal().info("bad request: token is null or empty");
@@ -120,7 +120,7 @@ public class GroupController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
-    @DeleteMapping("delete/{ids}")
+    @DeleteMapping("${mapping.group.delete}/{ids}")
     public ResponseEntity<Void> deleteById(@PathVariable("ids") String id, @RequestHeader("User-Token") String token){
         if(token == null || token.isEmpty()) {
             Logger.getGlobal().info("bad request: token is null or empty");

@@ -29,7 +29,7 @@ public class ScheduleTemplateController {
     @Autowired
     private AuthorizeUserService authorizeUserService;
 
-    @GetMapping("id/{ids}")
+    @GetMapping("${mapping.scheduleTemplate.getById}/{ids}")
     public ResponseEntity<List<ScheduleTemplate>> getById(@PathVariable("ids") String id, @RequestHeader("User-Token") String token) {
         if(token == null || token.isEmpty()) {
             Logger.getGlobal().info("bad request: token is null or empty");
@@ -63,7 +63,7 @@ public class ScheduleTemplateController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
-    @GetMapping("group/{id}")
+    @GetMapping("${mapping.scheduleTemplate.getByGroupId}/{id}")
     public ResponseEntity<List<ScheduleTemplate>> getByGroupId(@PathVariable("id") long id, @RequestHeader("User-Token") String token){
         if(token == null || token.isEmpty()) {
             Logger.getGlobal().info("bad request: token is null or empty");
@@ -95,7 +95,7 @@ public class ScheduleTemplateController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
-    @PostMapping("create")
+    @PostMapping("${mapping.scheduleTemplate.create}")
     public ResponseEntity<ScheduleTemplate> create(@RequestBody ScheduleTemplate data, @RequestHeader("User-Token") String token){
         if(token == null || token.isEmpty()) {
             Logger.getGlobal().info("bad request: token is null or empty");
@@ -112,7 +112,7 @@ public class ScheduleTemplateController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
-    @PatchMapping("patch")
+    @PatchMapping("${mapping.scheduleTemplate.patch}")
     public ResponseEntity<ScheduleTemplate> patch(@RequestBody ScheduleTemplate data, @RequestHeader("User-Token") String token){
         if(token == null || token.isEmpty()) {
             Logger.getGlobal().info("bad request: token is null or empty");
@@ -143,7 +143,7 @@ public class ScheduleTemplateController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
-    @DeleteMapping("delete/{ids}")
+    @DeleteMapping("${mapping.scheduleTemplate.delete}/{ids}")
     public ResponseEntity<Void> deleteById(@PathVariable("ids") String id, @RequestHeader("User-Token") String token){
         if(token == null || token.isEmpty()) {
             Logger.getGlobal().info("bad request: token is null or empty");

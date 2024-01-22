@@ -23,7 +23,7 @@ public class OutlineMediaCommentController {
     @Autowired
     private AuthorizeUserService authorizeUserService;
 
-    @GetMapping("id/{ids}")
+    @GetMapping("${mapping.outlineMediaComment.getById}/{ids}")
     public ResponseEntity<List<OutlineMediaComment>> getById(@PathVariable("ids") String id, @RequestHeader("User-Token") String token) {
         if(token == null || token.isEmpty()) {
             Logger.getGlobal().info("bad request: token is null or empty");
@@ -57,7 +57,7 @@ public class OutlineMediaCommentController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
-    @GetMapping("outlineMedia/{id}")
+    @GetMapping("${mapping.outlineMediaComment.getByOutlineMediaId}/{id}")
     public ResponseEntity<List<OutlineMediaComment>> getByOutlineMediaId(@PathVariable("id") long id, @RequestHeader("User-Token") String token){
         if(token == null || token.isEmpty()) {
             Logger.getGlobal().info("bad request: token is null or empty");
@@ -89,7 +89,7 @@ public class OutlineMediaCommentController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
-    @PostMapping("create")
+    @PostMapping("${mapping.outlineMediaComment.create}")
     public ResponseEntity<OutlineMediaComment> create(@RequestBody OutlineMediaComment data, @RequestHeader("User-Token") String token){
         if(token == null || token.isEmpty()) {
             Logger.getGlobal().info("bad request: token is null or empty");
@@ -104,7 +104,7 @@ public class OutlineMediaCommentController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
-    @PatchMapping("patch")
+    @PatchMapping("${mapping.outlineMediaComment.patch}")
     public ResponseEntity<OutlineMediaComment> patch(@RequestBody OutlineMediaComment data, @RequestHeader("User-Token") String token){
         if(token == null || token.isEmpty()) {
             Logger.getGlobal().info("bad request: token is null or empty");
@@ -133,7 +133,7 @@ public class OutlineMediaCommentController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
-    @DeleteMapping("delete/{ids}")
+    @DeleteMapping("${mapping.outlineMediaComment.delete}/{ids}")
     public ResponseEntity<Void> deleteById(@PathVariable("ids") String id, @RequestHeader("User-Token") String token){
         if(token == null || token.isEmpty()) {
             Logger.getGlobal().info("bad request: token is null or empty");

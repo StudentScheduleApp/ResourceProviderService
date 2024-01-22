@@ -24,7 +24,7 @@ public class LessonTemplateController {
     @Autowired
     private AuthorizeUserService authorizeUserService;
 
-    @GetMapping("id/{ids}")
+    @GetMapping("${mapping.lessonTemplate.getById}/{ids}")
     public ResponseEntity<List<LessonTemplate>> getById(@PathVariable("ids") String id, @RequestHeader("User-Token") String token) {
         if(token == null || token.isEmpty()) {
             Logger.getGlobal().info("bad request: token is null or empty");
@@ -57,7 +57,7 @@ public class LessonTemplateController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
-    @GetMapping("scheduleTemplate/{id}")
+    @GetMapping("${mapping.lessonTemplate.getByScheduleTemplateId}/{id}")
     public ResponseEntity<List<LessonTemplate>> getByScheduleTemplateId(@PathVariable("id") long id, @RequestHeader("User-Token") String token){
         if(token == null || token.isEmpty()) {
             Logger.getGlobal().info("bad request: token is null or empty");
@@ -88,7 +88,7 @@ public class LessonTemplateController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
-    @PostMapping("create")
+    @PostMapping("${mapping.lessonTemplate.create}")
     public ResponseEntity<LessonTemplate> create(@RequestBody LessonTemplate data, @RequestHeader("User-Token") String token){
         if(token == null || token.isEmpty()) {
             Logger.getGlobal().info("bad request: token is null or empty");
@@ -105,7 +105,7 @@ public class LessonTemplateController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
-    @PatchMapping("patch")
+    @PatchMapping("${mapping.lessonTemplate.patch}")
     public ResponseEntity<LessonTemplate> patch(@RequestBody LessonTemplate data, @RequestHeader("User-Token") String token){
         if(token == null || token.isEmpty()) {
             Logger.getGlobal().info("bad request: token is null or empty");
@@ -134,7 +134,7 @@ public class LessonTemplateController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
-    @DeleteMapping("delete/{ids}")
+    @DeleteMapping("${mapping.lessonTemplate.delete}/{ids}")
     public ResponseEntity<Void> deleteById(@PathVariable("ids") String id, @RequestHeader("User-Token") String token){
         if(token == null || token.isEmpty()) {
             Logger.getGlobal().info("bad request: token is null or empty");

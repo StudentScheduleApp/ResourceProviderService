@@ -30,7 +30,7 @@ public class OutlineController {
     @Autowired
     private AuthorizeUserService authorizeUserService;
 
-    @GetMapping("id/{ids}")
+    @GetMapping("${mapping.outline.getById}/{ids}")
     public ResponseEntity<List<Outline>> getById(@PathVariable("ids") String id, @RequestHeader("User-Token") String token) {
         if(token == null || token.isEmpty()) {
             Logger.getGlobal().info("bad request: token is null or empty");
@@ -61,7 +61,7 @@ public class OutlineController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
-    @GetMapping("specificLesson/{id}")
+    @GetMapping("${mapping.outline.getBySpecificLessonId}/{id}")
     public ResponseEntity<List<Outline>> getBySpecificLessonId(@PathVariable("id") long id, @RequestHeader("User-Token") String token){
         if(token == null || token.isEmpty()) {
             Logger.getGlobal().info("bad request: token is null or empty");
@@ -90,7 +90,7 @@ public class OutlineController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
-    @GetMapping("user/{id}")
+    @GetMapping("${mapping.outline.getByUserId}/{id}")
     public ResponseEntity<List<Outline>> getByUserId(@PathVariable("id") long id, @RequestHeader("User-Token") String token){
         if(token == null || token.isEmpty()) {
             Logger.getGlobal().info("bad request: token is null or empty");
@@ -119,7 +119,7 @@ public class OutlineController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
-    @PostMapping("create")
+    @PostMapping("${mapping.outline.create}")
     public ResponseEntity<Outline> create(@RequestBody Outline data, @RequestHeader("User-Token") String token){
         if(token == null || token.isEmpty()) {
             Logger.getGlobal().info("bad request: token is null or empty");
@@ -134,7 +134,7 @@ public class OutlineController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
-    @PatchMapping("patch")
+    @PatchMapping("${mapping.outline.patch}")
     public ResponseEntity<Outline> patch(@RequestBody Outline data, @RequestHeader("User-Token") String token){
         if(token == null || token.isEmpty()) {
             Logger.getGlobal().info("bad request: token is null or empty");
@@ -157,7 +157,7 @@ public class OutlineController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
-    @DeleteMapping("delete/{ids}")
+    @DeleteMapping("${mapping.outline.delete}/{ids}")
     public ResponseEntity<Void> deleteById(@PathVariable("ids") String id, @RequestHeader("User-Token") String token){
         if(token == null || token.isEmpty()) {
             Logger.getGlobal().info("bad request: token is null or empty");
