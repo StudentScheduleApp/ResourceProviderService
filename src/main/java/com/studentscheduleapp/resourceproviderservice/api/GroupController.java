@@ -119,10 +119,14 @@ public class GroupController {
             else if (data.getAvaUrl() == null || data.getAvaUrl().isEmpty())
                 ps.add("avaUrl");
             if(authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.PATCH, Collections.singletonList(data.getId()), Entity.GROUP, null)))){
-                if (u.getAvaUrl() != null && !u.getAvaUrl().isEmpty())
-                    imageRepository.delete(urlService.getNameFromImageUrl(u.getAvaUrl()));
-                if (file != null && !file.isEmpty())
-                    data.setAvaUrl(imageRepository.upload(file));
+                if (file != null && !file.isEmpty()) {
+                    String url = imageRepository.upload(file);
+                    if (url != null){
+                        if (u.getAvaUrl() != null && !u.getAvaUrl().isEmpty())
+                            imageRepository.delete(urlService.getNameFromImageUrl(u.getAvaUrl()));
+                        data.setAvaUrl(url);
+                    }
+                }
                 return ResponseEntity.ok(groupRepository.save(data));
             }
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();

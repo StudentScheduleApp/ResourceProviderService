@@ -28,7 +28,7 @@ public class ImageRepository {
         ResponseEntity<String> r = restTemplate.postForEntity(imageServiceProperties.getUri() + imageServiceProperties.getGetUploadPath(), file, String.class);
         if(r.getStatusCode().is2xxSuccessful())
             return r.getBody();
-        if (r.getStatusCode().equals(HttpStatus.CONFLICT))
+        if (r.getStatusCode().equals(HttpStatus.BAD_REQUEST))
             return null;
         throw new Exception("request to " + imageServiceProperties.getUri() + " return code " + r.getStatusCode());
     }

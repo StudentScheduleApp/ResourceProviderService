@@ -167,9 +167,14 @@ public class UserController {
             if (!data.getLastName().equals(u.getLastName()))
                 ps.add("lastName");
             if(authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.PATCH, Collections.singletonList(data.getId()), Entity.USER, ps)))){
-                if (u.getAvaUrl() != null && !u.getAvaUrl().isEmpty())
-                    imageRepository.delete(urlService.getNameFromImageUrl(u.getAvaUrl()));
-                data.setAvaUrl(imageRepository.upload(file));
+                if (file != null && !file.isEmpty()) {
+                    String url = imageRepository.upload(file);
+                    if (url != null){
+                        if (u.getAvaUrl() != null && !u.getAvaUrl().isEmpty())
+                            imageRepository.delete(urlService.getNameFromImageUrl(u.getAvaUrl()));
+                        data.setAvaUrl(url);
+                    }
+                }
                 return ResponseEntity.ok(userRepository.save(data));
             }
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
