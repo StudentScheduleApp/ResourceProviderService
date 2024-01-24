@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 public class UrlService {
 
     public String getNameFromImageUrl(String url){
-        return url.split("/")[url.split("/").length - 1];
+        return url.substring(43, url.length()-16);
     }
 
 }
