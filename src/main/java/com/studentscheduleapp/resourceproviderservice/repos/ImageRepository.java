@@ -4,10 +4,14 @@ import com.studentscheduleapp.resourceproviderservice.models.User;
 import com.studentscheduleapp.resourceproviderservice.properties.services.ImageServiceProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Repository;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -25,7 +29,11 @@ public class ImageRepository {
     private RestTemplate restTemplate;
 
     public String upload(MultipartFile file) throws Exception {
-        ResponseEntity<String> r = restTemplate.postForEntity(imageServiceProperties.getUri() + imageServiceProperties.getGetUploadPath(), file, String.class);
+        Resource multipartFile = file.getResource();
+        MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+        body.add("file", multipartFile);
+        HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, null);
+        ResponseEntity<String> r = restTemplate.postForEntity(imageServiceProperties.getUri() + imageServiceProperties.getGetUploadPath(), requestEntity, String.class);
         if(r.getStatusCode().is2xxSuccessful())
             return r.getBody();
         if (r.getStatusCode().equals(HttpStatus.BAD_REQUEST))
