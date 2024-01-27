@@ -3,6 +3,8 @@ package com.studentscheduleapp.resourceproviderservice.api;
 import com.studentscheduleapp.resourceproviderservice.models.*;
 import com.studentscheduleapp.resourceproviderservice.models.api.AuthorizeUserRequest;
 import com.studentscheduleapp.resourceproviderservice.repos.OutlineMediaCommentRepository;
+import com.studentscheduleapp.resourceproviderservice.repos.OutlineMediaRepository;
+import com.studentscheduleapp.resourceproviderservice.repos.UserRepository;
 import com.studentscheduleapp.resourceproviderservice.services.AuthorizeUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,6 +21,10 @@ public class OutlineMediaCommentController {
 
     @Autowired
     private OutlineMediaCommentRepository outlineMediaCommentRepository;
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private OutlineMediaRepository outlineMediaRepository;
     @Autowired
     private AuthorizeUserService authorizeUserService;
 
@@ -100,6 +106,15 @@ public class OutlineMediaCommentController {
         }
         try {
             if(authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.CREATE, Collections.singletonList(data.getMediaId()), Entity.OUTLINE_MEDIA_COMMENT, null)))){
+                if(userRepository.getById(data.getUserId()) != null) {
+                    Logger.getGlobal().info("bad request: user not exist");
+                    return ResponseEntity.status(HttpStatus.CONFLICT).build();
+                }
+                if(outlineMediaRepository.getById(data.getMediaId()) != null) {
+                    Logger.getGlobal().info("bad request: outline media not exist");
+                    return ResponseEntity.status(HttpStatus.CONFLICT).build();
+                }
+                data.setTimestamp(System.currentTimeMillis());
                 return ResponseEntity.ok(outlineMediaCommentRepository.save(data));
             }
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();

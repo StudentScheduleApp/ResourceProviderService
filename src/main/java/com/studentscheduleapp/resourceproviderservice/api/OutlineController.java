@@ -19,6 +19,8 @@ public class OutlineController {
     @Autowired
     private SpecificLessonRepository specificLessonRepository;
     @Autowired
+    private UserRepository userRepository;
+    @Autowired
     private OutlineRepository outlineRepository;
     @Autowired
     private OutlineMediaRepository outlineMediaRepository;
@@ -126,6 +128,14 @@ public class OutlineController {
         }
         try {
             if(authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.CREATE, Collections.singletonList(data.getSpecificLessonId()), Entity.LESSON_TEMPLATE, null)))){
+                if(userRepository.getById(data.getUserId()) != null) {
+                    Logger.getGlobal().info("bad request: user not exist");
+                    return ResponseEntity.status(HttpStatus.CONFLICT).build();
+                }
+                if(specificLessonRepository.getById(data.getSpecificLessonId()) != null) {
+                    Logger.getGlobal().info("bad request: specific lesson not exist");
+                    return ResponseEntity.status(HttpStatus.CONFLICT).build();
+                }
                 return ResponseEntity.ok(outlineRepository.save(data));
             }
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();

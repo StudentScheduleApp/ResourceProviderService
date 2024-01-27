@@ -2,7 +2,9 @@ package com.studentscheduleapp.resourceproviderservice.api;
 
 import com.studentscheduleapp.resourceproviderservice.models.*;
 import com.studentscheduleapp.resourceproviderservice.models.api.AuthorizeUserRequest;
+import com.studentscheduleapp.resourceproviderservice.repos.CustomLessonRepository;
 import com.studentscheduleapp.resourceproviderservice.repos.LessonTemplateRepository;
+import com.studentscheduleapp.resourceproviderservice.repos.ScheduleTemplateRepository;
 import com.studentscheduleapp.resourceproviderservice.services.AuthorizeUserService;
 import com.studentscheduleapp.resourceproviderservice.services.ScheduleService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +20,10 @@ public class LessonTemplateController {
 
     @Autowired
     private LessonTemplateRepository lessonTemplateRepository;
+    @Autowired
+    private ScheduleTemplateRepository scheduleTemplateRepository;
+    @Autowired
+    private CustomLessonRepository customLessonRepository;
     @Autowired
     private ScheduleService scheduleService;
     @Autowired
@@ -124,6 +130,14 @@ public class LessonTemplateController {
             if (data.getTime() != u.getTime())
                 ps.add("time");
             if(authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.PATCH, Collections.singletonList(data.getId()), Entity.LESSON_TEMPLATE, null)))){
+                if(customLessonRepository.getById(data.getLessonId()) != null) {
+                    Logger.getGlobal().info("bad request: custom lesson not exist");
+                    return ResponseEntity.status(HttpStatus.CONFLICT).build();
+                }
+                if(scheduleTemplateRepository.getById(data.getScheduleTemplateId()) != null) {
+                    Logger.getGlobal().info("bad request: schedule template not exist");
+                    return ResponseEntity.status(HttpStatus.CONFLICT).build();
+                }
                 LessonTemplate lt = lessonTemplateRepository.save(data);
                 scheduleService.updateSchedule(data.getScheduleTemplateId());
                 return ResponseEntity.ok(lt);

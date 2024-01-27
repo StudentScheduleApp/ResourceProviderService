@@ -2,6 +2,8 @@ package com.studentscheduleapp.resourceproviderservice.api;
 
 import com.studentscheduleapp.resourceproviderservice.models.*;
 import com.studentscheduleapp.resourceproviderservice.models.api.AuthorizeUserRequest;
+import com.studentscheduleapp.resourceproviderservice.repos.CustomLessonRepository;
+import com.studentscheduleapp.resourceproviderservice.repos.GroupRepository;
 import com.studentscheduleapp.resourceproviderservice.repos.SpecificLessonRepository;
 import com.studentscheduleapp.resourceproviderservice.services.AuthorizeUserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +21,10 @@ public class SpecificLessonController {
 
     @Autowired
     private SpecificLessonRepository specificLessonRepository;
+    @Autowired
+    private CustomLessonRepository customLessonRepository;
+    @Autowired
+    private GroupRepository groupRepository;
     @Autowired
     private AuthorizeUserService authorizeUserService;
 
@@ -96,6 +102,14 @@ public class SpecificLessonController {
         }
         try {
             if(authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.CREATE, Collections.singletonList(data.getGroupId()), Entity.SPECIFIC_LESSON, null)))){
+                if(groupRepository.getById(data.getGroupId()) != null) {
+                    Logger.getGlobal().info("bad request: group not exist");
+                    return ResponseEntity.status(HttpStatus.CONFLICT).build();
+                }
+                if(customLessonRepository.getById(data.getLessonId()) != null) {
+                    Logger.getGlobal().info("bad request: user not exist");
+                    return ResponseEntity.status(HttpStatus.CONFLICT).build();
+                }
                 return ResponseEntity.ok(specificLessonRepository.save(data));
             }
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();

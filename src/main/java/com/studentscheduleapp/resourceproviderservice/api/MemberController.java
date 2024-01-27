@@ -2,7 +2,9 @@ package com.studentscheduleapp.resourceproviderservice.api;
 
 import com.studentscheduleapp.resourceproviderservice.models.*;
 import com.studentscheduleapp.resourceproviderservice.models.api.AuthorizeUserRequest;
+import com.studentscheduleapp.resourceproviderservice.repos.GroupRepository;
 import com.studentscheduleapp.resourceproviderservice.repos.MemberRepository;
+import com.studentscheduleapp.resourceproviderservice.repos.UserRepository;
 import com.studentscheduleapp.resourceproviderservice.services.AuthorizeUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,6 +21,10 @@ public class MemberController {
 
     @Autowired
     private MemberRepository memberRepository;
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private GroupRepository groupRepository;
     @Autowired
     private AuthorizeUserService authorizeUserService;
 
@@ -122,6 +128,14 @@ public class MemberController {
         }
         try {
             if(authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.CREATE, Collections.singletonList(data.getGroupId()), Entity.MEMBER, null)))){
+                if(userRepository.getById(data.getUserId()) != null) {
+                    Logger.getGlobal().info("bad request: user not exist");
+                    return ResponseEntity.status(HttpStatus.CONFLICT).build();
+                }
+                if(groupRepository.getById(data.getGroupId()) != null) {
+                    Logger.getGlobal().info("bad request: group not exist");
+                    return ResponseEntity.status(HttpStatus.CONFLICT).build();
+                }
                 return ResponseEntity.ok(memberRepository.save(data));
             }
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();

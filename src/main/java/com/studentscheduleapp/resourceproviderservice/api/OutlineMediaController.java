@@ -103,10 +103,15 @@ public class OutlineMediaController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         try {
             if(authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.CREATE, Collections.singletonList(data.getOutlineId()), Entity.OUTLINE_MEDIA, null)))){
+                if(outlineRepository.getById(data.getOutlineId()) != null) {
+                    Logger.getGlobal().info("bad request: outline not exist");
+                    return ResponseEntity.status(HttpStatus.CONFLICT).build();
+                }
                 String url = imageRepository.upload(file);
                 if (url == null)
                     return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
                 data.setImageUrl(url);
+                data.setTimestamp(System.currentTimeMillis());
                 return ResponseEntity.ok(outlineMediaRepository.save(data));
             }
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();

@@ -20,7 +20,7 @@ public class ScheduleTemplateController {
     @Autowired
     private LessonTemplateRepository lessonTemplateRepository;
     @Autowired
-    private CustomLessonRepository customLessonRepository;
+    private GroupRepository groupRepository;
     @Autowired
     private ScheduleTemplateRepository scheduleTemplateRepository;
     @Autowired
@@ -106,6 +106,10 @@ public class ScheduleTemplateController {
         }
         try {
             if(authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.CREATE, Collections.singletonList(data.getGroupId()), Entity.SCHEDULE_TEMPLATE, null)))){
+                if(groupRepository.getById(data.getGroupId()) != null) {
+                    Logger.getGlobal().info("bad request: group not exist");
+                    return ResponseEntity.status(HttpStatus.CONFLICT).build();
+                }
                 ScheduleTemplate t = scheduleTemplateRepository.save(data);
                 scheduleService.updateSchedule(t.getId());
                 return ResponseEntity.ok(t);
