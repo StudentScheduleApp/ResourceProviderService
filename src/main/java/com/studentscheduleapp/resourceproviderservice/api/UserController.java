@@ -119,6 +119,22 @@ public class UserController {
             Logger.getGlobal().info("bad request: lastName is null or empty");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
+        if(data.getEmail() != null || data.getEmail().length() > 255) {
+            Logger.getGlobal().info("bad request: email length > 255");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+        if(data.getPassword() != null || data.getPassword().length() > 255) {
+            Logger.getGlobal().info("bad request: password length > 255");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+        if(data.getFirstName() != null || data.getFirstName().length() > 255) {
+            Logger.getGlobal().info("bad request: first name length > 255");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+        if(data.getLastName() != null || data.getLastName().length() > 255) {
+            Logger.getGlobal().info("bad request: last name length > 255");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
         try {
             if(authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.CREATE, Collections.singletonList(0L), Entity.USER, null)))){
                 data.setBanned(false);
@@ -147,6 +163,22 @@ public class UserController {
         }
         if(data.getLastName() == null || data.getLastName().isEmpty()) {
             Logger.getGlobal().info("bad request: lastName is null or empty");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+        if(data.getEmail() != null || data.getEmail().length() > 255) {
+            Logger.getGlobal().info("bad request: email length > 255");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+        if(data.getPassword() != null || data.getPassword().length() > 255) {
+            Logger.getGlobal().info("bad request: password length > 255");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+        if(data.getFirstName() != null || data.getFirstName().length() > 255) {
+            Logger.getGlobal().info("bad request: first name length > 255");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+        if(data.getLastName() != null || data.getLastName().length() > 255) {
+            Logger.getGlobal().info("bad request: last name length > 255");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
         try {

@@ -99,6 +99,10 @@ public class LessonTemplateController {
             Logger.getGlobal().info("bad request: token is null or empty");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
+        if(data.getComment() != null || data.getComment().length() > 255) {
+            Logger.getGlobal().info("bad request: comment length > 255");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
         try {
             if(authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.CREATE, Collections.singletonList(data.getScheduleTemplateId()), Entity.LESSON_TEMPLATE, null)))){
                 LessonTemplate lt = lessonTemplateRepository.save(data);
@@ -114,6 +118,10 @@ public class LessonTemplateController {
     public ResponseEntity<LessonTemplate> patch(@RequestBody LessonTemplate data, @RequestHeader("User-Token") String token){
         if(token == null || token.isEmpty()) {
             Logger.getGlobal().info("bad request: token is null or empty");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+        if(data.getComment() != null || data.getComment().length() > 255) {
+            Logger.getGlobal().info("bad request: comment length > 255");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
         try {

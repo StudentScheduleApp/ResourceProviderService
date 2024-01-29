@@ -104,6 +104,14 @@ public class ScheduleTemplateController {
             Logger.getGlobal().info("bad request: name is null or empty");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
+        if(data.getName() != null || data.getName().length() > 255) {
+            Logger.getGlobal().info("bad request: name length > 255");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+        if(data.getComment() != null || data.getComment().length() > 255) {
+            Logger.getGlobal().info("bad request: comment length > 255");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
         try {
             if(authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.CREATE, Collections.singletonList(data.getGroupId()), Entity.SCHEDULE_TEMPLATE, null)))){
                 if(groupRepository.getById(data.getGroupId()) != null) {
