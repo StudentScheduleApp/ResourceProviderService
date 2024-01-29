@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 @Getter
 public class IdentityServiceProperties {
 
-    @Value("${imageservice.uri}")
+    @Value("${identityservice.uri}")
     private String uri;
 
     @Value("${identityservice.path.user.login}")

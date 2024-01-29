@@ -12,105 +12,105 @@ public class DatabaseServiceProperties {
     private String uri;
 
     //CustomLessons
-    @Value("${databaseservice.path.customLesson.getById{")
+    @Value("${databaseservice.path.customLesson.getById}")
     private String getCustomLessonByIdPath;
-    @Value("${databaseservice.path.customLesson.getByGroupId{")
+    @Value("${databaseservice.path.customLesson.getByGroupId}")
     private String getCustomLessonByGroupIdPath;
-    @Value("${databaseservice.path.customLesson.save{")
+    @Value("${databaseservice.path.customLesson.save}")
     private String saveCustomLessonPath;
-    @Value("${databaseservice.path.customLesson.delete{")
+    @Value("${databaseservice.path.customLesson.delete}")
     private String deleteCustomLessonPath;
 
     //Groups
-    @Value("${databaseservice.path.group.getById{")
+    @Value("${databaseservice.path.group.getById}")
     private String getGroupByIdPath;
-    @Value("${databaseservice.path.group.save{")
+    @Value("${databaseservice.path.group.save}")
     private String saveGroupPath;
-    @Value("${databaseservice.path.group.delete{")
+    @Value("${databaseservice.path.group.delete}")
     private String deleteGroupPath;
 
     //LessonTemplate
-    @Value("${databaseservice.path.lessonTemplate.getById{")
+    @Value("${databaseservice.path.lessonTemplate.getById}")
     private String getLessonTemplateByIdPath;
-    @Value("${databaseservice.path.lessonTemplate.getByScheduleTemplateId{")
+    @Value("${databaseservice.path.lessonTemplate.getByScheduleTemplateId}")
     private String getLessonTemplateByScheduleTemplateIdPath;
-    @Value("${databaseservice.path.lessonTemplate.save{")
+    @Value("${databaseservice.path.lessonTemplate.save}")
     private String saveLessonTemplatePath;
-    @Value("${databaseservice.path.lessonTemplate.delete{")
+    @Value("${databaseservice.path.lessonTemplate.delete}")
     private String deleteLessonTemplatePath;
 
     //Member
-    @Value("${databaseservice.path.member.getById{")
+    @Value("${databaseservice.path.member.getById}")
     private String getMemberByIdPath;
-    @Value("${databaseservice.path.member.getByGroupId{")
+    @Value("${databaseservice.path.member.getByGroupId}")
     private String getMemberByGroupIdPath;
-    @Value("${databaseservice.path.member.getByUserId{")
+    @Value("${databaseservice.path.member.getByUserId}")
     private String getMemberByUserIdPath;
-    @Value("${databaseservice.path.member.save{")
+    @Value("${databaseservice.path.member.save}")
     private String saveMemberPath;
-    @Value("${databaseservice.path.member.delete{")
+    @Value("${databaseservice.path.member.delete}")
     private String deleteMemberPath;
 
     //OutlineMediaComment
-    @Value("${databaseservice.path.outlineMediaComment.getById{")
+    @Value("${databaseservice.path.outlineMediaComment.getById}")
     private String getOutlineMediaCommentByIdPath;
-    @Value("${databaseservice.path.outlineMediaComment.getByUserId{")
+    @Value("${databaseservice.path.outlineMediaComment.getByOutlineMediaId}")
     private String getOutlineMediaCommentByOutlineMediaIdPath;
-    @Value("${databaseservice.path.outlineMediaComment.save{")
+    @Value("${databaseservice.path.outlineMediaComment.save}")
     private String saveOutlineMediaCommentPath;
-    @Value("${databaseservice.path.outlineMediaComment.delete{")
+    @Value("${databaseservice.path.outlineMediaComment.delete}")
     private String deleteOutlineMediaCommentPath;
 
     //OutlineMedia
-    @Value("${databaseservice.path.outlineMedia.getById{")
+    @Value("${databaseservice.path.outlineMedia.getById}")
     private String getOutlineMediaByIdPath;
-    @Value("${databaseservice.path.outlineMedia.getByOutlineId{")
+    @Value("${databaseservice.path.outlineMedia.getByOutlineId}")
     private String getOutlineMediaByOutlineIdPath;
-    @Value("${databaseservice.path.outlineMedia.save{")
+    @Value("${databaseservice.path.outlineMedia.save}")
     private String saveOutlineMediaPath;
-    @Value("${databaseservice.path.outlineMedia.delete{")
+    @Value("${databaseservice.path.outlineMedia.delete}")
     private String deleteOutlineMediaPath;
 
     //Outline
-    @Value("${databaseservice.path.outline.getById{")
+    @Value("${databaseservice.path.outline.getById}")
     private String getOutlineByIdPath;
-    @Value("${databaseservice.path.outline.getBySpecificLessonId{")
+    @Value("${databaseservice.path.outline.getBySpecificLessonId}")
     private String getOutlineBySpecificLessonIdPath;
-    @Value("${databaseservice.path.outline.getByUserId{")
+    @Value("${databaseservice.path.outline.getByUserId}")
     private String getOutlineByUserIdPath;
-    @Value("${databaseservice.path.outline.save{")
+    @Value("${databaseservice.path.outline.save}")
     private String saveOutlinePath;
-    @Value("${databaseservice.path.outline.delete{")
+    @Value("${databaseservice.path.outline.delete}")
     private String deleteOutlinePath;
 
     //ScheduleTemplate
-    @Value("${databaseservice.path.scheduleTemplate.getById{")
+    @Value("${databaseservice.path.scheduleTemplate.getById}")
     private String getScheduleTemplateByIdPath;
-    @Value("${databaseservice.path.scheduleTemplate.getByGroupId{")
+    @Value("${databaseservice.path.scheduleTemplate.getByGroupId}")
     private String getScheduleTemplateByGroupIdPath;
-    @Value("${databaseservice.path.scheduleTemplate.save{")
+    @Value("${databaseservice.path.scheduleTemplate.save}")
     private String saveScheduleTemplatePath;
-    @Value("${databaseservice.path.scheduleTemplate.delete{")
+    @Value("${databaseservice.path.scheduleTemplate.delete}")
     private String deleteScheduleTemplatePath;
 
     //SpecificLesson
-    @Value("${databaseservice.path.specificLesson.getById{")
+    @Value("${databaseservice.path.specificLesson.getById}")
     private String getSpecificLessonByIdPath;
-    @Value("${databaseservice.path.specificLesson.getByGroupId{")
+    @Value("${databaseservice.path.specificLesson.getByGroupId}")
     private String getSpecificLessonByGroupIdPath;
-    @Value("${databaseservice.path.specificLesson.save{")
+    @Value("${databaseservice.path.specificLesson.save}")
     private String saveSpecificLessonPath;
-    @Value("${databaseservice.path.specificLesson.delete{")
+    @Value("${databaseservice.path.specificLesson.delete}")
     private String deleteSpecificLessonPath;
 
     //User
-    @Value("${databaseservice.path.user.getById{")
+    @Value("${databaseservice.path.user.getById}")
     private String getUserByIdPath;
-    @Value("${databaseservice.path.user.getByEmail{")
+    @Value("${databaseservice.path.user.getByEmail}")
     private String getUserByEmailPath;
-    @Value("${databaseservice.path.user.save{")
+    @Value("${databaseservice.path.user.save}")
     private String saveUserPath;
-    @Value("${databaseservice.path.user.delete{")
+    @Value("${databaseservice.path.user.delete}")
     private String deleteUserPath;
 
 

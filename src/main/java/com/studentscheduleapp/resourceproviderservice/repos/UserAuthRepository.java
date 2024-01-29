@@ -19,9 +19,9 @@ public class UserAuthRepository {
     private RestTemplate restTemplate;
 
     public boolean authorize(AuthorizeUserRequest request) throws Exception{
-        ResponseEntity<Void> r = restTemplate.postForEntity(identityServiceProperties.getUri() + identityServiceProperties.getGetAuthorizePath(), request, Void.class);
+        ResponseEntity<Boolean> r = restTemplate.postForEntity(identityServiceProperties.getUri() + identityServiceProperties.getGetAuthorizePath(), request, Boolean.class);
         if(r.getStatusCode().is2xxSuccessful())
-            return true;
+            return r.getBody();
         if(r.getStatusCode().equals(HttpStatus.UNAUTHORIZED))
             return false;
         throw new Exception("request to " + identityServiceProperties.getUri() + " return code " + r.getStatusCode());

@@ -104,11 +104,11 @@ public class ScheduleTemplateController {
             Logger.getGlobal().info("bad request: name is null or empty");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
-        if(data.getName() != null || data.getName().length() > 255) {
+        if(data.getName() != null && data.getName().length() > 255) {
             Logger.getGlobal().info("bad request: name length > 255");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
-        if(data.getComment() != null || data.getComment().length() > 255) {
+        if(data.getComment() != null && data.getComment().length() > 255) {
             Logger.getGlobal().info("bad request: comment length > 255");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
@@ -135,6 +135,14 @@ public class ScheduleTemplateController {
         }
         if(data.getName() == null || data.getName().isEmpty()) {
             Logger.getGlobal().info("bad request: name is null or empty");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+        if(data.getName() != null && data.getName().length() > 255) {
+            Logger.getGlobal().info("bad request: name length > 255");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+        if(data.getComment() != null && data.getComment().length() > 255) {
+            Logger.getGlobal().info("bad request: comment length > 255");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
         try {

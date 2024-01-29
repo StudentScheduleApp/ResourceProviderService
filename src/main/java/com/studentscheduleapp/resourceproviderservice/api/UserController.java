@@ -165,19 +165,19 @@ public class UserController {
             Logger.getGlobal().info("bad request: lastName is null or empty");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
-        if(data.getEmail() != null || data.getEmail().length() > 255) {
+        if(data.getEmail() != null && data.getEmail().length() > 255) {
             Logger.getGlobal().info("bad request: email length > 255");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
-        if(data.getPassword() != null || data.getPassword().length() > 255) {
+        if(data.getPassword() != null && data.getPassword().length() > 255) {
             Logger.getGlobal().info("bad request: password length > 255");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
-        if(data.getFirstName() != null || data.getFirstName().length() > 255) {
+        if(data.getFirstName() != null && data.getFirstName().length() > 255) {
             Logger.getGlobal().info("bad request: first name length > 255");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
-        if(data.getLastName() != null || data.getLastName().length() > 255) {
+        if(data.getLastName() != null && data.getLastName().length() > 255) {
             Logger.getGlobal().info("bad request: last name length > 255");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
@@ -190,13 +190,13 @@ public class UserController {
                 ps.add("avaUrl");
             if (data.getPassword() != null && !data.getPassword().isEmpty())
                 ps.add("password");
-            if (!data.getEmail().equals(u.getEmail()))
+            if (data.getEmail() != null && !data.getEmail().equals(u.getEmail()))
                 ps.add("email");
-            if (!data.getRoles().equals(u.getRoles()))
+            if (data.getRoles() == null || !data.getRoles().equals(u.getRoles()))
                 ps.add("roles");
-            if (!data.getFirstName().equals(u.getFirstName()))
+            if (data.getFirstName() != null && !data.getFirstName().equals(u.getFirstName()))
                 ps.add("firstName");
-            if (!data.getLastName().equals(u.getLastName()))
+            if (data.getLastName() != null && !data.getLastName().equals(u.getLastName()))
                 ps.add("lastName");
             if(authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.PATCH, Collections.singletonList(data.getId()), Entity.USER, ps)))){
                 if (file != null && !file.isEmpty()) {

@@ -97,11 +97,11 @@ public class CustomLessonController {
             Logger.getGlobal().info("bad request: name is null or empty");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
-        if(data.getName() != null || data.getName().length() > 255) {
+        if(data.getName() != null && data.getName().length() > 255) {
             Logger.getGlobal().info("bad request: name length > 255");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
-        if(data.getTeacher() != null || data.getTeacher().length() > 255) {
+        if(data.getTeacher() != null && data.getTeacher().length() > 255) {
             Logger.getGlobal().info("bad request: teacher length > 255");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
@@ -129,11 +129,11 @@ public class CustomLessonController {
             Logger.getGlobal().info("bad request: name is null or empty");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
-        if(data.getName() != null || data.getName().length() > 255) {
+        if(data.getName() != null && data.getName().length() > 255) {
             Logger.getGlobal().info("bad request: name length > 255");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
-        if(data.getTeacher() != null || data.getTeacher().length() > 255) {
+        if(data.getTeacher() != null && data.getTeacher().length() > 255) {
             Logger.getGlobal().info("bad request: teacher length > 255");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }

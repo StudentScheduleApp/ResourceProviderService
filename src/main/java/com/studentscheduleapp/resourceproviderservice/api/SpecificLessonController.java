@@ -100,7 +100,7 @@ public class SpecificLessonController {
             Logger.getGlobal().info("bad request: token is null or empty");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
-        if(data.getComment() != null || data.getComment().length() > 255) {
+        if(data.getComment() != null && data.getComment().length() > 255) {
             Logger.getGlobal().info("bad request: comment length > 255");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
@@ -127,7 +127,7 @@ public class SpecificLessonController {
             Logger.getGlobal().info("bad request: token is null or empty");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
-        if(data.getComment() != null || data.getComment().length() > 255) {
+        if(data.getComment() != null && data.getComment().length() > 255) {
             Logger.getGlobal().info("bad request: comment length > 255");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }

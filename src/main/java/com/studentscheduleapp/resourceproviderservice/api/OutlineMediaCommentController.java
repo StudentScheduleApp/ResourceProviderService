@@ -104,7 +104,7 @@ public class OutlineMediaCommentController {
             Logger.getGlobal().info("bad request: text is null or empty");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
-        if(data.getText() != null || data.getText().length() > 255) {
+        if(data.getText() != null && data.getText().length() > 255) {
             Logger.getGlobal().info("bad request: text length > 255");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
@@ -136,7 +136,7 @@ public class OutlineMediaCommentController {
             Logger.getGlobal().info("bad request: text is null or empty");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
-        if(data.getText() != null || data.getText().length() > 255) {
+        if(data.getText() != null && data.getText().length() > 255) {
             Logger.getGlobal().info("bad request: text length > 255");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
