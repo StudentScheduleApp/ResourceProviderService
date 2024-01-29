@@ -42,6 +42,7 @@ public class UserController {
                 ids.add(Long.parseLong(id.split(",")[i]));
             }
         } catch (Exception e) {
+            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
         ArrayList<String> ps = new ArrayList<>();
@@ -64,6 +65,7 @@ public class UserController {
             }
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         } catch (Exception e) {
+            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
@@ -79,6 +81,7 @@ public class UserController {
             u.setEmail(null);
             u.setPassword(null);
         } catch (Exception e) {
+            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
         ArrayList<String> ps = new ArrayList<>();
@@ -94,6 +97,7 @@ public class UserController {
             }
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         } catch (Exception e) {
+            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
@@ -144,6 +148,7 @@ public class UserController {
             }
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         } catch (Exception e) {
+            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
@@ -211,6 +216,7 @@ public class UserController {
             }
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         } catch (Exception e) {
+            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
@@ -226,6 +232,7 @@ public class UserController {
                 ids.add(Long.parseLong(id.split(",")[i]));
             }
         } catch (Exception e){
+            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
         try {
@@ -242,6 +249,7 @@ public class UserController {
             }
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         } catch (Exception e) {
+            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }

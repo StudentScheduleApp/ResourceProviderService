@@ -43,6 +43,7 @@ public class OutlineController {
                 ids.add(Long.parseLong(id.split(",")[i]));
             }
         } catch (Exception e) {
+            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
         ArrayList<String> ps = new ArrayList<>();
@@ -59,6 +60,7 @@ public class OutlineController {
             }
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         } catch (Exception e) {
+            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
@@ -76,6 +78,7 @@ public class OutlineController {
                 ids.add(c.getId());
             }
         } catch (Exception e) {
+            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
         ArrayList<String> ps = new ArrayList<>();
@@ -88,6 +91,7 @@ public class OutlineController {
             }
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         } catch (Exception e) {
+            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
@@ -105,6 +109,7 @@ public class OutlineController {
                 ids.add(c.getId());
             }
         } catch (Exception e) {
+            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
         ArrayList<String> ps = new ArrayList<>();
@@ -117,6 +122,7 @@ public class OutlineController {
             }
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         } catch (Exception e) {
+            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
@@ -140,6 +146,7 @@ public class OutlineController {
             }
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         } catch (Exception e) {
+            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
@@ -163,6 +170,7 @@ public class OutlineController {
             }
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         } catch (Exception e) {
+            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
@@ -178,6 +186,7 @@ public class OutlineController {
                 ids.add(Long.parseLong(id.split(",")[i]));
             }
         } catch (Exception e){
+            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
         try {
@@ -190,7 +199,9 @@ public class OutlineController {
                         if (om.getImageUrl() != null && !om.getImageUrl().isEmpty())
                             try {
                                 imageRepository.delete(om.getImageUrl().split("/")[om.getImageUrl().split("/").length - 1]);
-                            } catch (Exception e){ }
+                            } catch (Exception e){
+                                e.printStackTrace();
+                            }
                         outlineMediaRepository.delete(om.getId());
                     }
                     outlineRepository.delete(l);
@@ -199,6 +210,7 @@ public class OutlineController {
             }
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         } catch (Exception e) {
+            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }

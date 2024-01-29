@@ -76,6 +76,7 @@ public class OutlineMediaCommentController {
                 ids.add(c.getId());
             }
         } catch (Exception e) {
+            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
         ArrayList<String> ps = new ArrayList<>();
@@ -91,6 +92,7 @@ public class OutlineMediaCommentController {
             }
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         } catch (Exception e) {
+            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
@@ -123,6 +125,7 @@ public class OutlineMediaCommentController {
             }
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         } catch (Exception e) {
+            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
@@ -160,6 +163,7 @@ public class OutlineMediaCommentController {
             }
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         } catch (Exception e) {
+            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
@@ -175,6 +179,7 @@ public class OutlineMediaCommentController {
                 ids.add(Long.parseLong(id.split(",")[i]));
             }
         } catch (Exception e){
+            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
         try {
@@ -186,6 +191,7 @@ public class OutlineMediaCommentController {
             }
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         } catch (Exception e) {
+            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }

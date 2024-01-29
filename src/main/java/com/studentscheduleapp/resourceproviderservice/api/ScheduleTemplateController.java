@@ -40,6 +40,7 @@ public class ScheduleTemplateController {
                 ids.add(Long.parseLong(id.split(",")[i]));
             }
         } catch (Exception e) {
+            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
         ArrayList<String> ps = new ArrayList<>();
@@ -59,6 +60,7 @@ public class ScheduleTemplateController {
             }
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         } catch (Exception e) {
+            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
@@ -76,6 +78,7 @@ public class ScheduleTemplateController {
                 ids.add(c.getId());
             }
         } catch (Exception e) {
+            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
         ArrayList<String> ps = new ArrayList<>();
@@ -91,6 +94,7 @@ public class ScheduleTemplateController {
             }
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         } catch (Exception e) {
+            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
@@ -124,6 +128,7 @@ public class ScheduleTemplateController {
             }
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         } catch (Exception e) {
+            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
@@ -167,6 +172,7 @@ public class ScheduleTemplateController {
             }
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         } catch (Exception e) {
+            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
@@ -182,6 +188,7 @@ public class ScheduleTemplateController {
                 ids.add(Long.parseLong(id.split(",")[i]));
             }
         } catch (Exception e){
+            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
         try {
@@ -196,6 +203,7 @@ public class ScheduleTemplateController {
             }
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         } catch (Exception e) {
+            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
