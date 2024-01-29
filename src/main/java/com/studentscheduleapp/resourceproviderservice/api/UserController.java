@@ -191,13 +191,16 @@ public class UserController {
             if (u == null)
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
             ArrayList<String> ps = new ArrayList<>();
+            data.setAvaUrl(u.getAvaUrl());
+            if (data.getRoles() != null && (data.getRoles().size() == 0 || data.getRoles().contains(Role.ULTIMATE)))
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
             if (file != null && !file.isEmpty())
                 ps.add("avaUrl");
             if (data.getPassword() != null && !data.getPassword().isEmpty())
                 ps.add("password");
             if (data.getEmail() != null && !data.getEmail().equals(u.getEmail()))
                 ps.add("email");
-            if (data.getRoles() == null || !data.getRoles().equals(u.getRoles()))
+            if (data.getRoles() != null && !data.getRoles().equals(u.getRoles()))
                 ps.add("roles");
             if (data.getFirstName() != null && !data.getFirstName().equals(u.getFirstName()))
                 ps.add("firstName");
