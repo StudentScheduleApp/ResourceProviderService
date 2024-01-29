@@ -104,7 +104,7 @@ public class GroupController {
         }
     }
     @PatchMapping("${mapping.group.patch}")
-    public ResponseEntity<Group> patch(@RequestBody Group data, @RequestHeader("User-Token") String token, @RequestParam("image") MultipartFile file){
+    public ResponseEntity<Group> patch(@RequestBody Group data, @RequestHeader("User-Token") String token, @RequestParam(value = "image", required = false) MultipartFile file){
         if(token == null || token.isEmpty()) {
             Logger.getGlobal().info("bad request: token is null or empty");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
