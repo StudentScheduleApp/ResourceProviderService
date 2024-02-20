@@ -158,10 +158,10 @@ public class UserController {
             Logger.getGlobal().info("bad request: token is null or empty");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
-        if(data.getEmail() == null || data.getEmail().isEmpty()) {
-            Logger.getGlobal().info("bad request: email is null or empty");
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-        }
+       // if(data.getEmail() == null || data.getEmail().isEmpty()) {
+       //     Logger.getGlobal().info("bad request: email is null or empty");
+       //     return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+       // }
         if(data.getFirstName() == null || data.getFirstName().isEmpty()) {
             Logger.getGlobal().info("bad request: firstName is null or empty");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
@@ -174,10 +174,10 @@ public class UserController {
             Logger.getGlobal().info("bad request: email length > 255");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
-        if(data.getPassword() != null && data.getPassword().length() > 255) {
-            Logger.getGlobal().info("bad request: password length > 255");
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-        }
+       // if(data.getPassword() != null && data.getPassword().length() > 255) {
+       //     Logger.getGlobal().info("bad request: password length > 255");
+       //     return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+       // }
         if(data.getFirstName() != null && data.getFirstName().length() > 255) {
             Logger.getGlobal().info("bad request: first name length > 255");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
@@ -196,10 +196,10 @@ public class UserController {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
             if (file != null && !file.isEmpty())
                 ps.add("avaUrl");
-            if (data.getPassword() != null && !data.getPassword().isEmpty())
-                ps.add("password");
-            if (data.getEmail() != null && !data.getEmail().equals(u.getEmail()))
-                ps.add("email");
+          //  if (data.getPassword() != null && !data.getPassword().isEmpty())
+          //      ps.add("password");
+          //  if (data.getEmail() != null && !data.getEmail().equals(u.getEmail()))
+          //      ps.add("email");
             if (data.getRoles() != null && !data.getRoles().equals(u.getRoles()))
                 ps.add("roles");
             if (data.getFirstName() != null && !data.getFirstName().equals(u.getFirstName()))
@@ -215,6 +215,8 @@ public class UserController {
                         data.setAvaUrl(url);
                     }
                 }
+                data.setEmail(u.getEmail());
+                data.setPassword(u.getPassword());
                 return ResponseEntity.ok(userRepository.save(data));
             }
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
