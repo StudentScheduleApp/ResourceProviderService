@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.Arrays;
 import java.util.List;
 
 @Repository
@@ -33,17 +34,17 @@ public class MemberRepository {
         throw new Exception("request to " + databaseServiceProperties.getUri() + " return code " + r.getStatusCode());
     }
     public List<Member> getByGroupId(long id) throws Exception {
-        ResponseEntity<List> r = restTemplate.getForEntity(databaseServiceProperties.getUri() + databaseServiceProperties.getGetMemberByGroupIdPath() + "/" + id, List.class);
+        ResponseEntity<Member[]> r = restTemplate.getForEntity(databaseServiceProperties.getUri() + databaseServiceProperties.getGetMemberByGroupIdPath() + "/" + id, Member[].class);
         if(r.getStatusCode().is2xxSuccessful())
-            return r.getBody();
+            return Arrays.asList(r.getBody());
         if(r.getStatusCode().equals(HttpStatus.NOT_FOUND))
             return null;
         throw new Exception("request to " + databaseServiceProperties.getUri() + " return code " + r.getStatusCode());
     }
     public List<Member> getByUserId(long id) throws Exception {
-        ResponseEntity<List> r = restTemplate.getForEntity(databaseServiceProperties.getUri() +databaseServiceProperties.getGetMemberByUserIdPath() + "/" + id, List.class);
+        ResponseEntity<Member[]> r = restTemplate.getForEntity(databaseServiceProperties.getUri() +databaseServiceProperties.getGetMemberByUserIdPath() + "/" + id, Member[].class);
         if(r.getStatusCode().is2xxSuccessful())
-            return r.getBody();
+            return Arrays.asList(r.getBody());
         if(r.getStatusCode().equals(HttpStatus.NOT_FOUND))
             return null;
         throw new Exception("request to " + databaseServiceProperties.getUri() + " return code " + r.getStatusCode());

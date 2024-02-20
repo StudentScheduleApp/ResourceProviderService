@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.Arrays;
 import java.util.List;
 
 @Repository
@@ -32,17 +33,17 @@ public class OutlineRepository {
         throw new Exception("request to " + databaseServiceProperties.getUri() + " return code " + r.getStatusCode());
     }
     public List<Outline> getBySpecificLessonId(long id) throws Exception {
-        ResponseEntity<List> r = restTemplate.getForEntity(databaseServiceProperties.getUri() + databaseServiceProperties.getGetOutlineBySpecificLessonIdPath() + "/" + id, List.class);
+        ResponseEntity<Outline[]> r = restTemplate.getForEntity(databaseServiceProperties.getUri() + databaseServiceProperties.getGetOutlineBySpecificLessonIdPath() + "/" + id, Outline[].class);
         if(r.getStatusCode().is2xxSuccessful())
-            return r.getBody();
+            return Arrays.asList(r.getBody());
         if(r.getStatusCode().equals(HttpStatus.NOT_FOUND))
             return null;
         throw new Exception("request to " + databaseServiceProperties.getUri() + " return code " + r.getStatusCode());
     }
     public List<Outline> getByUserId(long id) throws Exception {
-        ResponseEntity<List> r = restTemplate.getForEntity(databaseServiceProperties.getUri() + databaseServiceProperties.getGetOutlineByUserIdPath() + "/" + id, List.class);
+        ResponseEntity<Outline[]> r = restTemplate.getForEntity(databaseServiceProperties.getUri() + databaseServiceProperties.getGetOutlineByUserIdPath() + "/" + id, Outline[].class);
         if(r.getStatusCode().is2xxSuccessful())
-            return r.getBody();
+            return Arrays.asList(r.getBody());
         if(r.getStatusCode().equals(HttpStatus.NOT_FOUND))
             return null;
         throw new Exception("request to " + databaseServiceProperties.getUri() + " return code " + r.getStatusCode());
