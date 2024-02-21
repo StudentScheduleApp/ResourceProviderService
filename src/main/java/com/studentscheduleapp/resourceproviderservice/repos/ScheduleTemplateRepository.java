@@ -17,8 +17,6 @@ import java.util.List;
 @Repository
 public class ScheduleTemplateRepository {
 
-
-
     @Autowired
     private DatabaseServiceProperties databaseServiceProperties;
 
