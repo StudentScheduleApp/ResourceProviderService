@@ -200,8 +200,7 @@ public class UserController {
           //      ps.add("password");
           //  if (data.getEmail() != null && !data.getEmail().equals(u.getEmail()))
           //      ps.add("email");
-            if (data.getRoles() != null && !data.getRoles().equals(u.getRoles())
-                    && u.getRoles().contains(Role.ULTIMATE)){
+            if (data.getRoles() != null && !data.getRoles().equals(u.getRoles())){
                 if(!data.getRoles().contains(Role.USER)){
                     data.getRoles().add(Role.USER);
                 }
