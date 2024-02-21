@@ -212,8 +212,17 @@ public class UserController {
             if (data.getFirstName() != null && !data.getFirstName().equals(u.getFirstName())){
                 ps.add("firstName");
             }
-            if (data.getLastName() != null && !data.getLastName().equals(u.getLastName()))
+            else{
+                data.setFirstName(u.getFirstName());
+                ps.add("firstName");
+            }
+            if (data.getLastName() != null && !data.getLastName().equals(u.getLastName())) {
                 ps.add("lastName");
+            }
+            else {
+                data.setLastName(u.getLastName());
+                ps.add("lastName");
+            }
             if(authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.PATCH, Collections.singletonList(data.getId()), Entity.USER, ps)))){
                 if (file != null && !file.isEmpty()) {
                     String url = imageRepository.upload(file);

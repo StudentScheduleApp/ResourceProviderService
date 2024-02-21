@@ -109,10 +109,10 @@ public class GroupController {
             Logger.getGlobal().info("bad request: token is null or empty");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
-        if(data.getName() == null || data.getName().isEmpty()) {
+        /*if(data.getName() == null || data.getName().isEmpty()) {
             Logger.getGlobal().info("bad request: name is null or empty");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-        }
+        }*/
         if(data.getName() != null && data.getName().length() > 255) {
             Logger.getGlobal().info("bad request: name length > 255");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
@@ -124,8 +124,12 @@ public class GroupController {
             ArrayList<String> ps = new ArrayList<>();
             if (data.getChatId() != u.getChatId())
                 ps.add("chatId");
-            if (!data.getName().equals(u.getName()))
+            if (data.getName() != null && !data.getName().equals(u.getName()))
                 ps.add("name");
+            else{
+                data.setName(u.getName());
+                ps.add("name");
+            }
             if (file != null && !file.isEmpty())
                 ps.add("avaUrl");
             else if (data.getAvaUrl() == null || data.getAvaUrl().isEmpty())
