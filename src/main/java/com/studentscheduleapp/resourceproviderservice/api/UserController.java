@@ -204,7 +204,7 @@ public class UserController {
                 if(!data.getRoles().contains(Role.USER)){
                     data.getRoles().add(Role.USER);
                 }
-                if(!data.getRoles().contains(Role.ULTIMATE)){
+                if(!data.getRoles().contains(Role.ULTIMATE) && u.getRoles().contains(Role.ULTIMATE)){
                     data.getRoles().add(Role.ULTIMATE);
                 }
                 ps.add("roles");
