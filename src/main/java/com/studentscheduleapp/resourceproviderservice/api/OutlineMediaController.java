@@ -116,6 +116,7 @@ public class OutlineMediaController {
                     return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
                 data.setImageUrl(url);
                 data.setTimestamp(System.currentTimeMillis());
+                data.setId(0);
                 return ResponseEntity.ok(outlineMediaRepository.save(data));
             }
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();

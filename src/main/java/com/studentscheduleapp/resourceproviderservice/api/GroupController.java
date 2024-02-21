@@ -95,6 +95,7 @@ public class GroupController {
         try {
             if(authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.CREATE, Collections.singletonList(0L), Entity.GROUP, null)))){
                 data.setAvaUrl(null);
+                data.setId(0);
                 return ResponseEntity.ok(groupRepository.save(data));
             }
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();

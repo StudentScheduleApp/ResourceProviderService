@@ -144,6 +144,7 @@ public class UserController {
                 data.setBanned(false);
                 data.setRoles(Collections.singletonList(Role.USER));
                 data.setAvaUrl(null);
+                data.setId(0);
                 return ResponseEntity.ok(userRepository.save(data));
             }
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();

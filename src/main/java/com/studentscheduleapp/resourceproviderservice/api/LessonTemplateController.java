@@ -109,6 +109,7 @@ public class LessonTemplateController {
         }
         try {
             if(authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.CREATE, Collections.singletonList(data.getScheduleTemplateId()), Entity.LESSON_TEMPLATE, null)))){
+                data.setId(0);
                 LessonTemplate lt = lessonTemplateRepository.save(data);
                 scheduleService.updateSchedule(data.getScheduleTemplateId());
                 return ResponseEntity.ok(lt);

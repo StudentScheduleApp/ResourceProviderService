@@ -142,6 +142,8 @@ public class MemberController {
                     Logger.getGlobal().info("bad request: group not exist");
                     return ResponseEntity.status(HttpStatus.CONFLICT).build();
                 }
+                data.setRoles(Collections.singletonList(MemberRole.MEMBER));
+                data.setId(0);
                 return ResponseEntity.ok(memberRepository.save(data));
             }
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();

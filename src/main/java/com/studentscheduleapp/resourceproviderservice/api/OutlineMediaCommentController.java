@@ -121,6 +121,7 @@ public class OutlineMediaCommentController {
                     return ResponseEntity.status(HttpStatus.CONFLICT).build();
                 }
                 data.setTimestamp(System.currentTimeMillis());
+                data.setId(0);
                 return ResponseEntity.ok(outlineMediaCommentRepository.save(data));
             }
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();

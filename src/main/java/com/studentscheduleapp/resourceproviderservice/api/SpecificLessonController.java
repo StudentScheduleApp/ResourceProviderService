@@ -118,6 +118,7 @@ public class SpecificLessonController {
                     Logger.getGlobal().info("bad request: user not exist");
                     return ResponseEntity.status(HttpStatus.CONFLICT).build();
                 }
+                data.setId(0);
                 return ResponseEntity.ok(specificLessonRepository.save(data));
             }
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();

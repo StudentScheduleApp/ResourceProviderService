@@ -115,6 +115,7 @@ public class CustomLessonController {
                     Logger.getGlobal().info("bad request: group not exist");
                     return ResponseEntity.status(HttpStatus.CONFLICT).build();
                 }
+                data.setId(0);
                 customLessonRepository.save(data);
                 return ResponseEntity.ok().build();
             }

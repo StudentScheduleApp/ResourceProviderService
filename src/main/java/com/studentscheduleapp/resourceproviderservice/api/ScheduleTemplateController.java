@@ -122,6 +122,7 @@ public class ScheduleTemplateController {
                     Logger.getGlobal().info("bad request: group not exist");
                     return ResponseEntity.status(HttpStatus.CONFLICT).build();
                 }
+                data.setId(0);
                 ScheduleTemplate t = scheduleTemplateRepository.save(data);
                 scheduleService.updateSchedule(t.getId());
                 return ResponseEntity.ok(t);

@@ -142,6 +142,7 @@ public class OutlineController {
                     Logger.getGlobal().info("bad request: specific lesson not exist");
                     return ResponseEntity.status(HttpStatus.CONFLICT).build();
                 }
+                data.setId(0);
                 return ResponseEntity.ok(outlineRepository.save(data));
             }
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
