@@ -165,7 +165,7 @@ public class ScheduleTemplateController {
                 ps.add("name");
             if (data.getComment().equals(u.getComment()))
                 ps.add("comment");
-            if(authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.PATCH, Collections.singletonList(data.getId()), Entity.SCHEDULE_TEMPLATE, null)))){
+            if(authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.PATCH, Collections.singletonList(data.getId()), Entity.SCHEDULE_TEMPLATE, ps)))){
                 ScheduleTemplate t = scheduleTemplateRepository.save(data);
                 scheduleService.updateSchedule(t.getId());
                 return ResponseEntity.ok(t);

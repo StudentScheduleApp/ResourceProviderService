@@ -134,7 +134,7 @@ public class GroupController {
                 ps.add("avaUrl");
             else if (data.getAvaUrl() == null || data.getAvaUrl().isEmpty())
                 ps.add("avaUrl");
-            if(authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.PATCH, Collections.singletonList(data.getId()), Entity.GROUP, null)))){
+            if(authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.PATCH, Collections.singletonList(data.getId()), Entity.GROUP, ps)))){
                 if (file != null && !file.isEmpty()) {
                     String url = imageRepository.upload(file);
                     if (url != null){

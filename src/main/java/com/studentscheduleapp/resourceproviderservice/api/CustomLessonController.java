@@ -153,7 +153,7 @@ public class CustomLessonController {
                 ps.add("name");
             if (!data.getTeacher().equals(u.getTeacher()))
                 ps.add("teacher");
-            if(authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.PATCH, Collections.singletonList(data.getId()), Entity.CUSTOM_LESSON, null)))){
+            if(authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.PATCH, Collections.singletonList(data.getId()), Entity.CUSTOM_LESSON, ps)))){
                 return ResponseEntity.ok(customLessonRepository.save(data));
             }
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();

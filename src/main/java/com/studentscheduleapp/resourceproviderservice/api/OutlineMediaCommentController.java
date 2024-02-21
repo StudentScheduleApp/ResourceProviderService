@@ -158,7 +158,7 @@ public class OutlineMediaCommentController {
                 ps.add("timestamp");
             if (data.getText().equals(u.getText()))
                 ps.add("text");
-            if(authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.PATCH, Collections.singletonList(data.getId()), Entity.OUTLINE_MEDIA_COMMENT, null)))){
+            if(authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.PATCH, Collections.singletonList(data.getId()), Entity.OUTLINE_MEDIA_COMMENT, ps)))){
                 return ResponseEntity.ok(outlineMediaCommentRepository.save(data));
             }
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();

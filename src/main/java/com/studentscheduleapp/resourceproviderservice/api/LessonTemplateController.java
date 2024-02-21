@@ -142,7 +142,7 @@ public class LessonTemplateController {
                 ps.add("scheduleTemplate");
             if (data.getTime() != u.getTime())
                 ps.add("time");
-            if(authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.PATCH, Collections.singletonList(data.getId()), Entity.LESSON_TEMPLATE, null)))){
+            if(authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.PATCH, Collections.singletonList(data.getId()), Entity.LESSON_TEMPLATE, ps)))){
                 if(customLessonRepository.getById(data.getLessonId()) != null) {
                     Logger.getGlobal().info("bad request: custom lesson not exist");
                     return ResponseEntity.status(HttpStatus.CONFLICT).build();

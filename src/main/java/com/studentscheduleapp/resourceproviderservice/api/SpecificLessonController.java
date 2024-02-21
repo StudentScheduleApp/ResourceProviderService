@@ -151,7 +151,7 @@ public class SpecificLessonController {
                 ps.add("comment");
             if (data.getCanceled().equals(u.getCanceled()))
                 ps.add("canceled");
-            if(authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.PATCH, Collections.singletonList(data.getId()), Entity.SPECIFIC_LESSON, null)))){
+            if(authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.PATCH, Collections.singletonList(data.getId()), Entity.SPECIFIC_LESSON, ps)))){
                 return ResponseEntity.ok(specificLessonRepository.save(data));
             }
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();

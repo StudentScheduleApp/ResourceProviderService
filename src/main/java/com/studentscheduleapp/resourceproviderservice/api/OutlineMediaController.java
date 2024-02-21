@@ -141,7 +141,7 @@ public class OutlineMediaController {
                 ps.add("timestamp");
             if (file != null && !file.isEmpty())
                 ps.add("imageUrl");
-            if(authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.PATCH, Collections.singletonList(data.getId()), Entity.OUTLINE_MEDIA, null)))){
+            if(authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.PATCH, Collections.singletonList(data.getId()), Entity.OUTLINE_MEDIA, ps)))){
                 if (file != null && !file.isEmpty()) {
                     String url = imageRepository.upload(file);
                     if (url != null)
