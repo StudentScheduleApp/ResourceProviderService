@@ -162,18 +162,18 @@ public class UserController {
        //     Logger.getGlobal().info("bad request: email is null or empty");
        //     return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
        // }
-        if(data.getFirstName() == null || data.getFirstName().isEmpty()) {
+        /*if(data.getFirstName() == null || data.getFirstName().isEmpty()) {
             Logger.getGlobal().info("bad request: firstName is null or empty");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-        }
-        if(data.getLastName() == null || data.getLastName().isEmpty()) {
+        }*/
+        /*if(data.getLastName() == null || data.getLastName().isEmpty()) {
             Logger.getGlobal().info("bad request: lastName is null or empty");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-        }
-        if(data.getEmail() != null && data.getEmail().length() > 255) {
+        }*/
+        /*if(data.getEmail() != null && data.getEmail().length() > 255) {
             Logger.getGlobal().info("bad request: email length > 255");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-        }
+        }*/
        // if(data.getPassword() != null && data.getPassword().length() > 255) {
        //     Logger.getGlobal().info("bad request: password length > 255");
        //     return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
@@ -209,8 +209,12 @@ public class UserController {
                 }
                 ps.add("roles");
             }
-            if (data.getFirstName() != null && !data.getFirstName().equals(u.getFirstName()))
+            if (data.getFirstName() != null && !data.getFirstName().equals(u.getFirstName())){
                 ps.add("firstName");
+            }
+            else {
+                ps.add("fristName");
+            }
             if (data.getLastName() != null && !data.getLastName().equals(u.getLastName()))
                 ps.add("lastName");
             if(authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.PATCH, Collections.singletonList(data.getId()), Entity.USER, ps)))){
