@@ -212,9 +212,6 @@ public class UserController {
             if (data.getFirstName() != null && !data.getFirstName().equals(u.getFirstName())){
                 ps.add("firstName");
             }
-            else {
-                ps.add("fristName");
-            }
             if (data.getLastName() != null && !data.getLastName().equals(u.getLastName()))
                 ps.add("lastName");
             if(authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.PATCH, Collections.singletonList(data.getId()), Entity.USER, ps)))){
