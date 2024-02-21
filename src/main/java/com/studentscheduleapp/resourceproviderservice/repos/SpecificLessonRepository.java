@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -35,7 +36,7 @@ public class SpecificLessonRepository {
     public List<SpecificLesson> getByGroupId(long id) throws Exception {
         ResponseEntity<SpecificLesson[]> r = restTemplate.getForEntity(databaseServiceProperties.getUri() + databaseServiceProperties.getGetSpecificLessonByGroupIdPath() + "/" + id, SpecificLesson[].class);
         if(r.getStatusCode().is2xxSuccessful())
-            return Arrays.asList(r.getBody());
+            return new ArrayList<>(Arrays.asList(r.getBody()));
         if(r.getStatusCode().equals(HttpStatus.NOT_FOUND))
             return null;
         throw new Exception("request to " + databaseServiceProperties.getUri() + " return code " + r.getStatusCode());
