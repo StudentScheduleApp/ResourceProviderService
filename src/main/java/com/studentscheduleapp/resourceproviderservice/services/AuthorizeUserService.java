@@ -13,5 +13,8 @@ public class AuthorizeUserService {
     public boolean authorize(AuthorizeUserRequest request) throws Exception {
         return userAuthRepository.authorize(request);
     }
+    public long getUserIdByToken(String token) throws Exception {
+        return userAuthRepository.getUserIdByToken(token);
+    }
 
 }

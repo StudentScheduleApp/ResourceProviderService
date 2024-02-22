@@ -96,7 +96,15 @@ public class GroupController {
             if(authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.CREATE, Collections.singletonList(0L), Entity.GROUP, null)))){
                 data.setAvaUrl(null);
                 data.setId(0);
-                return ResponseEntity.ok(groupRepository.save(data));
+                Group g = groupRepository.save(data);
+                long uid = authorizeUserService.getUserIdByToken(token);
+                List<MemberRole> roles = new ArrayList<MemberRole>();
+                roles.add(MemberRole.MEMBER);
+                roles.add(MemberRole.ADMIN);
+                roles.add(MemberRole.OWNER);
+                memberRepository.save(new Member(0, g.getId(), uid, roles));
+
+                return ResponseEntity.ok(g);
             }
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         } catch (Exception e) {

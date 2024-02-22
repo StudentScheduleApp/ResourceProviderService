@@ -21,6 +21,8 @@ public class IdentityServiceProperties {
     private String getVerifyPath;
     @Value("${identityservice.path.user.authorize}")
     private String getAuthorizePath;
+    @Value("${identityservice.path.user.getUserIdByToken}")
+    private String getUserIdByTokenPath;
 
 
 
