@@ -134,11 +134,11 @@ public class MemberController {
         }
         try {
             if(authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.CREATE, Collections.singletonList(data.getGroupId()), Entity.MEMBER, null)))){
-                if(userRepository.getById(data.getUserId()) != null) {
+                if(userRepository.getById(data.getUserId()) == null) {
                     Logger.getGlobal().info("bad request: user not exist");
                     return ResponseEntity.status(HttpStatus.CONFLICT).build();
                 }
-                if(groupRepository.getById(data.getGroupId()) != null) {
+                if(groupRepository.getById(data.getGroupId()) == null) {
                     Logger.getGlobal().info("bad request: group not exist");
                     return ResponseEntity.status(HttpStatus.CONFLICT).build();
                 }
