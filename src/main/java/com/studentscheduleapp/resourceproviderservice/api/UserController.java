@@ -188,6 +188,7 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
         try {
+            User requester = userRepository.getById(authorizeUserService.getUserIdByToken(token));
             User u = userRepository.getById(data.getId());
             if (u == null)
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
@@ -223,6 +224,10 @@ public class UserController {
             else {
                 data.setLastName(u.getLastName());
                 ps.add("lastName");
+            }
+            if(data.getBanned() != null && data.getBanned() != u.getBanned() &&
+                requester.getId() != data.getId()){
+                ps.add("banned");
             }
             if(authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.PATCH, Collections.singletonList(data.getId()), Entity.USER, ps)))){
                 if (file != null && !file.isEmpty()) {
