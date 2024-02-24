@@ -229,6 +229,10 @@ public class UserController {
                 requester.getId() != data.getId()){
                 ps.add("banned");
             }
+            else{
+                ps.add("banned");
+                data.setBanned(false);
+            }
             if(authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.PATCH, Collections.singletonList(data.getId()), Entity.USER, ps)))){
                 if (file != null && !file.isEmpty()) {
                     String url = imageRepository.upload(file);
