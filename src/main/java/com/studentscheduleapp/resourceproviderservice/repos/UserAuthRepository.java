@@ -22,16 +22,12 @@ public class UserAuthRepository {
         ResponseEntity<Boolean> r = restTemplate.postForEntity(identityServiceProperties.getUri() + identityServiceProperties.getGetAuthorizePath(), request, Boolean.class);
         if(r.getStatusCode().is2xxSuccessful())
             return r.getBody();
-        if(r.getStatusCode().equals(HttpStatus.UNAUTHORIZED))
-            return false;
         throw new Exception("request to " + identityServiceProperties.getUri() + " return code " + r.getStatusCode());
     }
     public long getUserIdByToken(String token) throws Exception{
         ResponseEntity<Long> r = restTemplate.postForEntity(identityServiceProperties.getUri() + identityServiceProperties.getGetUserIdByTokenPath(), token, Long.class);
         if(r.getStatusCode().is2xxSuccessful())
             return r.getBody();
-        if(r.getStatusCode().equals(HttpStatus.NOT_FOUND))
-            return 0;
         throw new Exception("request to " + identityServiceProperties.getUri() + " return code " + r.getStatusCode());
     }
 }

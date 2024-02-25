@@ -25,16 +25,12 @@ public class GroupRepository {
         ResponseEntity<Group> r = restTemplate.getForEntity(databaseServiceProperties.getUri() + databaseServiceProperties.getGetGroupByIdPath() + "/" + id, Group.class);
         if(r.getStatusCode().is2xxSuccessful())
             return r.getBody();
-        if(r.getStatusCode().equals(HttpStatus.NOT_FOUND))
-            return null;
         throw new Exception("request to " + databaseServiceProperties.getUri() + " return code " + r.getStatusCode());
     }
     public Group save(Group group) throws Exception {
         ResponseEntity<Group> r = restTemplate.postForEntity(databaseServiceProperties.getUri() + databaseServiceProperties.getSaveGroupPath(), group, Group.class);
         if(r.getStatusCode().is2xxSuccessful())
             return r.getBody();
-        if (r.getStatusCode().equals(HttpStatus.CONFLICT))
-            return null;
         throw new Exception("request to " + databaseServiceProperties.getUri() + " return code " + r.getStatusCode());
     }
     public boolean delete(long id) throws Exception {

@@ -29,24 +29,18 @@ public class SpecificLessonRepository {
         ResponseEntity<SpecificLesson> r = restTemplate.getForEntity(databaseServiceProperties.getUri() + databaseServiceProperties.getGetSpecificLessonByIdPath() + "/" + id, SpecificLesson.class);
         if(r.getStatusCode().is2xxSuccessful())
             return r.getBody();
-        if(r.getStatusCode().equals(HttpStatus.NOT_FOUND))
-            return null;
         throw new Exception("request to " + databaseServiceProperties.getUri() + " return code " + r.getStatusCode());
     }
     public List<SpecificLesson> getByGroupId(long id) throws Exception {
         ResponseEntity<SpecificLesson[]> r = restTemplate.getForEntity(databaseServiceProperties.getUri() + databaseServiceProperties.getGetSpecificLessonByGroupIdPath() + "/" + id, SpecificLesson[].class);
         if(r.getStatusCode().is2xxSuccessful())
             return new ArrayList<>(Arrays.asList(r.getBody()));
-        if(r.getStatusCode().equals(HttpStatus.NOT_FOUND))
-            return null;
         throw new Exception("request to " + databaseServiceProperties.getUri() + " return code " + r.getStatusCode());
     }
     public SpecificLesson save(SpecificLesson customLesson) throws Exception {
         ResponseEntity<SpecificLesson> r = restTemplate.postForEntity(databaseServiceProperties.getUri() + databaseServiceProperties.getSaveSpecificLessonPath(), customLesson, SpecificLesson.class);
         if(r.getStatusCode().is2xxSuccessful())
             return r.getBody();
-        if (r.getStatusCode().equals(HttpStatus.CONFLICT))
-            return null;
         throw new Exception("request to " + databaseServiceProperties.getUri() + " return code " + r.getStatusCode());
     }
     public boolean delete(long id) throws Exception {

@@ -29,24 +29,18 @@ public class OutlineMediaRepository {
         ResponseEntity<OutlineMedia> r = restTemplate.getForEntity(databaseServiceProperties.getUri() + databaseServiceProperties.getGetOutlineMediaByIdPath() + "/" + id, OutlineMedia.class);
         if(r.getStatusCode().is2xxSuccessful())
             return r.getBody();
-        if(r.getStatusCode().equals(HttpStatus.NOT_FOUND))
-            return null;
         throw new Exception("request to " + databaseServiceProperties.getUri() + " return code " + r.getStatusCode());
     }
     public List<OutlineMedia> getByOutlineId(long id) throws Exception {
         ResponseEntity<OutlineMedia[]> r = restTemplate.getForEntity(databaseServiceProperties.getUri() + databaseServiceProperties.getGetOutlineMediaByOutlineIdPath() + "/" + id, OutlineMedia[].class);
         if(r.getStatusCode().is2xxSuccessful())
             return new ArrayList<>(Arrays.asList(r.getBody()));
-        if(r.getStatusCode().equals(HttpStatus.NOT_FOUND))
-            return null;
         throw new Exception("request to " + databaseServiceProperties.getUri() + " return code " + r.getStatusCode());
     }
     public OutlineMedia save(OutlineMedia customLesson) throws Exception {
         ResponseEntity<OutlineMedia> r = restTemplate.postForEntity(databaseServiceProperties.getUri() + databaseServiceProperties.getSaveOutlineMediaPath(), customLesson, OutlineMedia.class);
         if(r.getStatusCode().is2xxSuccessful())
             return r.getBody();
-        if (r.getStatusCode().equals(HttpStatus.CONFLICT))
-            return null;
         throw new Exception("request to " + databaseServiceProperties.getUri() + " return code " + r.getStatusCode());
     }
     public boolean delete(long id) throws Exception {

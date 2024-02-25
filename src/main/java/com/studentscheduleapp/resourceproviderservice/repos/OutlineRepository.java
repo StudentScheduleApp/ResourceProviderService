@@ -29,32 +29,24 @@ public class OutlineRepository {
         ResponseEntity<Outline> r = restTemplate.getForEntity(databaseServiceProperties.getUri() + databaseServiceProperties.getGetOutlineByIdPath() + "/" + id, Outline.class);
         if(r.getStatusCode().is2xxSuccessful())
             return r.getBody();
-        if(r.getStatusCode().equals(HttpStatus.NOT_FOUND))
-            return null;
         throw new Exception("request to " + databaseServiceProperties.getUri() + " return code " + r.getStatusCode());
     }
     public List<Outline> getBySpecificLessonId(long id) throws Exception {
         ResponseEntity<Outline[]> r = restTemplate.getForEntity(databaseServiceProperties.getUri() + databaseServiceProperties.getGetOutlineBySpecificLessonIdPath() + "/" + id, Outline[].class);
         if(r.getStatusCode().is2xxSuccessful())
             return new ArrayList<>(Arrays.asList(r.getBody()));
-        if(r.getStatusCode().equals(HttpStatus.NOT_FOUND))
-            return null;
         throw new Exception("request to " + databaseServiceProperties.getUri() + " return code " + r.getStatusCode());
     }
     public List<Outline> getByUserId(long id) throws Exception {
         ResponseEntity<Outline[]> r = restTemplate.getForEntity(databaseServiceProperties.getUri() + databaseServiceProperties.getGetOutlineByUserIdPath() + "/" + id, Outline[].class);
         if(r.getStatusCode().is2xxSuccessful())
             return new ArrayList<>(Arrays.asList(r.getBody()));
-        if(r.getStatusCode().equals(HttpStatus.NOT_FOUND))
-            return null;
         throw new Exception("request to " + databaseServiceProperties.getUri() + " return code " + r.getStatusCode());
     }
     public Outline save(Outline member) throws Exception {
         ResponseEntity<Outline> r = restTemplate.postForEntity(databaseServiceProperties.getUri() + databaseServiceProperties.getSaveOutlinePath(), member, Outline.class);
         if(r.getStatusCode().is2xxSuccessful())
             return r.getBody();
-        if (r.getStatusCode().equals(HttpStatus.CONFLICT))
-            return null;
         throw new Exception("request to " + databaseServiceProperties.getUri() + " return code " + r.getStatusCode());
     }
     public boolean delete(long id) throws Exception {
