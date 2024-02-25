@@ -34,7 +34,7 @@ public class CustomLessonRepository {
     public List<CustomLesson> getByGroupId(long id) throws Exception {
         ResponseEntity<CustomLesson[]> r = restTemplate.getForEntity(databaseServiceProperties.getUri() +databaseServiceProperties.getGetCustomLessonByGroupIdPath() + "/" + id, CustomLesson[].class);
         if(r.getStatusCode().is2xxSuccessful())
-            return new ArrayList<>(Arrays.asList(r.getBody()));
+            return r.getBody() == null ? null : Arrays.asList(r.getBody());
         throw new Exception("request to " + databaseServiceProperties.getUri() + " return code " + r.getStatusCode());
     }
     public CustomLesson save(CustomLesson customLesson) throws Exception {

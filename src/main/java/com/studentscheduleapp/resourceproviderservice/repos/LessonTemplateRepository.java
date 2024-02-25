@@ -34,7 +34,7 @@ public class LessonTemplateRepository {
     public List<LessonTemplate> getByScheduleTemplateId(long id) throws Exception {
         ResponseEntity<LessonTemplate[]> r = restTemplate.getForEntity(databaseServiceProperties.getUri() + databaseServiceProperties.getGetLessonTemplateByScheduleTemplateIdPath() + "/" + id, LessonTemplate[].class);
         if(r.getStatusCode().is2xxSuccessful())
-            return new ArrayList<>(Arrays.asList(r.getBody()));
+            return r.getBody() == null ? null : Arrays.asList(r.getBody());
         throw new Exception("request to " + databaseServiceProperties.getUri() + " return code " + r.getStatusCode());
     }
     public LessonTemplate save(LessonTemplate lessonTemplate) throws Exception {

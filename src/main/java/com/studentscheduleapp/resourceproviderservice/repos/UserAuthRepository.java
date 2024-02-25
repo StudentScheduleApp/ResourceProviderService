@@ -27,7 +27,7 @@ public class UserAuthRepository {
     public long getUserIdByToken(String token) throws Exception{
         ResponseEntity<Long> r = restTemplate.postForEntity(identityServiceProperties.getUri() + identityServiceProperties.getGetUserIdByTokenPath(), token, Long.class);
         if(r.getStatusCode().is2xxSuccessful())
-            return r.getBody();
+            return r.getBody() == null ? 0L : r.getBody();
         throw new Exception("request to " + identityServiceProperties.getUri() + " return code " + r.getStatusCode());
     }
 }
