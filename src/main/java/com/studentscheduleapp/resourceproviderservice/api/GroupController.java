@@ -14,7 +14,8 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.logging.Logger;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 @RestController
 public class GroupController {
@@ -43,11 +44,12 @@ public class GroupController {
     private AuthorizeUserService authorizeUserService;
     @Autowired
     private UrlService urlService;
+    private static final Logger log = LogManager.getLogger(GroupController.class);
 
     @GetMapping("${mapping.group.getById}/{ids}")
     public ResponseEntity<List<Group>> getById(@PathVariable("ids") String id, @RequestHeader("User-Token") String token) {
         if(token == null || token.isEmpty()) {
-            Logger.getGlobal().info("bad request: token is null or empty");
+            log.info("bad request: token is null or empty");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
         ArrayList<Long> ids = new ArrayList<>();
@@ -81,15 +83,15 @@ public class GroupController {
     @PostMapping("${mapping.group.create}")
     public ResponseEntity<Group> create(@RequestBody Group data, @RequestHeader("User-Token") String token){
         if(token == null || token.isEmpty()) {
-            Logger.getGlobal().info("bad request: token is null or empty");
+            log.info("bad request: token is null or empty");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
         if(data.getName() == null || data.getName().isEmpty()) {
-            Logger.getGlobal().info("bad request: name is null or empty");
+            log.info("bad request: name is null or empty");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
         if(data.getName() != null && data.getName().length() > 255) {
-            Logger.getGlobal().info("bad request: name length > 255");
+            log.info("bad request: name length > 255");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
         try {
@@ -115,7 +117,7 @@ public class GroupController {
     @PatchMapping("${mapping.group.patch}")
     public ResponseEntity<Group> patch(@RequestBody Group data, @RequestHeader("User-Token") String token, @RequestParam(value = "image", required = false) MultipartFile file){
         if(token == null || token.isEmpty()) {
-            Logger.getGlobal().info("bad request: token is null or empty");
+            log.info("bad request: token is null or empty");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
         /*if(data.getName() == null || data.getName().isEmpty()) {
@@ -123,7 +125,7 @@ public class GroupController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }*/
         if(data.getName() != null && data.getName().length() > 255) {
-            Logger.getGlobal().info("bad request: name length > 255");
+            log.info("bad request: name length > 255");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
         try {
@@ -163,7 +165,7 @@ public class GroupController {
     @DeleteMapping("${mapping.group.delete}/{ids}")
     public ResponseEntity<Void> deleteById(@PathVariable("ids") String id, @RequestHeader("User-Token") String token){
         if(token == null || token.isEmpty()) {
-            Logger.getGlobal().info("bad request: token is null or empty");
+            log.info("bad request: token is null or empty");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
         ArrayList<Long> ids = new ArrayList<>();

@@ -17,7 +17,11 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
-import java.util.logging.Logger;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 @Slf4j
 @Component
@@ -38,13 +42,13 @@ public class ServiceTokenFilter extends GenericFilterBean {
                 appInfoToken.setAuthenticated(true);
                 appInfoToken.setServiceName("service");
                 SecurityContextHolder.getContext().setAuthentication(appInfoToken);
-                Logger.getGlobal().info("authorize service success");
             }
             else
-                Logger.getGlobal().info("authorize service failed: invalid token " + token);
+                logger.warn("authorize service failed: invalid token " + token);
         } catch (Exception e) {
-            e.printStackTrace();
-            Logger.getGlobal().info("authorize service failed: " + e.getMessage());
+            StringWriter errors = new StringWriter();
+            e.printStackTrace(new PrintWriter(errors));
+            logger.error("authorize service failed: " + errors);
         }
         fc.doFilter(request, response);
     }

@@ -12,7 +12,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.logging.Logger;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 @RestController
 public class OutlineController {
@@ -30,11 +31,12 @@ public class OutlineController {
     private ImageRepository imageRepository;
     @Autowired
     private AuthorizeUserService authorizeUserService;
+    private static final Logger log = LogManager.getLogger(OutlineController.class);
 
     @GetMapping("${mapping.outline.getById}/{ids}")
     public ResponseEntity<List<Outline>> getById(@PathVariable("ids") String id, @RequestHeader("User-Token") String token) {
         if(token == null || token.isEmpty()) {
-            Logger.getGlobal().info("bad request: token is null or empty");
+            log.info("bad request: token is null or empty");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
         ArrayList<Long> ids = new ArrayList<>();
@@ -67,7 +69,7 @@ public class OutlineController {
     @GetMapping("${mapping.outline.getBySpecificLessonId}/{id}")
     public ResponseEntity<List<Outline>> getBySpecificLessonId(@PathVariable("id") long id, @RequestHeader("User-Token") String token){
         if(token == null || token.isEmpty()) {
-            Logger.getGlobal().info("bad request: token is null or empty");
+            log.info("bad request: token is null or empty");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
         ArrayList<Outline> cs = new ArrayList<>();
@@ -98,7 +100,7 @@ public class OutlineController {
     @GetMapping("${mapping.outline.getByUserId}/{id}")
     public ResponseEntity<List<Outline>> getByUserId(@PathVariable("id") long id, @RequestHeader("User-Token") String token){
         if(token == null || token.isEmpty()) {
-            Logger.getGlobal().info("bad request: token is null or empty");
+            log.info("bad request: token is null or empty");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
         ArrayList<Outline> cs = new ArrayList<>();
@@ -129,17 +131,17 @@ public class OutlineController {
     @PostMapping("${mapping.outline.create}")
     public ResponseEntity<Outline> create(@RequestBody Outline data, @RequestHeader("User-Token") String token){
         if(token == null || token.isEmpty()) {
-            Logger.getGlobal().info("bad request: token is null or empty");
+            log.info("bad request: token is null or empty");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
         try {
             if(authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.CREATE, Collections.singletonList(data.getSpecificLessonId()), Entity.LESSON_TEMPLATE, null)))){
                 if(userRepository.getById(data.getUserId()) != null) {
-                    Logger.getGlobal().info("bad request: user not exist");
+                    log.info("bad request: user not exist");
                     return ResponseEntity.status(HttpStatus.CONFLICT).build();
                 }
                 if(specificLessonRepository.getById(data.getSpecificLessonId()) != null) {
-                    Logger.getGlobal().info("bad request: specific lesson not exist");
+                    log.info("bad request: specific lesson not exist");
                     return ResponseEntity.status(HttpStatus.CONFLICT).build();
                 }
                 data.setId(0);
@@ -154,7 +156,7 @@ public class OutlineController {
     @PatchMapping("${mapping.outline.patch}")
     public ResponseEntity<Outline> patch(@RequestBody Outline data, @RequestHeader("User-Token") String token){
         if(token == null || token.isEmpty()) {
-            Logger.getGlobal().info("bad request: token is null or empty");
+            log.info("bad request: token is null or empty");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
         try {
@@ -178,7 +180,7 @@ public class OutlineController {
     @DeleteMapping("${mapping.outline.delete}/{ids}")
     public ResponseEntity<Void> deleteById(@PathVariable("ids") String id, @RequestHeader("User-Token") String token){
         if(token == null || token.isEmpty()) {
-            Logger.getGlobal().info("bad request: token is null or empty");
+            log.info("bad request: token is null or empty");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
         ArrayList<Long> ids = new ArrayList<>();

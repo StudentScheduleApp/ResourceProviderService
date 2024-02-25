@@ -15,7 +15,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
-import java.util.logging.Logger;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 @RestController
 public class UserController {
@@ -29,11 +30,12 @@ public class UserController {
     private AuthorizeUserService authorizeUserService;
     @Autowired
     private UrlService urlService;
+    private static final Logger log = LogManager.getLogger(UserController.class);
 
     @GetMapping("${mapping.user.getById}/{ids}")
     public ResponseEntity<List<User>> getById(@PathVariable("ids") String id, @RequestHeader("User-Token") String token) {
         if(token == null || token.isEmpty()) {
-            Logger.getGlobal().info("bad request: token is null or empty");
+            log.info("bad request: token is null or empty");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
         ArrayList<Long> ids = new ArrayList<>();
@@ -72,7 +74,7 @@ public class UserController {
     @GetMapping("${mapping.user.getByEmail}/{email}")
     public ResponseEntity<User> getByEmail(@PathVariable("email") String email, @RequestHeader("User-Token") String token) {
         if(token == null || token.isEmpty()) {
-            Logger.getGlobal().info("bad request: token is null or empty");
+            log.info("bad request: token is null or empty");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
         User u;
@@ -104,39 +106,39 @@ public class UserController {
     @PostMapping("${mapping.user.create}")
     public ResponseEntity<User> create(@RequestBody User data, @RequestHeader("User-Token") String token){
         if(token == null || token.isEmpty()) {
-            Logger.getGlobal().info("bad request: token is null or empty");
+            log.info("bad request: token is null or empty");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
         if(data.getEmail() == null || data.getEmail().isEmpty()) {
-            Logger.getGlobal().info("bad request: email is null or empty");
+            log.info("bad request: email is null or empty");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
         if(data.getPassword() == null || data.getPassword().isEmpty()) {
-            Logger.getGlobal().info("bad request: password is null or empty");
+            log.info("bad request: password is null or empty");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
         if(data.getFirstName() == null || data.getFirstName().isEmpty()) {
-            Logger.getGlobal().info("bad request: firstName is null or empty");
+            log.info("bad request: firstName is null or empty");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
         if(data.getLastName() == null || data.getLastName().isEmpty()) {
-            Logger.getGlobal().info("bad request: lastName is null or empty");
+            log.info("bad request: lastName is null or empty");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
         if(data.getEmail() != null || data.getEmail().length() > 255) {
-            Logger.getGlobal().info("bad request: email length > 255");
+            log.info("bad request: email length > 255");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
         if(data.getPassword() != null || data.getPassword().length() > 255) {
-            Logger.getGlobal().info("bad request: password length > 255");
+            log.info("bad request: password length > 255");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
         if(data.getFirstName() != null || data.getFirstName().length() > 255) {
-            Logger.getGlobal().info("bad request: first name length > 255");
+            log.info("bad request: first name length > 255");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
         if(data.getLastName() != null || data.getLastName().length() > 255) {
-            Logger.getGlobal().info("bad request: last name length > 255");
+            log.info("bad request: last name length > 255");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
         try {
@@ -156,7 +158,7 @@ public class UserController {
     @PatchMapping("${mapping.user.patch}")
     public ResponseEntity<User> patch(@RequestBody User data, @RequestHeader("User-Token") String token, @RequestParam(value = "image", required = false) MultipartFile file){
         if(token == null || token.isEmpty()) {
-            Logger.getGlobal().info("bad request: token is null or empty");
+            log.info("bad request: token is null or empty");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
        // if(data.getEmail() == null || data.getEmail().isEmpty()) {
@@ -180,11 +182,11 @@ public class UserController {
        //     return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
        // }
         if(data.getFirstName() != null && data.getFirstName().length() > 255) {
-            Logger.getGlobal().info("bad request: first name length > 255");
+            log.info("bad request: first name length > 255");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
         if(data.getLastName() != null && data.getLastName().length() > 255) {
-            Logger.getGlobal().info("bad request: last name length > 255");
+            log.info("bad request: last name length > 255");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
         try {
@@ -255,7 +257,7 @@ public class UserController {
     @DeleteMapping("${mapping.user.delete}/{ids}")
     public ResponseEntity<Void> deleteById(@PathVariable("ids") String id, @RequestHeader("User-Token") String token){
         if(token == null || token.isEmpty()) {
-            Logger.getGlobal().info("bad request: token is null or empty");
+            log.info("bad request: token is null or empty");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
         ArrayList<Long> ids = new ArrayList<>();

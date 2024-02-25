@@ -14,7 +14,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.logging.Logger;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 @RestController
 public class OutlineMediaCommentController {
@@ -27,11 +28,12 @@ public class OutlineMediaCommentController {
     private OutlineMediaRepository outlineMediaRepository;
     @Autowired
     private AuthorizeUserService authorizeUserService;
+    private static final Logger log = LogManager.getLogger(OutlineMediaCommentController.class);
 
     @GetMapping("${mapping.outlineMediaComment.getById}/{ids}")
     public ResponseEntity<List<OutlineMediaComment>> getById(@PathVariable("ids") String id, @RequestHeader("User-Token") String token) {
         if(token == null || token.isEmpty()) {
-            Logger.getGlobal().info("bad request: token is null or empty");
+            log.info("bad request: token is null or empty");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
         ArrayList<Long> ids = new ArrayList<>();
@@ -65,7 +67,7 @@ public class OutlineMediaCommentController {
     @GetMapping("${mapping.outlineMediaComment.getByOutlineMediaId}/{id}")
     public ResponseEntity<List<OutlineMediaComment>> getByOutlineMediaId(@PathVariable("id") long id, @RequestHeader("User-Token") String token){
         if(token == null || token.isEmpty()) {
-            Logger.getGlobal().info("bad request: token is null or empty");
+            log.info("bad request: token is null or empty");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
         ArrayList<OutlineMediaComment> cs = new ArrayList<>();
@@ -99,25 +101,25 @@ public class OutlineMediaCommentController {
     @PostMapping("${mapping.outlineMediaComment.create}")
     public ResponseEntity<OutlineMediaComment> create(@RequestBody OutlineMediaComment data, @RequestHeader("User-Token") String token){
         if(token == null || token.isEmpty()) {
-            Logger.getGlobal().info("bad request: token is null or empty");
+            log.info("bad request: token is null or empty");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
         if(data.getText() == null || data.getText().isEmpty()) {
-            Logger.getGlobal().info("bad request: text is null or empty");
+            log.info("bad request: text is null or empty");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
         if(data.getText() != null && data.getText().length() > 255) {
-            Logger.getGlobal().info("bad request: text length > 255");
+            log.info("bad request: text length > 255");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
         try {
             if(authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.CREATE, Collections.singletonList(data.getMediaId()), Entity.OUTLINE_MEDIA_COMMENT, null)))){
                 if(userRepository.getById(data.getUserId()) != null) {
-                    Logger.getGlobal().info("bad request: user not exist");
+                    log.info("bad request: user not exist");
                     return ResponseEntity.status(HttpStatus.CONFLICT).build();
                 }
                 if(outlineMediaRepository.getById(data.getMediaId()) != null) {
-                    Logger.getGlobal().info("bad request: outline media not exist");
+                    log.info("bad request: outline media not exist");
                     return ResponseEntity.status(HttpStatus.CONFLICT).build();
                 }
                 data.setTimestamp(System.currentTimeMillis());
@@ -133,15 +135,15 @@ public class OutlineMediaCommentController {
     @PatchMapping("${mapping.outlineMediaComment.patch}")
     public ResponseEntity<OutlineMediaComment> patch(@RequestBody OutlineMediaComment data, @RequestHeader("User-Token") String token){
         if(token == null || token.isEmpty()) {
-            Logger.getGlobal().info("bad request: token is null or empty");
+            log.info("bad request: token is null or empty");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
         if(data.getText() == null || data.getText().isEmpty()) {
-            Logger.getGlobal().info("bad request: text is null or empty");
+            log.info("bad request: text is null or empty");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
         if(data.getText() != null && data.getText().length() > 255) {
-            Logger.getGlobal().info("bad request: text length > 255");
+            log.info("bad request: text length > 255");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
         try {
@@ -171,7 +173,7 @@ public class OutlineMediaCommentController {
     @DeleteMapping("${mapping.outlineMediaComment.delete}/{ids}")
     public ResponseEntity<Void> deleteById(@PathVariable("ids") String id, @RequestHeader("User-Token") String token){
         if(token == null || token.isEmpty()) {
-            Logger.getGlobal().info("bad request: token is null or empty");
+            log.info("bad request: token is null or empty");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
         ArrayList<Long> ids = new ArrayList<>();

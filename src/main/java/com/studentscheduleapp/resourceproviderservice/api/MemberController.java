@@ -14,7 +14,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.logging.Logger;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 @RestController
 public class MemberController {
@@ -27,11 +28,12 @@ public class MemberController {
     private GroupRepository groupRepository;
     @Autowired
     private AuthorizeUserService authorizeUserService;
+    private static final Logger log = LogManager.getLogger(MemberController.class);
 
     @GetMapping("${mapping.member.getById}/{ids}")
     public ResponseEntity<List<Member>> getById(@PathVariable("ids") String id, @RequestHeader("User-Token") String token) {
         if(token == null || token.isEmpty()) {
-            Logger.getGlobal().info("bad request: token is null or empty");
+            log.info("bad request: token is null or empty");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
         ArrayList<Long> ids = new ArrayList<>();
@@ -65,7 +67,7 @@ public class MemberController {
     @GetMapping("${mapping.member.getByGroupId}/{id}")
     public ResponseEntity<List<Member>> getByGroupId(@PathVariable("id") long id, @RequestHeader("User-Token") String token){
         if(token == null || token.isEmpty()) {
-            Logger.getGlobal().info("bad request: token is null or empty");
+            log.info("bad request: token is null or empty");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
         ArrayList<Member> cs = new ArrayList<>();
@@ -97,7 +99,7 @@ public class MemberController {
     @GetMapping("${mapping.member.getByUserId}/{id}")
     public ResponseEntity<List<Member>> getByUserId(@PathVariable("id") long id, @RequestHeader("User-Token") String token){
         if(token == null || token.isEmpty()) {
-            Logger.getGlobal().info("bad request: token is null or empty");
+            log.info("bad request: token is null or empty");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
         ArrayList<Member> cs = new ArrayList<>();
@@ -129,17 +131,17 @@ public class MemberController {
     @PostMapping("${mapping.member.create}")
     public ResponseEntity<Member> create(@RequestBody Member data, @RequestHeader("User-Token") String token){
         if(token == null || token.isEmpty()) {
-            Logger.getGlobal().info("bad request: token is null or empty");
+            log.info("bad request: token is null or empty");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
         try {
             if(authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.CREATE, Collections.singletonList(data.getGroupId()), Entity.MEMBER, null)))){
                 if(userRepository.getById(data.getUserId()) == null) {
-                    Logger.getGlobal().info("bad request: user not exist");
+                    log.info("bad request: user not exist");
                     return ResponseEntity.status(HttpStatus.CONFLICT).build();
                 }
                 if(groupRepository.getById(data.getGroupId()) == null) {
-                    Logger.getGlobal().info("bad request: group not exist");
+                    log.info("bad request: group not exist");
                     return ResponseEntity.status(HttpStatus.CONFLICT).build();
                 }
                 data.setRoles(Collections.singletonList(MemberRole.MEMBER));
@@ -155,7 +157,7 @@ public class MemberController {
     @PatchMapping("${mapping.member.patch}")
     public ResponseEntity<Member> patch(@RequestBody Member data, @RequestHeader("User-Token") String token){
         if(token == null || token.isEmpty()) {
-            Logger.getGlobal().info("bad request: token is null or empty");
+            log.info("bad request: token is null or empty");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
         try {
@@ -181,7 +183,7 @@ public class MemberController {
     @DeleteMapping("${mapping.member.delete}/{ids}")
     public ResponseEntity<Void> deleteById(@PathVariable("ids") String id, @RequestHeader("User-Token") String token){
         if(token == null || token.isEmpty()) {
-            Logger.getGlobal().info("bad request: token is null or empty");
+            log.info("bad request: token is null or empty");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
         ArrayList<Long> ids = new ArrayList<>();

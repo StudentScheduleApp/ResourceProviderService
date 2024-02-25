@@ -14,7 +14,8 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.logging.Logger;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 @RestController
 public class OutlineMediaController {
@@ -30,11 +31,12 @@ public class OutlineMediaController {
     private ImageRepository imageRepository;
     @Autowired
     private UrlService urlService;
+    private static final Logger log = LogManager.getLogger(OutlineMediaController.class);
 
     @GetMapping("${mapping.outlineMedia.getById}/{ids}")
     public ResponseEntity<List<OutlineMedia>> getById(@PathVariable("ids") String id, @RequestHeader("User-Token") String token) {
         if(token == null || token.isEmpty()) {
-            Logger.getGlobal().info("bad request: token is null or empty");
+            log.info("bad request: token is null or empty");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
         ArrayList<Long> ids = new ArrayList<>();
@@ -68,7 +70,7 @@ public class OutlineMediaController {
     @GetMapping("${mapping.outlineMedia.getByOutlineId}/{id}")
     public ResponseEntity<List<OutlineMedia>> getByOutlineId(@PathVariable("id") long id, @RequestHeader("User-Token") String token){
         if(token == null || token.isEmpty()) {
-            Logger.getGlobal().info("bad request: token is null or empty");
+            log.info("bad request: token is null or empty");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
         ArrayList<OutlineMedia> cs = new ArrayList<>();
@@ -100,7 +102,7 @@ public class OutlineMediaController {
     @PostMapping("${mapping.outlineMedia.create}")
     public ResponseEntity<OutlineMedia> create(@RequestBody OutlineMedia data, @RequestHeader("User-Token") String token, @RequestParam("image") MultipartFile file){
         if(token == null || token.isEmpty()) {
-            Logger.getGlobal().info("bad request: token is null or empty");
+            log.info("bad request: token is null or empty");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
         if(file == null || file.isEmpty())
@@ -108,7 +110,7 @@ public class OutlineMediaController {
         try {
             if(authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.CREATE, Collections.singletonList(data.getOutlineId()), Entity.OUTLINE_MEDIA, null)))){
                 if(outlineRepository.getById(data.getOutlineId()) != null) {
-                    Logger.getGlobal().info("bad request: outline not exist");
+                    log.info("bad request: outline not exist");
                     return ResponseEntity.status(HttpStatus.CONFLICT).build();
                 }
                 String url = imageRepository.upload(file);
@@ -128,7 +130,7 @@ public class OutlineMediaController {
     @PatchMapping("${mapping.outlineMedia.patch}")
     public ResponseEntity<OutlineMedia> patch(@RequestBody OutlineMedia data, @RequestHeader("User-Token") String token, @RequestParam("image") MultipartFile file){
         if(token == null || token.isEmpty()) {
-            Logger.getGlobal().info("bad request: token is null or empty");
+            log.info("bad request: token is null or empty");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
         try {
@@ -162,7 +164,7 @@ public class OutlineMediaController {
     @DeleteMapping("${mapping.outlineMedia.delete}/{ids}")
     public ResponseEntity<Void> deleteById(@PathVariable("ids") String id, @RequestHeader("User-Token") String token){
         if(token == null || token.isEmpty()) {
-            Logger.getGlobal().info("bad request: token is null or empty");
+            log.info("bad request: token is null or empty");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
         ArrayList<Long> ids = new ArrayList<>();
