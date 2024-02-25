@@ -39,10 +39,9 @@ public class UserRepository {
             return r.getBody();
         throw new Exception("request to " + databaseServiceProperties.getUri() + " return code " + r.getStatusCode());
     }
-    public boolean delete(long id) throws Exception {
+    public void delete(long id) throws Exception {
         ResponseEntity<Void> r = restTemplate.exchange(databaseServiceProperties.getUri() + databaseServiceProperties.getDeleteUserPath() + "/" + id, HttpMethod.DELETE, null, Void.class);
-        if(r.getStatusCode().is2xxSuccessful())
-            return true;
-        throw new Exception("request to " + databaseServiceProperties.getUri() + " return code " + r.getStatusCode());
+        if(!r.getStatusCode().is2xxSuccessful())
+            throw new Exception("request to " + databaseServiceProperties.getUri() + " return code " + r.getStatusCode());
     }
 }

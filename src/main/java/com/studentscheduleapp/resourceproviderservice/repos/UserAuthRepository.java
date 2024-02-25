@@ -21,7 +21,7 @@ public class UserAuthRepository {
     public boolean authorize(AuthorizeUserRequest request) throws Exception{
         ResponseEntity<Boolean> r = restTemplate.postForEntity(identityServiceProperties.getUri() + identityServiceProperties.getGetAuthorizePath(), request, Boolean.class);
         if(r.getStatusCode().is2xxSuccessful())
-            return r.getBody();
+            return r.getBody() != null && r.getBody();
         throw new Exception("request to " + identityServiceProperties.getUri() + " return code " + r.getStatusCode());
     }
     public long getUserIdByToken(String token) throws Exception{
