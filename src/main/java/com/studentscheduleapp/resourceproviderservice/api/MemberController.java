@@ -6,6 +6,8 @@ import com.studentscheduleapp.resourceproviderservice.repos.GroupRepository;
 import com.studentscheduleapp.resourceproviderservice.repos.MemberRepository;
 import com.studentscheduleapp.resourceproviderservice.repos.UserRepository;
 import com.studentscheduleapp.resourceproviderservice.services.AuthorizeUserService;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,8 +19,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
 
 @RestController
 public class MemberController {
@@ -202,6 +202,14 @@ public class MemberController {
             if (ps.contains("roles"))
                 u.setRoles(data.getRoles());
             if(authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.PATCH, Collections.singletonList(data.getId()), Entity.MEMBER, ps)))){
+                if(groupRepository.getById(data.getGroupId()) == null && ps.contains("groupId")) {
+                    log.warn("bad request: lessonTemplate scheduleTemplate not exist");
+                    return ResponseEntity.status(HttpStatus.CONFLICT).build();
+                }
+                if(userRepository.getById(data.getUserId()) == null && ps.contains("userId")) {
+                    log.warn("bad request: lessonTemplate scheduleTemplate not exist");
+                    return ResponseEntity.status(HttpStatus.CONFLICT).build();
+                }
                 Member member = memberRepository.save(u);
                 log.info("patch member with id " + data.getId() + " success");
                 return ResponseEntity.ok(member);

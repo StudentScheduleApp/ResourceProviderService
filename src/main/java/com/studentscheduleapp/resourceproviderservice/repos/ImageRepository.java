@@ -1,9 +1,7 @@
 package com.studentscheduleapp.resourceproviderservice.repos;
 
-import com.studentscheduleapp.resourceproviderservice.models.User;
 import com.studentscheduleapp.resourceproviderservice.properties.services.ImageServiceProperties;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
@@ -14,8 +12,6 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.io.File;
 
 @Repository
 public class ImageRepository {

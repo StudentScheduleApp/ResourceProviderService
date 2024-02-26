@@ -5,6 +5,8 @@ import com.studentscheduleapp.resourceproviderservice.models.api.AuthorizeUserRe
 import com.studentscheduleapp.resourceproviderservice.repos.*;
 import com.studentscheduleapp.resourceproviderservice.services.AuthorizeUserService;
 import com.studentscheduleapp.resourceproviderservice.services.UrlService;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,8 +19,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
 
 @RestController
 public class GroupController {
@@ -130,7 +130,8 @@ public class GroupController {
             log.warn("bad request: token is null or empty");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
-        if(data.getName() != null && data.getName().length() > 255) {
+        List<String> ps = Arrays.asList(params.split(","));
+        if(data.getName() != null && data.getName().length() > 255 && ps.contains("name")) {
             log.warn("bad request: group name length > 255");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
@@ -140,7 +141,6 @@ public class GroupController {
                 log.warn("patch group with id: " + data.getId() + " failed: entity not found");
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
             }
-            List<String> ps = Arrays.asList(params.split(","));
             if(ps.contains("name"))
                 u.setName(data.getName());
             if(ps.contains("chatId"))

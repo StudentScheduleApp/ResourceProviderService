@@ -1,11 +1,16 @@
 package com.studentscheduleapp.resourceproviderservice.api;
 
-import com.studentscheduleapp.resourceproviderservice.models.*;
+import com.studentscheduleapp.resourceproviderservice.models.AuthorizeEntity;
+import com.studentscheduleapp.resourceproviderservice.models.AuthorizeType;
+import com.studentscheduleapp.resourceproviderservice.models.Entity;
+import com.studentscheduleapp.resourceproviderservice.models.SpecificLesson;
 import com.studentscheduleapp.resourceproviderservice.models.api.AuthorizeUserRequest;
 import com.studentscheduleapp.resourceproviderservice.repos.CustomLessonRepository;
 import com.studentscheduleapp.resourceproviderservice.repos.GroupRepository;
 import com.studentscheduleapp.resourceproviderservice.repos.SpecificLessonRepository;
 import com.studentscheduleapp.resourceproviderservice.services.AuthorizeUserService;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,8 +19,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
 
 @RestController
 public class SpecificLessonController {

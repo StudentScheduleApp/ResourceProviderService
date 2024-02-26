@@ -20,9 +20,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-
 @Slf4j
 @Component
 @RequiredArgsConstructor

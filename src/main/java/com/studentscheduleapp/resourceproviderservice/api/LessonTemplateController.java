@@ -1,12 +1,17 @@
 package com.studentscheduleapp.resourceproviderservice.api;
 
-import com.studentscheduleapp.resourceproviderservice.models.*;
+import com.studentscheduleapp.resourceproviderservice.models.AuthorizeEntity;
+import com.studentscheduleapp.resourceproviderservice.models.AuthorizeType;
+import com.studentscheduleapp.resourceproviderservice.models.Entity;
+import com.studentscheduleapp.resourceproviderservice.models.LessonTemplate;
 import com.studentscheduleapp.resourceproviderservice.models.api.AuthorizeUserRequest;
 import com.studentscheduleapp.resourceproviderservice.repos.CustomLessonRepository;
 import com.studentscheduleapp.resourceproviderservice.repos.LessonTemplateRepository;
 import com.studentscheduleapp.resourceproviderservice.repos.ScheduleTemplateRepository;
 import com.studentscheduleapp.resourceproviderservice.services.AuthorizeUserService;
 import com.studentscheduleapp.resourceproviderservice.services.ScheduleService;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,8 +20,6 @@ import org.springframework.web.bind.annotation.*;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.*;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
 
 @RestController
 public class LessonTemplateController {
@@ -155,7 +158,8 @@ public class LessonTemplateController {
             log.warn("bad request: token is null or empty");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
-        if(data.getComment() != null && data.getComment().length() > 255) {
+        List<String> ps = Arrays.asList(params.split(","));
+        if(data.getComment() != null && data.getComment().length() > 255 && ps.contains("comment")) {
             log.warn("bad request: lessonTemplate comment length > 255");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
@@ -165,7 +169,14 @@ public class LessonTemplateController {
                 log.warn("patch lessonTemplate with id: " + data.getId() + " failed: entity not found");
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
             }
-            List<String> ps = Arrays.asList(params.split(","));
+            if (ps.contains("scheduleTemplateId"))
+                u.setScheduleTemplateId(data.getScheduleTemplateId());
+            if (ps.contains("lessonId"))
+                u.setLessonId(data.getLessonId());
+            if (ps.contains("time"))
+                u.setTime(data.getTime());
+            if (ps.contains("comment"))
+                u.setComment(data.getComment());
             if(authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.PATCH, Collections.singletonList(data.getId()), Entity.LESSON_TEMPLATE, ps)))){
                 if(customLessonRepository.getById(data.getLessonId()) == null && ps.contains("lessonId")) {
                     log.warn("bad request: lessonTemplate customLesson not exist");

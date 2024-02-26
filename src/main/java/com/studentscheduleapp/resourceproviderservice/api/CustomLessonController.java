@@ -1,10 +1,15 @@
 package com.studentscheduleapp.resourceproviderservice.api;
 
-import com.studentscheduleapp.resourceproviderservice.models.*;
+import com.studentscheduleapp.resourceproviderservice.models.AuthorizeEntity;
+import com.studentscheduleapp.resourceproviderservice.models.AuthorizeType;
+import com.studentscheduleapp.resourceproviderservice.models.CustomLesson;
+import com.studentscheduleapp.resourceproviderservice.models.Entity;
 import com.studentscheduleapp.resourceproviderservice.models.api.AuthorizeUserRequest;
 import com.studentscheduleapp.resourceproviderservice.repos.CustomLessonRepository;
 import com.studentscheduleapp.resourceproviderservice.repos.GroupRepository;
 import com.studentscheduleapp.resourceproviderservice.services.AuthorizeUserService;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,8 +21,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
 
 @RestController
 public class CustomLessonController {
@@ -153,15 +156,16 @@ public class CustomLessonController {
             log.warn("bad request: token is null or empty");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
-        if(data.getName() == null || data.getName().isEmpty()) {
+        List<String> ps = Arrays.asList(params.split(","));
+        if((data.getName() == null || data.getName().isEmpty()) && ps.contains("name")) {
             log.warn("bad request: customLesson name is null or empty");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
-        if(data.getName().length() > 255) {
+        if(data.getName() != null && data.getName().length() > 255 && ps.contains("name")) {
             log.warn("bad request: customLesson name length > 255");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
-        if(data.getTeacher() != null && data.getTeacher().length() > 255) {
+        if(data.getTeacher() != null && data.getTeacher().length() > 255 && ps.contains("teacher")) {
             log.warn("bad request: customLesson teacher length > 255");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
@@ -171,7 +175,6 @@ public class CustomLessonController {
                 log.warn("patch customLesson with id: " + data.getId() + " failed: entity not found");
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
             }
-            List<String> ps = Arrays.asList(params.split(","));
             if(ps.contains("name"))
                 u.setName(data.getName());
             if(ps.contains("teacher"))

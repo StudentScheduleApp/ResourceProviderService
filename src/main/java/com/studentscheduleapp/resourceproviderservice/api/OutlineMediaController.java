@@ -2,9 +2,14 @@ package com.studentscheduleapp.resourceproviderservice.api;
 
 import com.studentscheduleapp.resourceproviderservice.models.*;
 import com.studentscheduleapp.resourceproviderservice.models.api.AuthorizeUserRequest;
-import com.studentscheduleapp.resourceproviderservice.repos.*;
+import com.studentscheduleapp.resourceproviderservice.repos.ImageRepository;
+import com.studentscheduleapp.resourceproviderservice.repos.OutlineMediaCommentRepository;
+import com.studentscheduleapp.resourceproviderservice.repos.OutlineMediaRepository;
+import com.studentscheduleapp.resourceproviderservice.repos.OutlineRepository;
 import com.studentscheduleapp.resourceproviderservice.services.AuthorizeUserService;
 import com.studentscheduleapp.resourceproviderservice.services.UrlService;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,8 +19,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
 
 @RestController
 public class OutlineMediaController {
