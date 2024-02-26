@@ -158,8 +158,9 @@ public class GroupController {
                         u.setAvaUrl(url);
                     }
                 }
-                log.info("patch group with id " + data.getId() + " success");
-                return ResponseEntity.ok(groupRepository.save(data));
+                Group g = groupRepository.save(data);
+                log.info("patch group with id " + g.getId() + " success");
+                return ResponseEntity.ok(g);
             }
             log.warn("patch group with id: " + data.getId() + " failed: unauthorized");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
