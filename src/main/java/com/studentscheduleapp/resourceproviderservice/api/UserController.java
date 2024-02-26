@@ -11,6 +11,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -44,7 +46,7 @@ public class UserController {
                 ids.add(Long.parseLong(id.split(",")[i]));
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            log.warn("bad request: cant parse group ids: " + id);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
         ArrayList<String> ps = new ArrayList<>();
@@ -63,11 +65,15 @@ public class UserController {
                     u.setPassword(null);
                     ls.add(u);
                 }
+                log.info("get group with ids: " + id + " success");
                 return ResponseEntity.ok(ls);
             }
+            log.warn("get group with ids: " + id + " failed: unauthorized");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         } catch (Exception e) {
-            e.printStackTrace();
+            StringWriter errors = new StringWriter();
+            e.printStackTrace(new PrintWriter(errors));
+            log.error("get group failed: " + errors);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
@@ -95,11 +101,15 @@ public class UserController {
         ps.add("roles");
         try {
             if (authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.GET, Collections.singletonList(u.getId()), Entity.USER, ps)))) {
+                u.setPassword(null);
                 return ResponseEntity.ok(u);
             }
+            log.warn("get group with email: " + email + " failed: unauthorized");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         } catch (Exception e) {
-            e.printStackTrace();
+            StringWriter errors = new StringWriter();
+            e.printStackTrace(new PrintWriter(errors));
+            log.error("get group failed: " + errors);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
@@ -147,11 +157,16 @@ public class UserController {
                 data.setRoles(Collections.singletonList(Role.USER));
                 data.setAvaUrl(null);
                 data.setId(0);
-                return ResponseEntity.ok(userRepository.save(data));
+                User da = userRepository.save(data);
+                log.info("create group with id: " + da.getId() + " success");
+                return ResponseEntity.ok(da);
             }
+            log.warn("create group: failed: unauthorized");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         } catch (Exception e) {
-            e.printStackTrace();
+            StringWriter errors = new StringWriter();
+            e.printStackTrace(new PrintWriter(errors));
+            log.error("create group failed: " + errors);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
@@ -161,26 +176,26 @@ public class UserController {
             log.info("bad request: token is null or empty");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
-       // if(data.getEmail() == null || data.getEmail().isEmpty()) {
-       //     Logger.getGlobal().info("bad request: email is null or empty");
-       //     return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-       // }
-        /*if(data.getFirstName() == null || data.getFirstName().isEmpty()) {
-            Logger.getGlobal().info("bad request: firstName is null or empty");
+        if(data.getEmail() == null || data.getEmail().isEmpty()) {
+            log.info("bad request: email is null or empty");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-        }*/
-        /*if(data.getLastName() == null || data.getLastName().isEmpty()) {
-            Logger.getGlobal().info("bad request: lastName is null or empty");
+        }
+        if(data.getFirstName() == null || data.getFirstName().isEmpty()) {
+            log.info("bad request: firstName is null or empty");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-        }*/
-        /*if(data.getEmail() != null && data.getEmail().length() > 255) {
-            Logger.getGlobal().info("bad request: email length > 255");
+        }
+        if(data.getLastName() == null || data.getLastName().isEmpty()) {
+            log.info("bad request: lastName is null or empty");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-        }*/
-       // if(data.getPassword() != null && data.getPassword().length() > 255) {
-       //     Logger.getGlobal().info("bad request: password length > 255");
-       //     return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-       // }
+        }
+        if(data.getEmail() != null && data.getEmail().length() > 255) {
+            log.info("bad request: email length > 255");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+        if(data.getPassword() != null && data.getPassword().length() > 255) {
+            log.info("bad request: password length > 255");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
         if(data.getFirstName() != null && data.getFirstName().length() > 255) {
             log.info("bad request: first name length > 255");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();

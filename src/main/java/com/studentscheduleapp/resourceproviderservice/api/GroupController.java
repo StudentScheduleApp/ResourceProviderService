@@ -11,7 +11,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import org.apache.log4j.LogManager;
@@ -49,7 +52,7 @@ public class GroupController {
     @GetMapping("${mapping.group.getById}/{ids}")
     public ResponseEntity<List<Group>> getById(@PathVariable("ids") String id, @RequestHeader("User-Token") String token) {
         if(token == null || token.isEmpty()) {
-            log.info("bad request: token is null or empty");
+            log.warn("bad request: token is null or empty");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
         ArrayList<Long> ids = new ArrayList<>();
@@ -58,7 +61,7 @@ public class GroupController {
                 ids.add(Long.parseLong(id.split(",")[i]));
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            log.warn("bad request: cant parse group ids: " + id);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
         ArrayList<String> ps = new ArrayList<>();
@@ -72,26 +75,30 @@ public class GroupController {
                 for (Long l : ids) {
                     ls.add(groupRepository.getById(l));
                 }
+                log.info("get group with ids: " + id + " success");
                 return ResponseEntity.ok(ls);
             }
+            log.warn("get group with ids: " + id + " failed: unauthorized");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         } catch (Exception e) {
-            e.printStackTrace();
+            StringWriter errors = new StringWriter();
+            e.printStackTrace(new PrintWriter(errors));
+            log.error("get group failed: " + errors);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
     @PostMapping("${mapping.group.create}")
     public ResponseEntity<Group> create(@RequestBody Group data, @RequestHeader("User-Token") String token){
         if(token == null || token.isEmpty()) {
-            log.info("bad request: token is null or empty");
+            log.warn("bad request: token is null or empty");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
         if(data.getName() == null || data.getName().isEmpty()) {
-            log.info("bad request: name is null or empty");
+            log.warn("bad request: group name is null or empty");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
-        if(data.getName() != null && data.getName().length() > 255) {
-            log.info("bad request: name length > 255");
+        if(data.getName().length() > 255) {
+            log.warn("bad request: group name length > 255");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
         try {
@@ -105,42 +112,39 @@ public class GroupController {
                 roles.add(MemberRole.ADMIN);
                 roles.add(MemberRole.OWNER);
                 memberRepository.save(new Member(0, g.getId(), uid, roles));
-
+                log.info("create group with id: " + g.getId() + " success");
                 return ResponseEntity.ok(g);
             }
+            log.warn("create group: failed: unauthorized");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         } catch (Exception e) {
-            e.printStackTrace();
+            StringWriter errors = new StringWriter();
+            e.printStackTrace(new PrintWriter(errors));
+            log.error("create group failed: " + errors);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
     @PatchMapping("${mapping.group.patch}")
-    public ResponseEntity<Group> patch(@RequestBody Group data, @RequestHeader("User-Token") String token, @RequestParam(value = "image", required = false) MultipartFile file){
+    public ResponseEntity<Group> patch(@RequestBody Group data, @RequestHeader("User-Token") String token, @RequestParam(value = "image", required = false) MultipartFile file, @RequestParam("params") String params){
         if(token == null || token.isEmpty()) {
-            log.info("bad request: token is null or empty");
+            log.warn("bad request: token is null or empty");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
-        /*if(data.getName() == null || data.getName().isEmpty()) {
-            Logger.getGlobal().info("bad request: name is null or empty");
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-        }*/
         if(data.getName() != null && data.getName().length() > 255) {
-            log.info("bad request: name length > 255");
+            log.warn("bad request: group name length > 255");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
         try {
             Group u = groupRepository.getById(data.getId());
-            if (u == null)
+            if (u == null) {
+                log.warn("patch group with id: " + data.getId() + " failed: entity not found");
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-            ArrayList<String> ps = new ArrayList<>();
-            if (data.getChatId() != u.getChatId())
-                ps.add("chatId");
-            if (data.getName() != null && !data.getName().equals(u.getName()))
-                ps.add("name");
-            else{
-                data.setName(u.getName());
-                ps.add("name");
             }
+            List<String> ps = Arrays.asList(params.split(","));
+            if(ps.contains("name"))
+                u.setName(data.getName());
+            if(ps.contains("chatId"))
+                u.setChatId(data.getChatId());
             if (file != null && !file.isEmpty())
                 ps.add("avaUrl");
             else if (data.getAvaUrl() == null || data.getAvaUrl().isEmpty())
@@ -151,21 +155,25 @@ public class GroupController {
                     if (url != null){
                         if (u.getAvaUrl() != null && !u.getAvaUrl().isEmpty())
                             imageRepository.delete(urlService.getNameFromImageUrl(u.getAvaUrl()));
-                        data.setAvaUrl(url);
+                        u.setAvaUrl(url);
                     }
                 }
+                log.info("patch group with id " + data.getId() + " success");
                 return ResponseEntity.ok(groupRepository.save(data));
             }
+            log.warn("patch group with id: " + data.getId() + " failed: unauthorized");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         } catch (Exception e) {
-            e.printStackTrace();
+            StringWriter errors = new StringWriter();
+            e.printStackTrace(new PrintWriter(errors));
+            log.error("patch group with id " + data.getId() + " failed: " + errors);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
     @DeleteMapping("${mapping.group.delete}/{ids}")
     public ResponseEntity<Void> deleteById(@PathVariable("ids") String id, @RequestHeader("User-Token") String token){
         if(token == null || token.isEmpty()) {
-            log.info("bad request: token is null or empty");
+            log.warn("bad request: token is null or empty");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
         ArrayList<Long> ids = new ArrayList<>();
@@ -174,7 +182,9 @@ public class GroupController {
                 ids.add(Long.parseLong(id.split(",")[i]));
             }
         } catch (Exception e){
-            e.printStackTrace();
+            StringWriter errors = new StringWriter();
+            e.printStackTrace(new PrintWriter(errors));
+            log.warn("bad request: cant parse group ids: " + id);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
         try {
@@ -206,11 +216,15 @@ public class GroupController {
                     }
                     groupRepository.delete(l);
                 }
+                log.info("delete group with ids: " + id + " success");
                 return ResponseEntity.ok().build();
             }
+            log.warn("delete group with ids: " + id + " failed: unauthorized");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         } catch (Exception e) {
-            e.printStackTrace();
+            StringWriter errors = new StringWriter();
+            e.printStackTrace(new PrintWriter(errors));
+            log.error("delete group with ids: " + id + " failed: " + errors);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
