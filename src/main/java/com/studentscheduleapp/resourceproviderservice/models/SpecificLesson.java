@@ -12,7 +12,7 @@ public class SpecificLesson {
     private long groupId;
     private long lessonId;
     private long time;
-    private Boolean canceled;
+    private boolean canceled;
     private String comment;
 
 }

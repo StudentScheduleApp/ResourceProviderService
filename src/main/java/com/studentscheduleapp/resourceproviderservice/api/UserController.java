@@ -228,7 +228,7 @@ public class UserController {
             if (ps.contains("lastName"))
                 u.setLastName(data.getLastName());
             if (ps.contains("banned"))
-                u.setBanned(data.getBanned());
+                u.setBanned(data.isBanned());
             if (ps.contains("roles"))
                 u.setRoles(data.getRoles());
             if(authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.PATCH, Collections.singletonList(data.getId()), Entity.USER, ps)))){

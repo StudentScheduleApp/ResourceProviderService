@@ -16,7 +16,7 @@ public class User {
     private String password;
     private String firstName;
     private String lastName;
-    private Boolean banned;
+    private boolean banned;
     private String avaUrl;
     private List<Role> roles;
 
