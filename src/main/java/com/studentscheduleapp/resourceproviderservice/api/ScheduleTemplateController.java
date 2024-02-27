@@ -165,6 +165,7 @@ public class ScheduleTemplateController {
             log.warn("bad request: token is null or empty");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
+        List<String> ps = Arrays.asList(params.split(","));
         if (data.getName() == null || data.getName().isEmpty()) {
             log.warn("bad request: scheduleTemplate name is null or empty");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
@@ -173,7 +174,7 @@ public class ScheduleTemplateController {
             log.warn("bad request: scheduleTemplate name length > 255");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
-        if (data.getComment() != null && data.getComment().length() > 255) {
+        if (data.getComment() != null && data.getComment().length() > 255 && ps.contains("comment")) {
             log.warn("bad request: scheduleTemplate comment length > 255");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
@@ -181,7 +182,6 @@ public class ScheduleTemplateController {
             ScheduleTemplate u = scheduleTemplateRepository.getById(data.getId());
             if (u == null)
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-            List<String> ps = Arrays.asList(params.split(","));
             if (ps.contains("groupId"))
                 u.setGroupId(data.getGroupId());
             if (ps.contains("name"))

@@ -137,6 +137,10 @@ public class GroupController {
             log.warn("bad request: group name length > 255");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
+        if (data.getName() == null && ps.contains("name")) {
+            log.warn("bad request: group name is null or empty");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
         try {
             Group u = groupRepository.getById(data.getId());
             if (u == null) {

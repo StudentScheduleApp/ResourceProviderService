@@ -161,7 +161,8 @@ public class SpecificLessonController {
             log.warn("bad request: token is null or empty");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
-        if (data.getComment() != null && data.getComment().length() > 255) {
+        List<String> ps = Arrays.asList(params.split(","));
+        if (data.getComment() != null && data.getComment().length() > 255 && ps.contains("comment")) {
             log.warn("bad request: specificLesson comment length > 255");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
@@ -169,7 +170,6 @@ public class SpecificLessonController {
             SpecificLesson u = specificLessonRepository.getById(data.getId());
             if (u == null)
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-            List<String> ps = Arrays.asList(params.split(","));
             if (ps.contains("groupId"))
                 u.setGroupId(data.getGroupId());
             if (ps.contains("lessonId"))
