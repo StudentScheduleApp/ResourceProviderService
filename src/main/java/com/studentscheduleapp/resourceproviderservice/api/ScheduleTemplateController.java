@@ -124,21 +124,21 @@ public class ScheduleTemplateController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
         if(data.getName() == null || data.getName().isEmpty()) {
-            log.warn("bad request: name is null or empty");
+            log.warn("bad request: scheduleTemplate name is null or empty");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
         if(data.getName().length() > 255) {
-            log.warn("bad request: name length > 255");
+            log.warn("bad request: scheduleTemplate name length > 255");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
         if(data.getComment() != null && data.getComment().length() > 255) {
-            log.warn("bad request: comment length > 255");
+            log.warn("bad request: scheduleTemplate comment length > 255");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
         try {
             if(authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.CREATE, Collections.singletonList(data.getGroupId()), Entity.SCHEDULE_TEMPLATE, null)))){
                 if(groupRepository.getById(data.getGroupId()) == null) {
-                    log.warn("bad request: group not exist");
+                    log.warn("bad request: scheduleTemplate group not exist");
                     return ResponseEntity.status(HttpStatus.CONFLICT).build();
                 }
                 data.setId(0);
@@ -191,7 +191,7 @@ public class ScheduleTemplateController {
                 u.setComment(data.getComment());
             if(authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.PATCH, Collections.singletonList(data.getId()), Entity.SCHEDULE_TEMPLATE, ps)))){
                 if(groupRepository.getById(data.getGroupId()) == null && ps.contains("groupId")) {
-                    log.warn("bad request: group not exist");
+                    log.warn("bad request: scheduleTemplate group not exist");
                     return ResponseEntity.status(HttpStatus.CONFLICT).build();
                 }
                 ScheduleTemplate t = scheduleTemplateRepository.save(data);
