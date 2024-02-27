@@ -22,25 +22,28 @@ public class ScheduleTemplateRepository {
 
     public ScheduleTemplate getById(long id) throws Exception {
         ResponseEntity<ScheduleTemplate> r = restTemplate.getForEntity(databaseServiceProperties.getUri() + databaseServiceProperties.getGetScheduleTemplateByIdPath() + "/" + id, ScheduleTemplate.class);
-        if(r.getStatusCode().is2xxSuccessful())
+        if (r.getStatusCode().is2xxSuccessful())
             return r.getBody();
         throw new Exception("request to " + databaseServiceProperties.getUri() + " return code " + r.getStatusCode());
     }
+
     public List<ScheduleTemplate> getByGroupId(long id) throws Exception {
         ResponseEntity<ScheduleTemplate[]> r = restTemplate.getForEntity(databaseServiceProperties.getUri() + databaseServiceProperties.getGetScheduleTemplateByGroupIdPath() + "/" + id, ScheduleTemplate[].class);
-        if(r.getStatusCode().is2xxSuccessful())
+        if (r.getStatusCode().is2xxSuccessful())
             return r.getBody() == null ? null : Arrays.asList(r.getBody());
         throw new Exception("request to " + databaseServiceProperties.getUri() + " return code " + r.getStatusCode());
     }
+
     public ScheduleTemplate save(ScheduleTemplate customLesson) throws Exception {
         ResponseEntity<ScheduleTemplate> r = restTemplate.postForEntity(databaseServiceProperties.getUri() + databaseServiceProperties.getSaveScheduleTemplatePath(), customLesson, ScheduleTemplate.class);
-        if(r.getStatusCode().is2xxSuccessful())
+        if (r.getStatusCode().is2xxSuccessful())
             return r.getBody();
         throw new Exception("request to " + databaseServiceProperties.getUri() + " return code " + r.getStatusCode());
     }
+
     public void delete(long id) throws Exception {
         ResponseEntity<Void> r = restTemplate.exchange(databaseServiceProperties.getUri() + databaseServiceProperties.getDeleteScheduleTemplatePath() + "/" + id, HttpMethod.DELETE, null, Void.class);
-        if(!r.getStatusCode().is2xxSuccessful())
+        if (!r.getStatusCode().is2xxSuccessful())
             throw new Exception("request to " + databaseServiceProperties.getUri() + " return code " + r.getStatusCode());
     }
 }

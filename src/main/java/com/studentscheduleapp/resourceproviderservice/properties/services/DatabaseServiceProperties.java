@@ -114,5 +114,4 @@ public class DatabaseServiceProperties {
     private String deleteUserPath;
 
 
-
 }

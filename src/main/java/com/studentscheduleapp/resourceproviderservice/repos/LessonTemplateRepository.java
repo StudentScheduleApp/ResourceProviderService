@@ -15,7 +15,6 @@ import java.util.List;
 public class LessonTemplateRepository {
 
 
-
     @Autowired
     private DatabaseServiceProperties databaseServiceProperties;
 
@@ -24,25 +23,28 @@ public class LessonTemplateRepository {
 
     public LessonTemplate getById(long id) throws Exception {
         ResponseEntity<LessonTemplate> r = restTemplate.getForEntity(databaseServiceProperties.getUri() + databaseServiceProperties.getGetLessonTemplateByIdPath() + "/" + id, LessonTemplate.class);
-        if(r.getStatusCode().is2xxSuccessful())
+        if (r.getStatusCode().is2xxSuccessful())
             return r.getBody();
         throw new Exception("request to " + databaseServiceProperties.getUri() + " return code " + r.getStatusCode());
     }
+
     public List<LessonTemplate> getByScheduleTemplateId(long id) throws Exception {
         ResponseEntity<LessonTemplate[]> r = restTemplate.getForEntity(databaseServiceProperties.getUri() + databaseServiceProperties.getGetLessonTemplateByScheduleTemplateIdPath() + "/" + id, LessonTemplate[].class);
-        if(r.getStatusCode().is2xxSuccessful())
+        if (r.getStatusCode().is2xxSuccessful())
             return r.getBody() == null ? null : Arrays.asList(r.getBody());
         throw new Exception("request to " + databaseServiceProperties.getUri() + " return code " + r.getStatusCode());
     }
+
     public LessonTemplate save(LessonTemplate lessonTemplate) throws Exception {
         ResponseEntity<LessonTemplate> r = restTemplate.postForEntity(databaseServiceProperties.getUri() + databaseServiceProperties.getSaveLessonTemplatePath(), lessonTemplate, LessonTemplate.class);
-        if(r.getStatusCode().is2xxSuccessful())
+        if (r.getStatusCode().is2xxSuccessful())
             return r.getBody();
         throw new Exception("request to " + databaseServiceProperties.getUri() + " return code " + r.getStatusCode());
     }
+
     public void delete(long id) throws Exception {
         ResponseEntity<Void> r = restTemplate.exchange(databaseServiceProperties.getUri() + databaseServiceProperties.getDeleteLessonTemplatePath() + "/" + id, HttpMethod.DELETE, null, Void.class);
-        if(!r.getStatusCode().is2xxSuccessful())
+        if (!r.getStatusCode().is2xxSuccessful())
             throw new Exception("request to " + databaseServiceProperties.getUri() + " return code " + r.getStatusCode());
     }
 }

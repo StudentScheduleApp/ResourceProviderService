@@ -17,7 +17,6 @@ import org.springframework.web.multipart.MultipartFile;
 public class ImageRepository {
 
 
-
     @Autowired
     private ImageServiceProperties imageServiceProperties;
 
@@ -30,15 +29,16 @@ public class ImageRepository {
         body.add("file", multipartFile);
         HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, null);
         ResponseEntity<String> r = restTemplate.postForEntity(imageServiceProperties.getUri() + imageServiceProperties.getGetUploadPath(), requestEntity, String.class);
-        if(r.getStatusCode().is2xxSuccessful())
+        if (r.getStatusCode().is2xxSuccessful())
             return r.getBody();
         if (r.getStatusCode().equals(HttpStatus.BAD_REQUEST))
             return null;
         throw new Exception("request to " + imageServiceProperties.getUri() + " return code " + r.getStatusCode());
     }
+
     public void delete(String id) throws Exception {
         ResponseEntity<Void> r = restTemplate.exchange(imageServiceProperties.getUri() + imageServiceProperties.getGetDeletePath() + "/" + id, HttpMethod.DELETE, null, Void.class);
-        if(!r.getStatusCode().is2xxSuccessful())
+        if (!r.getStatusCode().is2xxSuccessful())
             throw new Exception("request to " + imageServiceProperties.getUri() + " return code " + r.getStatusCode());
     }
 }

@@ -23,6 +23,7 @@ import java.util.List;
 @RestController
 public class OutlineMediaCommentController {
 
+    private static final Logger log = LogManager.getLogger(OutlineMediaCommentController.class);
     @Autowired
     private OutlineMediaCommentRepository outlineMediaCommentRepository;
     @Autowired
@@ -31,11 +32,10 @@ public class OutlineMediaCommentController {
     private OutlineMediaRepository outlineMediaRepository;
     @Autowired
     private AuthorizeUserService authorizeUserService;
-    private static final Logger log = LogManager.getLogger(OutlineMediaCommentController.class);
 
     @GetMapping("${mapping.outlineMediaComment.getById}/{ids}")
     public ResponseEntity<List<OutlineMediaComment>> getById(@PathVariable("ids") String id, @RequestHeader("User-Token") String token) {
-        if(token == null || token.isEmpty()) {
+        if (token == null || token.isEmpty()) {
             log.info("bad request: token is null or empty");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
@@ -67,9 +67,10 @@ public class OutlineMediaCommentController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+
     @GetMapping("${mapping.outlineMediaComment.getByOutlineMediaId}/{id}")
-    public ResponseEntity<List<OutlineMediaComment>> getByOutlineMediaId(@PathVariable("id") long id, @RequestHeader("User-Token") String token){
-        if(token == null || token.isEmpty()) {
+    public ResponseEntity<List<OutlineMediaComment>> getByOutlineMediaId(@PathVariable("id") long id, @RequestHeader("User-Token") String token) {
+        if (token == null || token.isEmpty()) {
             log.info("bad request: token is null or empty");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
@@ -92,7 +93,7 @@ public class OutlineMediaCommentController {
         ps.add("questionCommentId");
         ps.add("mediaId");
         try {
-            if(authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.GET, ids, Entity.OUTLINE_MEDIA_COMMENT, ps)))){
+            if (authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.GET, ids, Entity.OUTLINE_MEDIA_COMMENT, ps)))) {
                 return ResponseEntity.ok(cs);
             }
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
@@ -101,27 +102,28 @@ public class OutlineMediaCommentController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+
     @PostMapping("${mapping.outlineMediaComment.create}")
-    public ResponseEntity<OutlineMediaComment> create(@RequestBody OutlineMediaComment data, @RequestHeader("User-Token") String token){
-        if(token == null || token.isEmpty()) {
+    public ResponseEntity<OutlineMediaComment> create(@RequestBody OutlineMediaComment data, @RequestHeader("User-Token") String token) {
+        if (token == null || token.isEmpty()) {
             log.info("bad request: token is null or empty");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
-        if(data.getText() == null || data.getText().isEmpty()) {
+        if (data.getText() == null || data.getText().isEmpty()) {
             log.info("bad request: text is null or empty");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
-        if(data.getText() != null && data.getText().length() > 255) {
+        if (data.getText() != null && data.getText().length() > 255) {
             log.info("bad request: text length > 255");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
         try {
-            if(authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.CREATE, Collections.singletonList(data.getMediaId()), Entity.OUTLINE_MEDIA_COMMENT, null)))){
-                if(userRepository.getById(data.getUserId()) != null) {
+            if (authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.CREATE, Collections.singletonList(data.getMediaId()), Entity.OUTLINE_MEDIA_COMMENT, null)))) {
+                if (userRepository.getById(data.getUserId()) != null) {
                     log.info("bad request: user not exist");
                     return ResponseEntity.status(HttpStatus.CONFLICT).build();
                 }
-                if(outlineMediaRepository.getById(data.getMediaId()) != null) {
+                if (outlineMediaRepository.getById(data.getMediaId()) != null) {
                     log.info("bad request: outline media not exist");
                     return ResponseEntity.status(HttpStatus.CONFLICT).build();
                 }
@@ -135,17 +137,18 @@ public class OutlineMediaCommentController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+
     @PatchMapping("${mapping.outlineMediaComment.patch}")
-    public ResponseEntity<OutlineMediaComment> patch(@RequestBody OutlineMediaComment data, @RequestHeader("User-Token") String token){
-        if(token == null || token.isEmpty()) {
+    public ResponseEntity<OutlineMediaComment> patch(@RequestBody OutlineMediaComment data, @RequestHeader("User-Token") String token) {
+        if (token == null || token.isEmpty()) {
             log.info("bad request: token is null or empty");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
-        if(data.getText() == null || data.getText().isEmpty()) {
+        if (data.getText() == null || data.getText().isEmpty()) {
             log.info("bad request: text is null or empty");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
-        if(data.getText() != null && data.getText().length() > 255) {
+        if (data.getText() != null && data.getText().length() > 255) {
             log.info("bad request: text length > 255");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
@@ -164,7 +167,7 @@ public class OutlineMediaCommentController {
                 ps.add("timestamp");
             if (data.getText().equals(u.getText()))
                 ps.add("text");
-            if(authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.PATCH, Collections.singletonList(data.getId()), Entity.OUTLINE_MEDIA_COMMENT, ps)))){
+            if (authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.PATCH, Collections.singletonList(data.getId()), Entity.OUTLINE_MEDIA_COMMENT, ps)))) {
                 return ResponseEntity.ok(outlineMediaCommentRepository.save(data));
             }
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
@@ -173,9 +176,10 @@ public class OutlineMediaCommentController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+
     @DeleteMapping("${mapping.outlineMediaComment.delete}/{ids}")
-    public ResponseEntity<Void> deleteById(@PathVariable("ids") String id, @RequestHeader("User-Token") String token){
-        if(token == null || token.isEmpty()) {
+    public ResponseEntity<Void> deleteById(@PathVariable("ids") String id, @RequestHeader("User-Token") String token) {
+        if (token == null || token.isEmpty()) {
             log.info("bad request: token is null or empty");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
@@ -184,12 +188,12 @@ public class OutlineMediaCommentController {
             for (int i = 0; i < id.split(",").length; i++) {
                 ids.add(Long.parseLong(id.split(",")[i]));
             }
-        } catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
         try {
-            if(authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.DELETE, ids, Entity.OUTLINE_MEDIA_COMMENT, null)))){
+            if (authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.DELETE, ids, Entity.OUTLINE_MEDIA_COMMENT, null)))) {
                 for (Long l : ids) {
                     outlineMediaCommentRepository.delete(l);
                 }

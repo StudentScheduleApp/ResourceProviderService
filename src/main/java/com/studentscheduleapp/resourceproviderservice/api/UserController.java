@@ -24,6 +24,7 @@ import java.util.List;
 
 @RestController
 public class UserController {
+    private static final Logger log = LogManager.getLogger(UserController.class);
     @Autowired
     private MemberRepository memberRepository;
     @Autowired
@@ -34,11 +35,10 @@ public class UserController {
     private AuthorizeUserService authorizeUserService;
     @Autowired
     private UrlService urlService;
-    private static final Logger log = LogManager.getLogger(UserController.class);
 
     @GetMapping("${mapping.user.getById}/{ids}")
     public ResponseEntity<List<User>> getById(@PathVariable("ids") String id, @RequestHeader("User-Token") String token) {
-        if(token == null || token.isEmpty()) {
+        if (token == null || token.isEmpty()) {
             log.warn("bad request: token is null or empty");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
@@ -79,9 +79,10 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+
     @GetMapping("${mapping.user.getByEmail}/{email}")
     public ResponseEntity<User> getByEmail(@PathVariable("email") String email, @RequestHeader("User-Token") String token) {
-        if(token == null || token.isEmpty()) {
+        if (token == null || token.isEmpty()) {
             log.warn("bad request: token is null or empty");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
@@ -116,46 +117,47 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+
     @PostMapping("${mapping.user.create}")
-    public ResponseEntity<User> create(@RequestBody User data, @RequestHeader("User-Token") String token){
-        if(token == null || token.isEmpty()) {
+    public ResponseEntity<User> create(@RequestBody User data, @RequestHeader("User-Token") String token) {
+        if (token == null || token.isEmpty()) {
             log.warn("bad request: token is null or empty");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
-        if(data.getEmail() == null || data.getEmail().isEmpty()) {
+        if (data.getEmail() == null || data.getEmail().isEmpty()) {
             log.warn("bad request: user email is null or empty");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
-        if(data.getPassword() == null || data.getPassword().isEmpty()) {
+        if (data.getPassword() == null || data.getPassword().isEmpty()) {
             log.warn("bad request: user password is null or empty");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
-        if(data.getFirstName() == null || data.getFirstName().isEmpty()) {
+        if (data.getFirstName() == null || data.getFirstName().isEmpty()) {
             log.warn("bad request: user firstName is null or empty");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
-        if(data.getLastName() == null || data.getLastName().isEmpty()) {
+        if (data.getLastName() == null || data.getLastName().isEmpty()) {
             log.warn("bad request: user lastName is null or empty");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
-        if(data.getEmail().length() > 255) {
+        if (data.getEmail().length() > 255) {
             log.warn("bad request: user email length > 255");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
-        if(data.getPassword().length() > 255) {
+        if (data.getPassword().length() > 255) {
             log.warn("bad request: user password length > 255");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
-        if(data.getFirstName().length() > 255) {
+        if (data.getFirstName().length() > 255) {
             log.warn("bad request: user firstName length > 255");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
-        if(data.getLastName().length() > 255) {
+        if (data.getLastName().length() > 255) {
             log.warn("bad request: user lastName length > 255");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
         try {
-            if(authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.CREATE, Collections.singletonList(0L), Entity.USER, null)))){
+            if (authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.CREATE, Collections.singletonList(0L), Entity.USER, null)))) {
                 data.setBanned(false);
                 data.setRoles(Collections.singletonList(Role.USER));
                 data.setAvaUrl(null);
@@ -173,42 +175,43 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+
     @PatchMapping("${mapping.user.patch}")
-    public ResponseEntity<User> patch(@RequestBody User data, @RequestHeader("User-Token") String token, @RequestParam(value = "image", required = false) MultipartFile file, @RequestParam("params") String params){
-        if(token == null || token.isEmpty()) {
+    public ResponseEntity<User> patch(@RequestBody User data, @RequestHeader("User-Token") String token, @RequestParam(value = "image", required = false) MultipartFile file, @RequestParam("params") String params) {
+        if (token == null || token.isEmpty()) {
             log.warn("bad request: token is null or empty");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
         List<String> ps = Arrays.asList(params.split(","));
-        if((data.getEmail() == null || data.getEmail().isEmpty()) && ps.contains("email")) {
+        if ((data.getEmail() == null || data.getEmail().isEmpty()) && ps.contains("email")) {
             log.warn("bad request: user email is null or empty");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
-        if((data.getPassword() == null || data.getPassword().isEmpty()) && ps.contains("password")) {
+        if ((data.getPassword() == null || data.getPassword().isEmpty()) && ps.contains("password")) {
             log.warn("bad request: user email is null or empty");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
-        if((data.getFirstName() == null || data.getFirstName().isEmpty()) && ps.contains("firstName")) {
+        if ((data.getFirstName() == null || data.getFirstName().isEmpty()) && ps.contains("firstName")) {
             log.warn("bad request: user firstName is null or empty");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
-        if((data.getLastName() == null || data.getLastName().isEmpty()) && ps.contains("lastName")) {
+        if ((data.getLastName() == null || data.getLastName().isEmpty()) && ps.contains("lastName")) {
             log.warn("bad request: user lastName is null or empty");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
-        if(data.getEmail() != null && data.getEmail().length() > 255) {
+        if (data.getEmail() != null && data.getEmail().length() > 255) {
             log.warn("bad request: user email length > 255");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
-        if(data.getPassword() != null && data.getPassword().length() > 255) {
+        if (data.getPassword() != null && data.getPassword().length() > 255) {
             log.warn("bad request: user password length > 255");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
-        if(data.getFirstName() != null && data.getFirstName().length() > 255) {
+        if (data.getFirstName() != null && data.getFirstName().length() > 255) {
             log.warn("bad request: user firstName length > 255");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
-        if(data.getLastName() != null && data.getLastName().length() > 255) {
+        if (data.getLastName() != null && data.getLastName().length() > 255) {
             log.warn("bad request: user lastName length > 255");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
@@ -231,10 +234,10 @@ public class UserController {
                 u.setBanned(data.isBanned());
             if (ps.contains("roles"))
                 u.setRoles(data.getRoles());
-            if(authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.PATCH, Collections.singletonList(data.getId()), Entity.USER, ps)))){
+            if (authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.PATCH, Collections.singletonList(data.getId()), Entity.USER, ps)))) {
                 if (file != null && !file.isEmpty()) {
                     String url = imageRepository.upload(file);
-                    if (url != null){
+                    if (url != null) {
                         if (u.getAvaUrl() != null && !u.getAvaUrl().isEmpty())
                             imageRepository.delete(urlService.getNameFromImageUrl(u.getAvaUrl()));
                         data.setAvaUrl(url);
@@ -253,9 +256,10 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+
     @DeleteMapping("${mapping.user.delete}/{ids}")
-    public ResponseEntity<Void> deleteById(@PathVariable("ids") String id, @RequestHeader("User-Token") String token){
-        if(token == null || token.isEmpty()) {
+    public ResponseEntity<Void> deleteById(@PathVariable("ids") String id, @RequestHeader("User-Token") String token) {
+        if (token == null || token.isEmpty()) {
             log.warn("bad request: token is null or empty");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
@@ -264,14 +268,14 @@ public class UserController {
             for (int i = 0; i < id.split(",").length; i++) {
                 ids.add(Long.parseLong(id.split(",")[i]));
             }
-        } catch (Exception e){
+        } catch (Exception e) {
             StringWriter errors = new StringWriter();
             e.printStackTrace(new PrintWriter(errors));
             log.warn("bad request: cant parse user ids: " + id);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
         try {
-            if(authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.DELETE, ids, Entity.USER, null)))){
+            if (authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.DELETE, ids, Entity.USER, null)))) {
                 for (Long l : ids) {
                     User u = userRepository.getById(l);
                     if (u.getAvaUrl() != null && !u.getAvaUrl().isEmpty())

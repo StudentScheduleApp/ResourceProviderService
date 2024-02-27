@@ -17,6 +17,7 @@ import java.util.List;
 
 @RestController
 public class OutlineController {
+    private static final Logger log = LogManager.getLogger(OutlineController.class);
     @Autowired
     private SpecificLessonRepository specificLessonRepository;
     @Autowired
@@ -31,11 +32,10 @@ public class OutlineController {
     private ImageRepository imageRepository;
     @Autowired
     private AuthorizeUserService authorizeUserService;
-    private static final Logger log = LogManager.getLogger(OutlineController.class);
 
     @GetMapping("${mapping.outline.getById}/{ids}")
     public ResponseEntity<List<Outline>> getById(@PathVariable("ids") String id, @RequestHeader("User-Token") String token) {
-        if(token == null || token.isEmpty()) {
+        if (token == null || token.isEmpty()) {
             log.info("bad request: token is null or empty");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
@@ -66,9 +66,10 @@ public class OutlineController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+
     @GetMapping("${mapping.outline.getBySpecificLessonId}/{id}")
-    public ResponseEntity<List<Outline>> getBySpecificLessonId(@PathVariable("id") long id, @RequestHeader("User-Token") String token){
-        if(token == null || token.isEmpty()) {
+    public ResponseEntity<List<Outline>> getBySpecificLessonId(@PathVariable("id") long id, @RequestHeader("User-Token") String token) {
+        if (token == null || token.isEmpty()) {
             log.info("bad request: token is null or empty");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
@@ -88,7 +89,7 @@ public class OutlineController {
         ps.add("userId");
         ps.add("specificLessonId");
         try {
-            if(authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.GET, ids, Entity.OUTLINE, ps)))){
+            if (authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.GET, ids, Entity.OUTLINE, ps)))) {
                 return ResponseEntity.ok(cs);
             }
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
@@ -97,9 +98,10 @@ public class OutlineController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+
     @GetMapping("${mapping.outline.getByUserId}/{id}")
-    public ResponseEntity<List<Outline>> getByUserId(@PathVariable("id") long id, @RequestHeader("User-Token") String token){
-        if(token == null || token.isEmpty()) {
+    public ResponseEntity<List<Outline>> getByUserId(@PathVariable("id") long id, @RequestHeader("User-Token") String token) {
+        if (token == null || token.isEmpty()) {
             log.info("bad request: token is null or empty");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
@@ -119,7 +121,7 @@ public class OutlineController {
         ps.add("userId");
         ps.add("specificLessonId");
         try {
-            if(authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.GET, ids, Entity.OUTLINE, ps)))){
+            if (authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.GET, ids, Entity.OUTLINE, ps)))) {
                 return ResponseEntity.ok(cs);
             }
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
@@ -128,19 +130,20 @@ public class OutlineController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+
     @PostMapping("${mapping.outline.create}")
-    public ResponseEntity<Outline> create(@RequestBody Outline data, @RequestHeader("User-Token") String token){
-        if(token == null || token.isEmpty()) {
+    public ResponseEntity<Outline> create(@RequestBody Outline data, @RequestHeader("User-Token") String token) {
+        if (token == null || token.isEmpty()) {
             log.info("bad request: token is null or empty");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
         try {
-            if(authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.CREATE, Collections.singletonList(data.getSpecificLessonId()), Entity.LESSON_TEMPLATE, null)))){
-                if(userRepository.getById(data.getUserId()) != null) {
+            if (authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.CREATE, Collections.singletonList(data.getSpecificLessonId()), Entity.LESSON_TEMPLATE, null)))) {
+                if (userRepository.getById(data.getUserId()) != null) {
                     log.info("bad request: user not exist");
                     return ResponseEntity.status(HttpStatus.CONFLICT).build();
                 }
-                if(specificLessonRepository.getById(data.getSpecificLessonId()) != null) {
+                if (specificLessonRepository.getById(data.getSpecificLessonId()) != null) {
                     log.info("bad request: specific lesson not exist");
                     return ResponseEntity.status(HttpStatus.CONFLICT).build();
                 }
@@ -153,9 +156,10 @@ public class OutlineController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+
     @PatchMapping("${mapping.outline.patch}")
-    public ResponseEntity<Outline> patch(@RequestBody Outline data, @RequestHeader("User-Token") String token){
-        if(token == null || token.isEmpty()) {
+    public ResponseEntity<Outline> patch(@RequestBody Outline data, @RequestHeader("User-Token") String token) {
+        if (token == null || token.isEmpty()) {
             log.info("bad request: token is null or empty");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
@@ -168,7 +172,7 @@ public class OutlineController {
                 ps.add("specificLessonId");
             if (data.getUserId() != u.getUserId())
                 ps.add("userId");
-            if(authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.PATCH, Collections.singletonList(data.getId()), Entity.LESSON_TEMPLATE, ps)))){
+            if (authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.PATCH, Collections.singletonList(data.getId()), Entity.LESSON_TEMPLATE, ps)))) {
                 return ResponseEntity.ok(outlineRepository.save(data));
             }
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
@@ -177,9 +181,10 @@ public class OutlineController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+
     @DeleteMapping("${mapping.outline.delete}/{ids}")
-    public ResponseEntity<Void> deleteById(@PathVariable("ids") String id, @RequestHeader("User-Token") String token){
-        if(token == null || token.isEmpty()) {
+    public ResponseEntity<Void> deleteById(@PathVariable("ids") String id, @RequestHeader("User-Token") String token) {
+        if (token == null || token.isEmpty()) {
             log.info("bad request: token is null or empty");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
@@ -188,21 +193,21 @@ public class OutlineController {
             for (int i = 0; i < id.split(",").length; i++) {
                 ids.add(Long.parseLong(id.split(",")[i]));
             }
-        } catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
         try {
-            if(authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.DELETE, ids, Entity.OUTLINE, null)))){
+            if (authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.DELETE, ids, Entity.OUTLINE, null)))) {
                 for (Long l : ids) {
-                    for (OutlineMedia om : outlineMediaRepository.getByOutlineId(l)){
-                        for (OutlineMediaComment omc : outlineMediaCommentRepository.getByOutlineMediaId(om.getId())){
+                    for (OutlineMedia om : outlineMediaRepository.getByOutlineId(l)) {
+                        for (OutlineMediaComment omc : outlineMediaCommentRepository.getByOutlineMediaId(om.getId())) {
                             outlineMediaCommentRepository.delete(omc.getId());
                         }
                         if (om.getImageUrl() != null && !om.getImageUrl().isEmpty())
                             try {
                                 imageRepository.delete(om.getImageUrl().split("/")[om.getImageUrl().split("/").length - 1]);
-                            } catch (Exception e){
+                            } catch (Exception e) {
                                 e.printStackTrace();
                             }
                         outlineMediaRepository.delete(om.getId());

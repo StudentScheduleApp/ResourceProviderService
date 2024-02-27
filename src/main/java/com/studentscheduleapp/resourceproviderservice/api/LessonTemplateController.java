@@ -24,6 +24,7 @@ import java.util.*;
 @RestController
 public class LessonTemplateController {
 
+    private static final Logger log = LogManager.getLogger(LessonTemplateController.class);
     @Autowired
     private LessonTemplateRepository lessonTemplateRepository;
     @Autowired
@@ -34,11 +35,10 @@ public class LessonTemplateController {
     private ScheduleService scheduleService;
     @Autowired
     private AuthorizeUserService authorizeUserService;
-    private static final Logger log = LogManager.getLogger(LessonTemplateController.class);
 
     @GetMapping("${mapping.lessonTemplate.getById}/{ids}")
     public ResponseEntity<List<LessonTemplate>> getById(@PathVariable("ids") String id, @RequestHeader("User-Token") String token) {
-        if(token == null || token.isEmpty()) {
+        if (token == null || token.isEmpty()) {
             log.warn("bad request: token is null or empty");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
@@ -75,9 +75,10 @@ public class LessonTemplateController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+
     @GetMapping("${mapping.lessonTemplate.getByScheduleTemplateId}/{id}")
-    public ResponseEntity<List<LessonTemplate>> getByScheduleTemplateId(@PathVariable("id") long id, @RequestHeader("User-Token") String token){
-        if(token == null || token.isEmpty()) {
+    public ResponseEntity<List<LessonTemplate>> getByScheduleTemplateId(@PathVariable("id") long id, @RequestHeader("User-Token") String token) {
+        if (token == null || token.isEmpty()) {
             log.warn("bad request: token is null or empty");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
@@ -103,7 +104,7 @@ public class LessonTemplateController {
         ps.add("time");
         ps.add("comment");
         try {
-            if(authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.GET, ids, Entity.OUTLINE, ps)))){
+            if (authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.GET, ids, Entity.OUTLINE, ps)))) {
                 log.info("get lessonTemplate with scheduleTemplateId: " + id + " success");
                 return ResponseEntity.ok(cs);
             }
@@ -116,26 +117,27 @@ public class LessonTemplateController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+
     @PostMapping("${mapping.lessonTemplate.create}")
-    public ResponseEntity<LessonTemplate> create(@RequestBody LessonTemplate data, @RequestHeader("User-Token") String token){
-        if(token == null || token.isEmpty()) {
+    public ResponseEntity<LessonTemplate> create(@RequestBody LessonTemplate data, @RequestHeader("User-Token") String token) {
+        if (token == null || token.isEmpty()) {
             log.warn("bad request: token is null or empty");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
-        if(data.getComment() != null && data.getComment().length() > 255) {
+        if (data.getComment() != null && data.getComment().length() > 255) {
             log.warn("bad request: comment length > 255");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
         try {
-            if(scheduleTemplateRepository.getById(data.getScheduleTemplateId()) == null) {
+            if (scheduleTemplateRepository.getById(data.getScheduleTemplateId()) == null) {
                 log.warn("bad request: lessonTemplate scheduleTemplate not exist");
                 return ResponseEntity.status(HttpStatus.CONFLICT).build();
             }
-            if(customLessonRepository.getById(data.getLessonId()) == null) {
+            if (customLessonRepository.getById(data.getLessonId()) == null) {
                 log.warn("bad request: lessonTemplate customLesson not exist");
                 return ResponseEntity.status(HttpStatus.CONFLICT).build();
             }
-            if(authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.CREATE, Collections.singletonList(data.getScheduleTemplateId()), Entity.LESSON_TEMPLATE, null)))){
+            if (authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.CREATE, Collections.singletonList(data.getScheduleTemplateId()), Entity.LESSON_TEMPLATE, null)))) {
                 data.setId(0);
                 LessonTemplate lt = lessonTemplateRepository.save(data);
 
@@ -152,14 +154,15 @@ public class LessonTemplateController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+
     @PatchMapping("${mapping.lessonTemplate.patch}")
-    public ResponseEntity<LessonTemplate> patch(@RequestBody LessonTemplate data, @RequestHeader("User-Token") String token, @RequestParam("params") String params){
-        if(token == null || token.isEmpty()) {
+    public ResponseEntity<LessonTemplate> patch(@RequestBody LessonTemplate data, @RequestHeader("User-Token") String token, @RequestParam("params") String params) {
+        if (token == null || token.isEmpty()) {
             log.warn("bad request: token is null or empty");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
         List<String> ps = Arrays.asList(params.split(","));
-        if(data.getComment() != null && data.getComment().length() > 255 && ps.contains("comment")) {
+        if (data.getComment() != null && data.getComment().length() > 255 && ps.contains("comment")) {
             log.warn("bad request: lessonTemplate comment length > 255");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
@@ -177,15 +180,15 @@ public class LessonTemplateController {
                 u.setTime(data.getTime());
             if (ps.contains("comment"))
                 u.setComment(data.getComment());
-            if(customLessonRepository.getById(data.getLessonId()) == null && ps.contains("lessonId")) {
+            if (customLessonRepository.getById(data.getLessonId()) == null && ps.contains("lessonId")) {
                 log.warn("bad request: lessonTemplate customLesson not exist");
                 return ResponseEntity.status(HttpStatus.CONFLICT).build();
             }
-            if(scheduleTemplateRepository.getById(data.getScheduleTemplateId()) == null && ps.contains("scheduleTemplateId")) {
+            if (scheduleTemplateRepository.getById(data.getScheduleTemplateId()) == null && ps.contains("scheduleTemplateId")) {
                 log.warn("bad request: lessonTemplate scheduleTemplate not exist");
                 return ResponseEntity.status(HttpStatus.CONFLICT).build();
             }
-            if(authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.PATCH, Collections.singletonList(data.getId()), Entity.LESSON_TEMPLATE, ps)))){
+            if (authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.PATCH, Collections.singletonList(data.getId()), Entity.LESSON_TEMPLATE, ps)))) {
                 LessonTemplate lt = lessonTemplateRepository.save(data);
                 scheduleService.updateSchedule(data.getScheduleTemplateId());
                 log.info("patch lessonTemplate with id " + data.getId() + " success");
@@ -200,9 +203,10 @@ public class LessonTemplateController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+
     @DeleteMapping("${mapping.lessonTemplate.delete}/{ids}")
-    public ResponseEntity<Void> deleteById(@PathVariable("ids") String id, @RequestHeader("User-Token") String token){
-        if(token == null || token.isEmpty()) {
+    public ResponseEntity<Void> deleteById(@PathVariable("ids") String id, @RequestHeader("User-Token") String token) {
+        if (token == null || token.isEmpty()) {
             log.warn("bad request: token is null or empty");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
@@ -211,14 +215,14 @@ public class LessonTemplateController {
             for (int i = 0; i < id.split(",").length; i++) {
                 ids.add(Long.parseLong(id.split(",")[i]));
             }
-        } catch (Exception e){
+        } catch (Exception e) {
             StringWriter errors = new StringWriter();
             e.printStackTrace(new PrintWriter(errors));
             log.warn("bad request: cant parse lessonTemplate ids: " + id);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
         try {
-            if(authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.DELETE, ids, Entity.LESSON_TEMPLATE, null)))){
+            if (authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.DELETE, ids, Entity.LESSON_TEMPLATE, null)))) {
                 Set<Long> is = new HashSet<>();
                 for (Long l : ids) {
                     LessonTemplate lt = lessonTemplateRepository.getById(l);

@@ -17,5 +17,4 @@ public class ImageServiceProperties {
     private String getDeletePath;
 
 
-
 }

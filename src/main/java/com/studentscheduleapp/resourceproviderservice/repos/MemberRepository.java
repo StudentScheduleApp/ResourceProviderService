@@ -15,8 +15,6 @@ import java.util.List;
 public class MemberRepository {
 
 
-
-
     @Autowired
     private DatabaseServiceProperties databaseServiceProperties;
 
@@ -25,32 +23,36 @@ public class MemberRepository {
 
     public Member getById(long id) throws Exception {
         ResponseEntity<Member> r = restTemplate.getForEntity(databaseServiceProperties.getUri() + databaseServiceProperties.getGetMemberByIdPath() + "/" + id, Member.class);
-        if(r.getStatusCode().is2xxSuccessful())
+        if (r.getStatusCode().is2xxSuccessful())
             return r.getBody();
         throw new Exception("request to " + databaseServiceProperties.getUri() + " return code " + r.getStatusCode());
     }
+
     public List<Member> getByGroupId(long id) throws Exception {
         ResponseEntity<Member[]> r = restTemplate.getForEntity(databaseServiceProperties.getUri() + databaseServiceProperties.getGetMemberByGroupIdPath() + "/" + id, Member[].class);
-        if(r.getStatusCode().is2xxSuccessful()) {
+        if (r.getStatusCode().is2xxSuccessful()) {
             return r.getBody() == null ? null : Arrays.asList(r.getBody());
         }
         throw new Exception("request to " + databaseServiceProperties.getUri() + " return code " + r.getStatusCode());
     }
+
     public List<Member> getByUserId(long id) throws Exception {
-        ResponseEntity<Member[]> r = restTemplate.getForEntity(databaseServiceProperties.getUri() +databaseServiceProperties.getGetMemberByUserIdPath() + "/" + id, Member[].class);
-        if(r.getStatusCode().is2xxSuccessful())
+        ResponseEntity<Member[]> r = restTemplate.getForEntity(databaseServiceProperties.getUri() + databaseServiceProperties.getGetMemberByUserIdPath() + "/" + id, Member[].class);
+        if (r.getStatusCode().is2xxSuccessful())
             return r.getBody() == null ? null : Arrays.asList(r.getBody());
         throw new Exception("request to " + databaseServiceProperties.getUri() + " return code " + r.getStatusCode());
     }
+
     public Member save(Member member) throws Exception {
         ResponseEntity<Member> r = restTemplate.postForEntity(databaseServiceProperties.getUri() + databaseServiceProperties.getSaveMemberPath(), member, Member.class);
-        if(r.getStatusCode().is2xxSuccessful())
+        if (r.getStatusCode().is2xxSuccessful())
             return r.getBody();
         throw new Exception("request to " + databaseServiceProperties.getUri() + " return code " + r.getStatusCode());
     }
+
     public void delete(long id) throws Exception {
         ResponseEntity<Void> r = restTemplate.exchange(databaseServiceProperties.getUri() + databaseServiceProperties.getDeleteMemberPath() + "/" + id, HttpMethod.DELETE, null, Void.class);
-        if(!r.getStatusCode().is2xxSuccessful())
+        if (!r.getStatusCode().is2xxSuccessful())
             throw new Exception("request to " + databaseServiceProperties.getUri() + " return code " + r.getStatusCode());
     }
 }

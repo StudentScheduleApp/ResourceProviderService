@@ -27,7 +27,8 @@ public class ServiceTokenFilter extends GenericFilterBean {
 
 
     @Autowired
-    private GlobalProperties globalProperties;    @Autowired
+    private GlobalProperties globalProperties;
+    @Autowired
     private AuthorizeServiceService authorizeServiceService;
 
     @Override
@@ -39,8 +40,7 @@ public class ServiceTokenFilter extends GenericFilterBean {
                 appInfoToken.setAuthenticated(true);
                 appInfoToken.setServiceName("service");
                 SecurityContextHolder.getContext().setAuthentication(appInfoToken);
-            }
-            else
+            } else
                 logger.warn("authorize service failed: invalid token " + token);
         } catch (Exception e) {
             StringWriter errors = new StringWriter();

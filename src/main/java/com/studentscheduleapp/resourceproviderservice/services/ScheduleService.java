@@ -37,12 +37,12 @@ public class ScheduleService {
         weekStartCalendar.set(Calendar.MINUTE, 0);
         weekStartCalendar.set(Calendar.SECOND, 0);
         weekStartCalendar.set(Calendar.MILLISECOND, 0);
-        final long weekStartTime = weekStartCalendar.getTimeInMillis() - 86400000L/2;
+        final long weekStartTime = weekStartCalendar.getTimeInMillis() - 86400000L / 2;
         int week = 0;
         ArrayList<SpecificLesson> generatedLessons = new ArrayList<>();
-        while ((weekStartTime + WEEK_LENGTH*week) < endTimestamp) {
-            for (LessonTemplate lesson: schedule) {
-                long lessonTime = weekStartTime + week*WEEK_LENGTH + lesson.getTime();
+        while ((weekStartTime + WEEK_LENGTH * week) < endTimestamp) {
+            for (LessonTemplate lesson : schedule) {
+                long lessonTime = weekStartTime + week * WEEK_LENGTH + lesson.getTime();
                 if (lessonTime < startTimestamp) continue;
                 if (lessonTime > endTimestamp) break;
                 SpecificLesson newLesson = new SpecificLesson(0, groupId, lesson.getLessonId(),
@@ -59,11 +59,11 @@ public class ScheduleService {
         ArrayList<LessonTemplate> lts = (ArrayList<LessonTemplate>) lessonTemplateRepository.getByScheduleTemplateId(st.getId());
         ArrayList<SpecificLesson> sls = scheduleLessons(st.getTimeStart(), st.getTimeStop(), lts, st.getGroupId());
         ArrayList<SpecificLesson> slsold = (ArrayList<SpecificLesson>) specificLessonRepository.getByGroupId(st.getGroupId());
-        for (SpecificLesson sl : slsold){
-            if(sl.getTime() > System.currentTimeMillis()) {
-                for (Outline o : outlineRepository.getBySpecificLessonId(sl.getId())){
-                    for (OutlineMedia om : outlineMediaRepository.getByOutlineId(o.getId())){
-                        for (OutlineMediaComment omc : outlineMediaCommentRepository.getByOutlineMediaId(om.getId())){
+        for (SpecificLesson sl : slsold) {
+            if (sl.getTime() > System.currentTimeMillis()) {
+                for (Outline o : outlineRepository.getBySpecificLessonId(sl.getId())) {
+                    for (OutlineMedia om : outlineMediaRepository.getByOutlineId(o.getId())) {
+                        for (OutlineMediaComment omc : outlineMediaCommentRepository.getByOutlineMediaId(om.getId())) {
                             outlineMediaCommentRepository.delete(omc.getId());
                         }
                         outlineMediaRepository.delete(om.getId());
@@ -73,7 +73,7 @@ public class ScheduleService {
                 specificLessonRepository.delete(sl.getId());
             }
         }
-        for (SpecificLesson sl : sls){
+        for (SpecificLesson sl : sls) {
             specificLessonRepository.save(sl);
         }
     }

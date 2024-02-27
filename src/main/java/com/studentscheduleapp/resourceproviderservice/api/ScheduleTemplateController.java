@@ -23,6 +23,7 @@ import java.util.List;
 
 @RestController
 public class ScheduleTemplateController {
+    private static final Logger log = LogManager.getLogger(ScheduleTemplateController.class);
     @Autowired
     private LessonTemplateRepository lessonTemplateRepository;
     @Autowired
@@ -33,11 +34,10 @@ public class ScheduleTemplateController {
     private ScheduleService scheduleService;
     @Autowired
     private AuthorizeUserService authorizeUserService;
-    private static final Logger log = LogManager.getLogger(ScheduleTemplateController.class);
 
     @GetMapping("${mapping.scheduleTemplate.getById}/{ids}")
     public ResponseEntity<List<ScheduleTemplate>> getById(@PathVariable("ids") String id, @RequestHeader("User-Token") String token) {
-        if(token == null || token.isEmpty()) {
+        if (token == null || token.isEmpty()) {
             log.info("bad request: token is null or empty");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
@@ -75,9 +75,10 @@ public class ScheduleTemplateController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+
     @GetMapping("${mapping.scheduleTemplate.getByGroupId}/{id}")
-    public ResponseEntity<List<ScheduleTemplate>> getByGroupId(@PathVariable("id") long id, @RequestHeader("User-Token") String token){
-        if(token == null || token.isEmpty()) {
+    public ResponseEntity<List<ScheduleTemplate>> getByGroupId(@PathVariable("id") long id, @RequestHeader("User-Token") String token) {
+        if (token == null || token.isEmpty()) {
             log.warn("bad request: token is null or empty");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
@@ -104,7 +105,7 @@ public class ScheduleTemplateController {
         ps.add("timeStop");
         ps.add("comment");
         try {
-            if(authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.GET, ids, Entity.MEMBER, ps)))){
+            if (authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.GET, ids, Entity.MEMBER, ps)))) {
                 log.info("get scheduleTemplate with groupId: " + id + " success");
                 return ResponseEntity.ok(cs);
             }
@@ -117,30 +118,31 @@ public class ScheduleTemplateController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+
     @PostMapping("${mapping.scheduleTemplate.create}")
-    public ResponseEntity<ScheduleTemplate> create(@RequestBody ScheduleTemplate data, @RequestHeader("User-Token") String token){
-        if(token == null || token.isEmpty()) {
+    public ResponseEntity<ScheduleTemplate> create(@RequestBody ScheduleTemplate data, @RequestHeader("User-Token") String token) {
+        if (token == null || token.isEmpty()) {
             log.warn("bad request: token is null or empty");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
-        if(data.getName() == null || data.getName().isEmpty()) {
+        if (data.getName() == null || data.getName().isEmpty()) {
             log.warn("bad request: scheduleTemplate name is null or empty");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
-        if(data.getName().length() > 255) {
+        if (data.getName().length() > 255) {
             log.warn("bad request: scheduleTemplate name length > 255");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
-        if(data.getComment() != null && data.getComment().length() > 255) {
+        if (data.getComment() != null && data.getComment().length() > 255) {
             log.warn("bad request: scheduleTemplate comment length > 255");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
         try {
-            if(groupRepository.getById(data.getGroupId()) == null) {
+            if (groupRepository.getById(data.getGroupId()) == null) {
                 log.warn("bad request: scheduleTemplate group not exist");
                 return ResponseEntity.status(HttpStatus.CONFLICT).build();
             }
-            if(authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.CREATE, Collections.singletonList(data.getGroupId()), Entity.SCHEDULE_TEMPLATE, null)))){
+            if (authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.CREATE, Collections.singletonList(data.getGroupId()), Entity.SCHEDULE_TEMPLATE, null)))) {
                 data.setId(0);
                 ScheduleTemplate t = scheduleTemplateRepository.save(data);
                 scheduleService.updateSchedule(t.getId());
@@ -156,21 +158,22 @@ public class ScheduleTemplateController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+
     @PatchMapping("${mapping.scheduleTemplate.patch}")
-    public ResponseEntity<ScheduleTemplate> patch(@RequestBody ScheduleTemplate data, @RequestHeader("User-Token") String token, @RequestParam("params") String params){
-        if(token == null || token.isEmpty()) {
+    public ResponseEntity<ScheduleTemplate> patch(@RequestBody ScheduleTemplate data, @RequestHeader("User-Token") String token, @RequestParam("params") String params) {
+        if (token == null || token.isEmpty()) {
             log.warn("bad request: token is null or empty");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
-        if(data.getName() == null || data.getName().isEmpty()) {
+        if (data.getName() == null || data.getName().isEmpty()) {
             log.warn("bad request: scheduleTemplate name is null or empty");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
-        if(data.getName().length() > 255) {
+        if (data.getName().length() > 255) {
             log.warn("bad request: scheduleTemplate name length > 255");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
-        if(data.getComment() != null && data.getComment().length() > 255) {
+        if (data.getComment() != null && data.getComment().length() > 255) {
             log.warn("bad request: scheduleTemplate comment length > 255");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
@@ -179,21 +182,21 @@ public class ScheduleTemplateController {
             if (u == null)
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
             List<String> ps = Arrays.asList(params.split(","));
-            if(ps.contains("groupId"))
+            if (ps.contains("groupId"))
                 u.setGroupId(data.getGroupId());
-            if(ps.contains("name"))
+            if (ps.contains("name"))
                 u.setName(data.getName());
-            if(ps.contains("timeStart"))
+            if (ps.contains("timeStart"))
                 u.setTimeStart(data.getTimeStart());
-            if(ps.contains("timeStop"))
+            if (ps.contains("timeStop"))
                 u.setTimeStop(data.getTimeStop());
-            if(ps.contains("comment"))
+            if (ps.contains("comment"))
                 u.setComment(data.getComment());
-            if(groupRepository.getById(data.getGroupId()) == null && ps.contains("groupId")) {
+            if (groupRepository.getById(data.getGroupId()) == null && ps.contains("groupId")) {
                 log.warn("bad request: scheduleTemplate group not exist");
                 return ResponseEntity.status(HttpStatus.CONFLICT).build();
             }
-            if(authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.PATCH, Collections.singletonList(data.getId()), Entity.SCHEDULE_TEMPLATE, ps)))){
+            if (authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.PATCH, Collections.singletonList(data.getId()), Entity.SCHEDULE_TEMPLATE, ps)))) {
                 ScheduleTemplate t = scheduleTemplateRepository.save(data);
                 scheduleService.updateSchedule(t.getId());
                 log.info("patch scheduleTemplate with id " + data.getId() + " success");
@@ -208,9 +211,10 @@ public class ScheduleTemplateController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+
     @DeleteMapping("${mapping.scheduleTemplate.delete}/{ids}")
-    public ResponseEntity<Void> deleteById(@PathVariable("ids") String id, @RequestHeader("User-Token") String token){
-        if(token == null || token.isEmpty()) {
+    public ResponseEntity<Void> deleteById(@PathVariable("ids") String id, @RequestHeader("User-Token") String token) {
+        if (token == null || token.isEmpty()) {
             log.warn("bad request: token is null or empty");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
@@ -219,14 +223,14 @@ public class ScheduleTemplateController {
             for (int i = 0; i < id.split(",").length; i++) {
                 ids.add(Long.parseLong(id.split(",")[i]));
             }
-        } catch (Exception e){
+        } catch (Exception e) {
             StringWriter errors = new StringWriter();
             e.printStackTrace(new PrintWriter(errors));
             log.warn("bad request: cant parse scheduleTemplate ids: " + id);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
         try {
-            if(authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.DELETE, ids, Entity.SCHEDULE_TEMPLATE, null)))){
+            if (authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.DELETE, ids, Entity.SCHEDULE_TEMPLATE, null)))) {
                 for (Long l : ids) {
                     for (LessonTemplate lt : lessonTemplateRepository.getByScheduleTemplateId(l))
                         lessonTemplateRepository.delete(lt.getId());

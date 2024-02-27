@@ -12,7 +12,6 @@ import org.springframework.web.client.RestTemplate;
 public class GroupRepository {
 
 
-
     @Autowired
     private DatabaseServiceProperties databaseServiceProperties;
 
@@ -21,19 +20,21 @@ public class GroupRepository {
 
     public Group getById(long id) throws Exception {
         ResponseEntity<Group> r = restTemplate.getForEntity(databaseServiceProperties.getUri() + databaseServiceProperties.getGetGroupByIdPath() + "/" + id, Group.class);
-        if(r.getStatusCode().is2xxSuccessful())
+        if (r.getStatusCode().is2xxSuccessful())
             return r.getBody();
         throw new Exception("request to " + databaseServiceProperties.getUri() + " return code " + r.getStatusCode());
     }
+
     public Group save(Group group) throws Exception {
         ResponseEntity<Group> r = restTemplate.postForEntity(databaseServiceProperties.getUri() + databaseServiceProperties.getSaveGroupPath(), group, Group.class);
-        if(r.getStatusCode().is2xxSuccessful())
+        if (r.getStatusCode().is2xxSuccessful())
             return r.getBody();
         throw new Exception("request to " + databaseServiceProperties.getUri() + " return code " + r.getStatusCode());
     }
+
     public void delete(long id) throws Exception {
         ResponseEntity<Void> r = restTemplate.exchange(databaseServiceProperties.getUri() + databaseServiceProperties.getDeleteGroupPath() + "/" + id, HttpMethod.DELETE, null, Void.class);
-        if(!r.getStatusCode().is2xxSuccessful())
+        if (!r.getStatusCode().is2xxSuccessful())
             throw new Exception("request to " + databaseServiceProperties.getUri() + " return code " + r.getStatusCode());
     }
 }

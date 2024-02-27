@@ -23,6 +23,7 @@ import java.util.List;
 @RestController
 public class MemberController {
 
+    private static final Logger log = LogManager.getLogger(MemberController.class);
     @Autowired
     private MemberRepository memberRepository;
     @Autowired
@@ -31,11 +32,10 @@ public class MemberController {
     private GroupRepository groupRepository;
     @Autowired
     private AuthorizeUserService authorizeUserService;
-    private static final Logger log = LogManager.getLogger(MemberController.class);
 
     @GetMapping("${mapping.member.getById}/{ids}")
     public ResponseEntity<List<Member>> getById(@PathVariable("ids") String id, @RequestHeader("User-Token") String token) {
-        if(token == null || token.isEmpty()) {
+        if (token == null || token.isEmpty()) {
             log.warn("bad request: token is null or empty");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
@@ -71,9 +71,10 @@ public class MemberController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+
     @GetMapping("${mapping.member.getByGroupId}/{id}")
-    public ResponseEntity<List<Member>> getByGroupId(@PathVariable("id") long id, @RequestHeader("User-Token") String token){
-        if(token == null || token.isEmpty()) {
+    public ResponseEntity<List<Member>> getByGroupId(@PathVariable("id") long id, @RequestHeader("User-Token") String token) {
+        if (token == null || token.isEmpty()) {
             log.warn("bad request: token is null or empty");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
@@ -98,7 +99,7 @@ public class MemberController {
         ps.add("userId");
         ps.add("roles");
         try {
-            if(authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.GET, ids, Entity.MEMBER, ps)))){
+            if (authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.GET, ids, Entity.MEMBER, ps)))) {
                 log.info("get member with groupId: " + id + " success");
                 return ResponseEntity.ok(cs);
             }
@@ -111,9 +112,10 @@ public class MemberController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+
     @GetMapping("${mapping.member.getByUserId}/{id}")
-    public ResponseEntity<List<Member>> getByUserId(@PathVariable("id") long id, @RequestHeader("User-Token") String token){
-        if(token == null || token.isEmpty()) {
+    public ResponseEntity<List<Member>> getByUserId(@PathVariable("id") long id, @RequestHeader("User-Token") String token) {
+        if (token == null || token.isEmpty()) {
             log.warn("bad request: token is null or empty");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
@@ -138,7 +140,7 @@ public class MemberController {
         ps.add("userId");
         ps.add("roles");
         try {
-            if(authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.GET, ids, Entity.MEMBER, ps)))){
+            if (authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.GET, ids, Entity.MEMBER, ps)))) {
                 log.info("get member with userId: " + id + " success");
                 return ResponseEntity.ok(cs);
             }
@@ -151,22 +153,23 @@ public class MemberController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+
     @PostMapping("${mapping.member.create}")
-    public ResponseEntity<Member> create(@RequestBody Member data, @RequestHeader("User-Token") String token){
-        if(token == null || token.isEmpty()) {
+    public ResponseEntity<Member> create(@RequestBody Member data, @RequestHeader("User-Token") String token) {
+        if (token == null || token.isEmpty()) {
             log.warn("bad request: token is null or empty");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
         try {
-            if(userRepository.getById(data.getUserId()) == null) {
+            if (userRepository.getById(data.getUserId()) == null) {
                 log.warn("bad request: member user not exist");
                 return ResponseEntity.status(HttpStatus.CONFLICT).build();
             }
-            if(groupRepository.getById(data.getGroupId()) == null) {
+            if (groupRepository.getById(data.getGroupId()) == null) {
                 log.warn("bad request: member group not exist");
                 return ResponseEntity.status(HttpStatus.CONFLICT).build();
             }
-            if(authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.CREATE, Collections.singletonList(data.getGroupId()), Entity.MEMBER, null)))){
+            if (authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.CREATE, Collections.singletonList(data.getGroupId()), Entity.MEMBER, null)))) {
                 data.setRoles(Collections.singletonList(MemberRole.MEMBER));
                 data.setId(0);
                 Member member = memberRepository.save(data);
@@ -182,9 +185,10 @@ public class MemberController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+
     @PatchMapping("${mapping.member.patch}")
-    public ResponseEntity<Member> patch(@RequestBody Member data, @RequestHeader("User-Token") String token, @RequestParam("params") String params){
-        if(token == null || token.isEmpty()) {
+    public ResponseEntity<Member> patch(@RequestBody Member data, @RequestHeader("User-Token") String token, @RequestParam("params") String params) {
+        if (token == null || token.isEmpty()) {
             log.warn("bad request: token is null or empty");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
@@ -201,15 +205,15 @@ public class MemberController {
                 u.setUserId(data.getUserId());
             if (ps.contains("roles"))
                 u.setRoles(data.getRoles());
-            if(groupRepository.getById(data.getGroupId()) == null && ps.contains("groupId")) {
+            if (groupRepository.getById(data.getGroupId()) == null && ps.contains("groupId")) {
                 log.warn("bad request: member group not exist");
                 return ResponseEntity.status(HttpStatus.CONFLICT).build();
             }
-            if(userRepository.getById(data.getUserId()) == null && ps.contains("userId")) {
+            if (userRepository.getById(data.getUserId()) == null && ps.contains("userId")) {
                 log.warn("bad request: member user not exist");
                 return ResponseEntity.status(HttpStatus.CONFLICT).build();
             }
-            if(authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.PATCH, Collections.singletonList(data.getId()), Entity.MEMBER, ps)))){
+            if (authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.PATCH, Collections.singletonList(data.getId()), Entity.MEMBER, ps)))) {
                 Member member = memberRepository.save(u);
                 log.info("patch member with id " + data.getId() + " success");
                 return ResponseEntity.ok(member);
@@ -223,9 +227,10 @@ public class MemberController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+
     @DeleteMapping("${mapping.member.delete}/{ids}")
-    public ResponseEntity<Void> deleteById(@PathVariable("ids") String id, @RequestHeader("User-Token") String token){
-        if(token == null || token.isEmpty()) {
+    public ResponseEntity<Void> deleteById(@PathVariable("ids") String id, @RequestHeader("User-Token") String token) {
+        if (token == null || token.isEmpty()) {
             log.warn("bad request: token is null or empty");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
@@ -234,14 +239,14 @@ public class MemberController {
             for (int i = 0; i < id.split(",").length; i++) {
                 ids.add(Long.parseLong(id.split(",")[i]));
             }
-        } catch (Exception e){
+        } catch (Exception e) {
             StringWriter errors = new StringWriter();
             e.printStackTrace(new PrintWriter(errors));
             log.warn("bad request: cant parse member ids: " + id);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
         try {
-            if(authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.DELETE, ids, Entity.MEMBER, null)))){
+            if (authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.DELETE, ids, Entity.MEMBER, null)))) {
                 for (Long l : ids) {
                     memberRepository.delete(l);
                 }

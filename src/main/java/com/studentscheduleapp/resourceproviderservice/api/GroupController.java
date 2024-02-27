@@ -23,6 +23,7 @@ import java.util.List;
 @RestController
 public class GroupController {
 
+    private static final Logger log = LogManager.getLogger(GroupController.class);
     @Autowired
     private GroupRepository groupRepository;
     @Autowired
@@ -47,11 +48,10 @@ public class GroupController {
     private AuthorizeUserService authorizeUserService;
     @Autowired
     private UrlService urlService;
-    private static final Logger log = LogManager.getLogger(GroupController.class);
 
     @GetMapping("${mapping.group.getById}/{ids}")
     public ResponseEntity<List<Group>> getById(@PathVariable("ids") String id, @RequestHeader("User-Token") String token) {
-        if(token == null || token.isEmpty()) {
+        if (token == null || token.isEmpty()) {
             log.warn("bad request: token is null or empty");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
@@ -87,22 +87,23 @@ public class GroupController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+
     @PostMapping("${mapping.group.create}")
-    public ResponseEntity<Group> create(@RequestBody Group data, @RequestHeader("User-Token") String token){
-        if(token == null || token.isEmpty()) {
+    public ResponseEntity<Group> create(@RequestBody Group data, @RequestHeader("User-Token") String token) {
+        if (token == null || token.isEmpty()) {
             log.warn("bad request: token is null or empty");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
-        if(data.getName() == null || data.getName().isEmpty()) {
+        if (data.getName() == null || data.getName().isEmpty()) {
             log.warn("bad request: group name is null or empty");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
-        if(data.getName().length() > 255) {
+        if (data.getName().length() > 255) {
             log.warn("bad request: group name length > 255");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
         try {
-            if(authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.CREATE, Collections.singletonList(0L), Entity.GROUP, null)))){
+            if (authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.CREATE, Collections.singletonList(0L), Entity.GROUP, null)))) {
                 data.setAvaUrl(null);
                 data.setId(0);
                 Group g = groupRepository.save(data);
@@ -124,14 +125,15 @@ public class GroupController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+
     @PatchMapping("${mapping.group.patch}")
-    public ResponseEntity<Group> patch(@RequestBody Group data, @RequestHeader("User-Token") String token, @RequestParam(value = "image", required = false) MultipartFile file, @RequestParam("params") String params){
-        if(token == null || token.isEmpty()) {
+    public ResponseEntity<Group> patch(@RequestBody Group data, @RequestHeader("User-Token") String token, @RequestParam(value = "image", required = false) MultipartFile file, @RequestParam("params") String params) {
+        if (token == null || token.isEmpty()) {
             log.warn("bad request: token is null or empty");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
         List<String> ps = Arrays.asList(params.split(","));
-        if(data.getName() != null && data.getName().length() > 255 && ps.contains("name")) {
+        if (data.getName() != null && data.getName().length() > 255 && ps.contains("name")) {
             log.warn("bad request: group name length > 255");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
@@ -141,18 +143,18 @@ public class GroupController {
                 log.warn("patch group with id: " + data.getId() + " failed: entity not found");
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
             }
-            if(ps.contains("name"))
+            if (ps.contains("name"))
                 u.setName(data.getName());
-            if(ps.contains("chatId"))
+            if (ps.contains("chatId"))
                 u.setChatId(data.getChatId());
             if (file != null && !file.isEmpty())
                 ps.add("avaUrl");
             else if (data.getAvaUrl() == null || data.getAvaUrl().isEmpty())
                 ps.add("avaUrl");
-            if(authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.PATCH, Collections.singletonList(data.getId()), Entity.GROUP, ps)))){
+            if (authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.PATCH, Collections.singletonList(data.getId()), Entity.GROUP, ps)))) {
                 if (file != null && !file.isEmpty()) {
                     String url = imageRepository.upload(file);
-                    if (url != null){
+                    if (url != null) {
                         if (u.getAvaUrl() != null && !u.getAvaUrl().isEmpty())
                             imageRepository.delete(urlService.getNameFromImageUrl(u.getAvaUrl()));
                         u.setAvaUrl(url);
@@ -171,9 +173,10 @@ public class GroupController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+
     @DeleteMapping("${mapping.group.delete}/{ids}")
-    public ResponseEntity<Void> deleteById(@PathVariable("ids") String id, @RequestHeader("User-Token") String token){
-        if(token == null || token.isEmpty()) {
+    public ResponseEntity<Void> deleteById(@PathVariable("ids") String id, @RequestHeader("User-Token") String token) {
+        if (token == null || token.isEmpty()) {
             log.warn("bad request: token is null or empty");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
@@ -182,14 +185,14 @@ public class GroupController {
             for (int i = 0; i < id.split(",").length; i++) {
                 ids.add(Long.parseLong(id.split(",")[i]));
             }
-        } catch (Exception e){
+        } catch (Exception e) {
             StringWriter errors = new StringWriter();
             e.printStackTrace(new PrintWriter(errors));
             log.warn("bad request: cant parse group ids: " + id);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
         try {
-            if(authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.DELETE, ids, Entity.GROUP, null)))){
+            if (authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.DELETE, ids, Entity.GROUP, null)))) {
                 for (Long l : ids) {
                     Group u = groupRepository.getById(l);
                     if (u.getAvaUrl() != null && !u.getAvaUrl().isEmpty())
@@ -205,8 +208,8 @@ public class GroupController {
                     }
                     for (SpecificLesson sl : specificLessonRepository.getByGroupId(l)) {
                         for (Outline o : outlineRepository.getBySpecificLessonId(sl.getId())) {
-                            for (OutlineMedia om : outlineMediaRepository.getByOutlineId(o.getId())){
-                                for (OutlineMediaComment omc : outlineMediaCommentRepository.getByOutlineMediaId(om.getId())){
+                            for (OutlineMedia om : outlineMediaRepository.getByOutlineId(o.getId())) {
+                                for (OutlineMediaComment omc : outlineMediaCommentRepository.getByOutlineMediaId(om.getId())) {
                                     outlineMediaCommentRepository.delete(omc.getId());
                                 }
                                 outlineMediaRepository.delete(om.getId());

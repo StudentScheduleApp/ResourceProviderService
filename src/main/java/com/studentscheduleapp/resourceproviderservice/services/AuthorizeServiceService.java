@@ -10,7 +10,7 @@ public class AuthorizeServiceService {
     @Autowired
     private GlobalProperties globalProperties;
 
-    public boolean authorize(String token){
+    public boolean authorize(String token) {
         return globalProperties.getServiceToken().equals(token);
     }
 

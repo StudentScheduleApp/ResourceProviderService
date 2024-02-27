@@ -26,6 +26,7 @@ import java.util.List;
 @RestController
 public class SpecificLessonController {
 
+    private static final Logger log = LogManager.getLogger(SpecificLessonController.class);
     @Autowired
     private SpecificLessonRepository specificLessonRepository;
     @Autowired
@@ -34,11 +35,10 @@ public class SpecificLessonController {
     private GroupRepository groupRepository;
     @Autowired
     private AuthorizeUserService authorizeUserService;
-    private static final Logger log = LogManager.getLogger(SpecificLessonController.class);
 
     @GetMapping("${mapping.specificLesson.getById}/{ids}")
     public ResponseEntity<List<SpecificLesson>> getById(@PathVariable("ids") String id, @RequestHeader("User-Token") String token) {
-        if(token == null || token.isEmpty()) {
+        if (token == null || token.isEmpty()) {
             log.warn("bad request: token is null or empty");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
@@ -76,9 +76,10 @@ public class SpecificLessonController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+
     @GetMapping("${mapping.specificLesson.getByGroupId}/{id}")
-    public ResponseEntity<List<SpecificLesson>> getByGroupId(@PathVariable("id") long id, @RequestHeader("User-Token") String token){
-        if(token == null || token.isEmpty()) {
+    public ResponseEntity<List<SpecificLesson>> getByGroupId(@PathVariable("id") long id, @RequestHeader("User-Token") String token) {
+        if (token == null || token.isEmpty()) {
             log.info("bad request: token is null or empty");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
@@ -105,7 +106,7 @@ public class SpecificLessonController {
         ps.add("canceled");
         ps.add("comment");
         try {
-            if(authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.GET, ids, Entity.MEMBER, ps)))){
+            if (authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.GET, ids, Entity.MEMBER, ps)))) {
                 log.info("get specificLesson with groupId: " + id + " success");
                 return ResponseEntity.ok(cs);
             }
@@ -118,26 +119,27 @@ public class SpecificLessonController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+
     @PostMapping("${mapping.specificLesson.create}")
-    public ResponseEntity<SpecificLesson> create(@RequestBody SpecificLesson data, @RequestHeader("User-Token") String token){
-        if(token == null || token.isEmpty()) {
+    public ResponseEntity<SpecificLesson> create(@RequestBody SpecificLesson data, @RequestHeader("User-Token") String token) {
+        if (token == null || token.isEmpty()) {
             log.warn("bad request: token is null or empty");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
-        if(data.getComment() != null && data.getComment().length() > 255) {
+        if (data.getComment() != null && data.getComment().length() > 255) {
             log.warn("bad request: specificLesson comment length > 255");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
         try {
-            if(groupRepository.getById(data.getGroupId()) == null) {
+            if (groupRepository.getById(data.getGroupId()) == null) {
                 log.warn("bad request: specificLesson group not exist");
                 return ResponseEntity.status(HttpStatus.CONFLICT).build();
             }
-            if(customLessonRepository.getById(data.getLessonId()) == null) {
+            if (customLessonRepository.getById(data.getLessonId()) == null) {
                 log.warn("bad request: specificLesson user not exist");
                 return ResponseEntity.status(HttpStatus.CONFLICT).build();
             }
-            if(authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.CREATE, Collections.singletonList(data.getGroupId()), Entity.SPECIFIC_LESSON, null)))){
+            if (authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.CREATE, Collections.singletonList(data.getGroupId()), Entity.SPECIFIC_LESSON, null)))) {
                 data.setId(0);
                 SpecificLesson sl = specificLessonRepository.save(data);
                 log.info("create specificLesson with groupId: " + sl.getGroupId() + " success");
@@ -152,13 +154,14 @@ public class SpecificLessonController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+
     @PatchMapping("${mapping.specificLesson.patch}")
-    public ResponseEntity<SpecificLesson> patch(@RequestBody SpecificLesson data, @RequestHeader("User-Token") String token, @RequestParam("params") String params){
-        if(token == null || token.isEmpty()) {
+    public ResponseEntity<SpecificLesson> patch(@RequestBody SpecificLesson data, @RequestHeader("User-Token") String token, @RequestParam("params") String params) {
+        if (token == null || token.isEmpty()) {
             log.warn("bad request: token is null or empty");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
-        if(data.getComment() != null && data.getComment().length() > 255) {
+        if (data.getComment() != null && data.getComment().length() > 255) {
             log.warn("bad request: specificLesson comment length > 255");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
@@ -177,15 +180,15 @@ public class SpecificLessonController {
                 u.setCanceled(data.isCanceled());
             if (ps.contains("comment"))
                 u.setComment(data.getComment());
-            if(groupRepository.getById(data.getGroupId()) == null && ps.contains("groupId")) {
+            if (groupRepository.getById(data.getGroupId()) == null && ps.contains("groupId")) {
                 log.warn("bad request: specificLesson group not exist");
                 return ResponseEntity.status(HttpStatus.CONFLICT).build();
             }
-            if(customLessonRepository.getById(data.getLessonId()) == null && ps.contains("lessonId")) {
+            if (customLessonRepository.getById(data.getLessonId()) == null && ps.contains("lessonId")) {
                 log.warn("bad request: specificLesson user not exist");
                 return ResponseEntity.status(HttpStatus.CONFLICT).build();
             }
-            if(authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.PATCH, Collections.singletonList(data.getId()), Entity.SPECIFIC_LESSON, ps)))){
+            if (authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.PATCH, Collections.singletonList(data.getId()), Entity.SPECIFIC_LESSON, ps)))) {
                 SpecificLesson sl = specificLessonRepository.save(u);
                 log.info("patch specificLesson with id " + sl.getId() + " success");
                 return ResponseEntity.ok(sl);
@@ -199,9 +202,10 @@ public class SpecificLessonController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+
     @DeleteMapping("${mapping.specificLesson.delete}/{ids}")
-    public ResponseEntity<Void> deleteById(@PathVariable("ids") String id, @RequestHeader("User-Token") String token){
-        if(token == null || token.isEmpty()) {
+    public ResponseEntity<Void> deleteById(@PathVariable("ids") String id, @RequestHeader("User-Token") String token) {
+        if (token == null || token.isEmpty()) {
             log.warn("bad request: token is null or empty");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
@@ -210,14 +214,14 @@ public class SpecificLessonController {
             for (int i = 0; i < id.split(",").length; i++) {
                 ids.add(Long.parseLong(id.split(",")[i]));
             }
-        } catch (Exception e){
+        } catch (Exception e) {
             StringWriter errors = new StringWriter();
             e.printStackTrace(new PrintWriter(errors));
             log.warn("bad request: cant parse specificLesson ids: " + id);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
         try {
-            if(authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.DELETE, ids, Entity.SPECIFIC_LESSON, null)))){
+            if (authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.DELETE, ids, Entity.SPECIFIC_LESSON, null)))) {
                 for (Long l : ids) {
                     specificLessonRepository.delete(l);
                 }
