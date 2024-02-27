@@ -1,6 +1,9 @@
 package com.studentscheduleapp.resourceproviderservice.api;
 
-import com.studentscheduleapp.resourceproviderservice.models.*;
+import com.studentscheduleapp.resourceproviderservice.models.AuthorizeEntity;
+import com.studentscheduleapp.resourceproviderservice.models.AuthorizeType;
+import com.studentscheduleapp.resourceproviderservice.models.Entity;
+import com.studentscheduleapp.resourceproviderservice.models.SpecificLesson;
 import com.studentscheduleapp.resourceproviderservice.models.api.AuthorizeUserRequest;
 import com.studentscheduleapp.resourceproviderservice.repos.CustomLessonRepository;
 import com.studentscheduleapp.resourceproviderservice.repos.GroupRepository;
@@ -126,15 +129,15 @@ public class SpecificLessonController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
         try {
+            if(groupRepository.getById(data.getGroupId()) == null) {
+                log.warn("bad request: specificLesson group not exist");
+                return ResponseEntity.status(HttpStatus.CONFLICT).build();
+            }
+            if(customLessonRepository.getById(data.getLessonId()) == null) {
+                log.warn("bad request: specificLesson user not exist");
+                return ResponseEntity.status(HttpStatus.CONFLICT).build();
+            }
             if(authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.CREATE, Collections.singletonList(data.getGroupId()), Entity.SPECIFIC_LESSON, null)))){
-                if(groupRepository.getById(data.getGroupId()) == null) {
-                    log.warn("bad request: specificLesson group not exist");
-                    return ResponseEntity.status(HttpStatus.CONFLICT).build();
-                }
-                if(customLessonRepository.getById(data.getLessonId()) == null) {
-                    log.warn("bad request: specificLesson user not exist");
-                    return ResponseEntity.status(HttpStatus.CONFLICT).build();
-                }
                 data.setId(0);
                 SpecificLesson sl = specificLessonRepository.save(data);
                 log.info("create specificLesson with groupId: " + sl.getGroupId() + " success");
@@ -174,15 +177,15 @@ public class SpecificLessonController {
                 u.setCanceled(data.isCanceled());
             if (ps.contains("comment"))
                 u.setComment(data.getComment());
+            if(groupRepository.getById(data.getGroupId()) == null && ps.contains("groupId")) {
+                log.warn("bad request: specificLesson group not exist");
+                return ResponseEntity.status(HttpStatus.CONFLICT).build();
+            }
+            if(customLessonRepository.getById(data.getLessonId()) == null && ps.contains("lessonId")) {
+                log.warn("bad request: specificLesson user not exist");
+                return ResponseEntity.status(HttpStatus.CONFLICT).build();
+            }
             if(authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.PATCH, Collections.singletonList(data.getId()), Entity.SPECIFIC_LESSON, ps)))){
-                if(groupRepository.getById(data.getGroupId()) == null && ps.contains("groupId")) {
-                    log.warn("bad request: specificLesson group not exist");
-                    return ResponseEntity.status(HttpStatus.CONFLICT).build();
-                }
-                if(customLessonRepository.getById(data.getLessonId()) == null && ps.contains("lessonId")) {
-                    log.warn("bad request: specificLesson user not exist");
-                    return ResponseEntity.status(HttpStatus.CONFLICT).build();
-                }
                 SpecificLesson sl = specificLessonRepository.save(u);
                 log.info("patch specificLesson with id " + sl.getId() + " success");
                 return ResponseEntity.ok(sl);

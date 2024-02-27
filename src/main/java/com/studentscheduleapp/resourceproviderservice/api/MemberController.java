@@ -158,15 +158,15 @@ public class MemberController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
         try {
+            if(userRepository.getById(data.getUserId()) == null) {
+                log.warn("bad request: member user not exist");
+                return ResponseEntity.status(HttpStatus.CONFLICT).build();
+            }
+            if(groupRepository.getById(data.getGroupId()) == null) {
+                log.warn("bad request: member group not exist");
+                return ResponseEntity.status(HttpStatus.CONFLICT).build();
+            }
             if(authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.CREATE, Collections.singletonList(data.getGroupId()), Entity.MEMBER, null)))){
-                if(userRepository.getById(data.getUserId()) == null) {
-                    log.warn("bad request: member user not exist");
-                    return ResponseEntity.status(HttpStatus.CONFLICT).build();
-                }
-                if(groupRepository.getById(data.getGroupId()) == null) {
-                    log.warn("bad request: member group not exist");
-                    return ResponseEntity.status(HttpStatus.CONFLICT).build();
-                }
                 data.setRoles(Collections.singletonList(MemberRole.MEMBER));
                 data.setId(0);
                 Member member = memberRepository.save(data);
@@ -201,15 +201,15 @@ public class MemberController {
                 u.setUserId(data.getUserId());
             if (ps.contains("roles"))
                 u.setRoles(data.getRoles());
+            if(groupRepository.getById(data.getGroupId()) == null && ps.contains("groupId")) {
+                log.warn("bad request: member group not exist");
+                return ResponseEntity.status(HttpStatus.CONFLICT).build();
+            }
+            if(userRepository.getById(data.getUserId()) == null && ps.contains("userId")) {
+                log.warn("bad request: member user not exist");
+                return ResponseEntity.status(HttpStatus.CONFLICT).build();
+            }
             if(authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.PATCH, Collections.singletonList(data.getId()), Entity.MEMBER, ps)))){
-                if(groupRepository.getById(data.getGroupId()) == null && ps.contains("groupId")) {
-                    log.warn("bad request: member group not exist");
-                    return ResponseEntity.status(HttpStatus.CONFLICT).build();
-                }
-                if(userRepository.getById(data.getUserId()) == null && ps.contains("userId")) {
-                    log.warn("bad request: member user not exist");
-                    return ResponseEntity.status(HttpStatus.CONFLICT).build();
-                }
                 Member member = memberRepository.save(u);
                 log.info("patch member with id " + data.getId() + " success");
                 return ResponseEntity.ok(member);

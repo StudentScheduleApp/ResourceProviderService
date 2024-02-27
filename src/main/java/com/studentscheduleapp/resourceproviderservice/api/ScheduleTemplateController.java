@@ -136,11 +136,11 @@ public class ScheduleTemplateController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
         try {
+            if(groupRepository.getById(data.getGroupId()) == null) {
+                log.warn("bad request: scheduleTemplate group not exist");
+                return ResponseEntity.status(HttpStatus.CONFLICT).build();
+            }
             if(authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.CREATE, Collections.singletonList(data.getGroupId()), Entity.SCHEDULE_TEMPLATE, null)))){
-                if(groupRepository.getById(data.getGroupId()) == null) {
-                    log.warn("bad request: scheduleTemplate group not exist");
-                    return ResponseEntity.status(HttpStatus.CONFLICT).build();
-                }
                 data.setId(0);
                 ScheduleTemplate t = scheduleTemplateRepository.save(data);
                 scheduleService.updateSchedule(t.getId());
@@ -189,11 +189,11 @@ public class ScheduleTemplateController {
                 u.setTimeStop(data.getTimeStop());
             if(ps.contains("comment"))
                 u.setComment(data.getComment());
+            if(groupRepository.getById(data.getGroupId()) == null && ps.contains("groupId")) {
+                log.warn("bad request: scheduleTemplate group not exist");
+                return ResponseEntity.status(HttpStatus.CONFLICT).build();
+            }
             if(authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.PATCH, Collections.singletonList(data.getId()), Entity.SCHEDULE_TEMPLATE, ps)))){
-                if(groupRepository.getById(data.getGroupId()) == null && ps.contains("groupId")) {
-                    log.warn("bad request: scheduleTemplate group not exist");
-                    return ResponseEntity.status(HttpStatus.CONFLICT).build();
-                }
                 ScheduleTemplate t = scheduleTemplateRepository.save(data);
                 scheduleService.updateSchedule(t.getId());
                 log.info("patch scheduleTemplate with id " + data.getId() + " success");

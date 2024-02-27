@@ -127,15 +127,15 @@ public class LessonTemplateController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
         try {
+            if(scheduleTemplateRepository.getById(data.getScheduleTemplateId()) == null) {
+                log.warn("bad request: lessonTemplate scheduleTemplate not exist");
+                return ResponseEntity.status(HttpStatus.CONFLICT).build();
+            }
+            if(customLessonRepository.getById(data.getLessonId()) == null) {
+                log.warn("bad request: lessonTemplate customLesson not exist");
+                return ResponseEntity.status(HttpStatus.CONFLICT).build();
+            }
             if(authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.CREATE, Collections.singletonList(data.getScheduleTemplateId()), Entity.LESSON_TEMPLATE, null)))){
-                if(scheduleTemplateRepository.getById(data.getScheduleTemplateId()) == null) {
-                    log.warn("bad request: lessonTemplate scheduleTemplate not exist");
-                    return ResponseEntity.status(HttpStatus.CONFLICT).build();
-                }
-                if(customLessonRepository.getById(data.getLessonId()) == null) {
-                    log.warn("bad request: lessonTemplate customLesson not exist");
-                    return ResponseEntity.status(HttpStatus.CONFLICT).build();
-                }
                 data.setId(0);
                 LessonTemplate lt = lessonTemplateRepository.save(data);
 
@@ -177,15 +177,15 @@ public class LessonTemplateController {
                 u.setTime(data.getTime());
             if (ps.contains("comment"))
                 u.setComment(data.getComment());
+            if(customLessonRepository.getById(data.getLessonId()) == null && ps.contains("lessonId")) {
+                log.warn("bad request: lessonTemplate customLesson not exist");
+                return ResponseEntity.status(HttpStatus.CONFLICT).build();
+            }
+            if(scheduleTemplateRepository.getById(data.getScheduleTemplateId()) == null && ps.contains("scheduleTemplateId")) {
+                log.warn("bad request: lessonTemplate scheduleTemplate not exist");
+                return ResponseEntity.status(HttpStatus.CONFLICT).build();
+            }
             if(authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.PATCH, Collections.singletonList(data.getId()), Entity.LESSON_TEMPLATE, ps)))){
-                if(customLessonRepository.getById(data.getLessonId()) == null && ps.contains("lessonId")) {
-                    log.warn("bad request: lessonTemplate customLesson not exist");
-                    return ResponseEntity.status(HttpStatus.CONFLICT).build();
-                }
-                if(scheduleTemplateRepository.getById(data.getScheduleTemplateId()) == null && ps.contains("scheduleTemplateId")) {
-                    log.warn("bad request: lessonTemplate scheduleTemplate not exist");
-                    return ResponseEntity.status(HttpStatus.CONFLICT).build();
-                }
                 LessonTemplate lt = lessonTemplateRepository.save(data);
                 scheduleService.updateSchedule(data.getScheduleTemplateId());
                 log.info("patch lessonTemplate with id " + data.getId() + " success");

@@ -131,11 +131,11 @@ public class CustomLessonController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
         try {
+            if(groupRepository.getById(data.getGroupId()) == null) {
+                log.warn("bad request: customLesson group not exist");
+                return ResponseEntity.status(HttpStatus.CONFLICT).build();
+            }
             if(authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.CREATE, Collections.singletonList(data.getGroupId()), Entity.CUSTOM_LESSON, null)))){
-                if(groupRepository.getById(data.getGroupId()) == null) {
-                    log.warn("bad request: customLesson group not exist");
-                    return ResponseEntity.status(HttpStatus.CONFLICT).build();
-                }
                 data.setId(0);
                 CustomLesson c = customLessonRepository.save(data);
                 log.info("create customLesson with groupId: " + data.getGroupId() + " success");
@@ -181,11 +181,12 @@ public class CustomLessonController {
                 u.setTeacher(data.getTeacher());
             if(ps.contains("groupId"))
                 u.setGroupId(data.getGroupId());
+            if(groupRepository.getById(data.getGroupId()) == null && ps.contains("groupId")) {
+                log.warn("bad request: customLesson group not exist");
+                return ResponseEntity.status(HttpStatus.CONFLICT).build();
+            }
             if(authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.PATCH, Collections.singletonList(data.getId()), Entity.CUSTOM_LESSON, ps)))){
-                if(groupRepository.getById(data.getGroupId()) == null && ps.contains("groupId")) {
-                    log.warn("bad request: customLesson group not exist");
-                    return ResponseEntity.status(HttpStatus.CONFLICT).build();
-                }
+
                 CustomLesson c = customLessonRepository.save(u);
                 log.info("patch customLesson with id " + data.getId() + " success");
                 return ResponseEntity.ok(c);
