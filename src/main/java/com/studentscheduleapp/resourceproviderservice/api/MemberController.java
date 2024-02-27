@@ -203,11 +203,11 @@ public class MemberController {
                 u.setRoles(data.getRoles());
             if(authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.PATCH, Collections.singletonList(data.getId()), Entity.MEMBER, ps)))){
                 if(groupRepository.getById(data.getGroupId()) == null && ps.contains("groupId")) {
-                    log.warn("bad request: lessonTemplate scheduleTemplate not exist");
+                    log.warn("bad request: member group not exist");
                     return ResponseEntity.status(HttpStatus.CONFLICT).build();
                 }
                 if(userRepository.getById(data.getUserId()) == null && ps.contains("userId")) {
-                    log.warn("bad request: lessonTemplate scheduleTemplate not exist");
+                    log.warn("bad request: member user not exist");
                     return ResponseEntity.status(HttpStatus.CONFLICT).build();
                 }
                 Member member = memberRepository.save(u);

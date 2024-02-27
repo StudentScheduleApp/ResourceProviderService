@@ -182,8 +182,8 @@ public class CustomLessonController {
             if(ps.contains("groupId"))
                 u.setGroupId(data.getGroupId());
             if(authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.PATCH, Collections.singletonList(data.getId()), Entity.CUSTOM_LESSON, ps)))){
-                if(customLessonRepository.getById(data.getGroupId()) == null && ps.contains("groupId")) {
-                    log.warn("bad request: customLesson lessonTemplate not exist");
+                if(groupRepository.getById(data.getGroupId()) == null && ps.contains("groupId")) {
+                    log.warn("bad request: customLesson group not exist");
                     return ResponseEntity.status(HttpStatus.CONFLICT).build();
                 }
                 CustomLesson c = customLessonRepository.save(u);
