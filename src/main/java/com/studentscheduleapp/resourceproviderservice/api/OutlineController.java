@@ -4,6 +4,7 @@ import com.studentscheduleapp.resourceproviderservice.models.*;
 import com.studentscheduleapp.resourceproviderservice.models.api.AuthorizeUserRequest;
 import com.studentscheduleapp.resourceproviderservice.repos.*;
 import com.studentscheduleapp.resourceproviderservice.services.AuthorizeUserService;
+import com.studentscheduleapp.resourceproviderservice.services.UrlService;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +36,8 @@ public class OutlineController {
     private ImageRepository imageRepository;
     @Autowired
     private AuthorizeUserService authorizeUserService;
+    @Autowired
+    private UrlService urlService;
 
     @GetMapping("${mapping.outline.getById}/{ids}")
     public ResponseEntity<List<Outline>> getById(@PathVariable("ids") String id, @RequestHeader("User-Token") String token) {
@@ -247,13 +250,7 @@ public class OutlineController {
                             outlineMediaCommentRepository.delete(omc.getId());
                         }
                         if (om.getImageUrl() != null && !om.getImageUrl().isEmpty())
-                            try {
-                                imageRepository.delete(om.getImageUrl().split("/")[om.getImageUrl().split("/").length - 1]);
-                            } catch (Exception e) {
-                                StringWriter errors = new StringWriter();
-                                e.printStackTrace(new PrintWriter(errors));
-                                log.error("create outline image failed: " + errors);
-                            }
+                            imageRepository.delete(urlService.getNameFromImageUrl(om.getImageUrl()));
                         outlineMediaRepository.delete(om.getId());
                     }
                     outlineRepository.delete(l);

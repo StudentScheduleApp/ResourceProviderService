@@ -158,11 +158,13 @@ public class GroupController {
             if (authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.PATCH, Collections.singletonList(data.getId()), Entity.GROUP, ps)))) {
                 if (file != null && !file.isEmpty()) {
                     String url = imageRepository.upload(file);
-                    if (url != null) {
-                        if (u.getAvaUrl() != null && !u.getAvaUrl().isEmpty())
-                            imageRepository.delete(urlService.getNameFromImageUrl(u.getAvaUrl()));
-                        u.setAvaUrl(url);
+                    if (url == null) {
+                        log.warn("patch group with id: " + data.getId() + " failed: cant upload image");
+                        return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
                     }
+                    if (u.getAvaUrl() != null && !u.getAvaUrl().isEmpty())
+                        imageRepository.delete(urlService.getNameFromImageUrl(u.getAvaUrl()));
+                    u.setAvaUrl(url);
                 }
                 Group g = groupRepository.save(data);
                 log.info("patch group with id " + g.getId() + " success");

@@ -216,7 +216,6 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
         try {
-            User requester = userRepository.getById(authorizeUserService.getUserIdByToken(token));
             User u = userRepository.getById(data.getId());
             if (u == null) {
                 log.warn("patch user with id: " + data.getId() + " failed: entity not found");
@@ -238,6 +237,10 @@ public class UserController {
                 if (file != null && !file.isEmpty()) {
                     String url = imageRepository.upload(file);
                     if (url != null) {
+                        if (url == null) {
+                            log.warn("patch group with id: " + data.getId() + " failed: cant upload image");
+                            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+                        }
                         if (u.getAvaUrl() != null && !u.getAvaUrl().isEmpty())
                             imageRepository.delete(urlService.getNameFromImageUrl(u.getAvaUrl()));
                         data.setAvaUrl(url);
