@@ -78,7 +78,7 @@ public class MemberController {
             log.warn("bad request: token is null or empty");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
-        ArrayList<Member> cs = new ArrayList<>();
+        ArrayList<Member> cs;
         ArrayList<Long> ids = new ArrayList<>();
         try {
             cs = (ArrayList<Member>) memberRepository.getByGroupId(id);

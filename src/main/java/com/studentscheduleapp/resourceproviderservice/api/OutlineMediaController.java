@@ -174,6 +174,10 @@ public class OutlineMediaController {
             if (ps.contains("timestamp"))
                 data.setTimestamp(u.getTimestamp());
 
+            if (outlineRepository.getById(data.getOutlineId()) == null && ps.contains("outlineId")) {
+                log.warn("bad request: outline not exist");
+                return ResponseEntity.status(HttpStatus.CONFLICT).build();
+            }
             if (authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.PATCH, Collections.singletonList(data.getId()), Entity.OUTLINE_MEDIA, ps)))) {
                 if (file != null && !file.isEmpty()) {
                     String url = imageRepository.upload(file);

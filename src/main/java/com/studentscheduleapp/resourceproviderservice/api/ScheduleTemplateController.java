@@ -180,8 +180,10 @@ public class ScheduleTemplateController {
         }
         try {
             ScheduleTemplate u = scheduleTemplateRepository.getById(data.getId());
-            if (u == null)
+            if (u == null) {
+                log.warn("patch scheduleTemplate with id: " + data.getId() + " failed: entity not found");
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            }
             if (ps.contains("groupId"))
                 u.setGroupId(data.getGroupId());
             if (ps.contains("name"))

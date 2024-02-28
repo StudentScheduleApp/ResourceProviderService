@@ -195,8 +195,10 @@ public class OutlineController {
         }
         try {
             Outline u = outlineRepository.getById(data.getId());
-            if (u == null)
+            if (u == null) {
+                log.warn("patch outlime with id: " + data.getId() + " failed: entity not found");
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            }
             List<String> ps = Arrays.asList(params.split(","));
             if (ps.contains("userId"))
                 u.setUserId(data.getUserId());
