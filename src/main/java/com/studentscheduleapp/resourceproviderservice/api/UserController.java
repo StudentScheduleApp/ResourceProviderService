@@ -235,15 +235,21 @@ public class UserController {
                 u.setRoles(data.getRoles());
             if (authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.PATCH, Collections.singletonList(data.getId()), Entity.USER, ps)))) {
                 if (file != null && !file.isEmpty()) {
-                    String url = imageRepository.upload(file);
-                    if (url != null) {
-                        if (url == null) {
-                            log.warn("patch group with id: " + data.getId() + " failed: cant upload image");
-                            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+                    if (file.getContentType() != null && file.getContentType().split("/")[0].equals("image")) {
+                        String url = imageRepository.upload(file);
+                        if (url != null) {
+                            if (url == null) {
+                                log.warn("patch user with id: " + data.getId() + " failed: cant upload image");
+                                return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+                            }
+                            if (u.getAvaUrl() != null && !u.getAvaUrl().isEmpty())
+                                imageRepository.delete(urlService.getNameFromImageUrl(u.getAvaUrl()));
+                            data.setAvaUrl(url);
                         }
-                        if (u.getAvaUrl() != null && !u.getAvaUrl().isEmpty())
-                            imageRepository.delete(urlService.getNameFromImageUrl(u.getAvaUrl()));
-                        data.setAvaUrl(url);
+                    }
+                    else {
+                        log.warn("patch user with id: " + data.getId() + " failed: unsupported image type: " + file.getContentType());
+                        return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
                     }
                 }
                 User d = userRepository.save(u);

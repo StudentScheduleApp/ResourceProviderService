@@ -157,14 +157,20 @@ public class GroupController {
                 ps.add("avaUrl");
             if (authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.PATCH, Collections.singletonList(data.getId()), Entity.GROUP, ps)))) {
                 if (file != null && !file.isEmpty()) {
-                    String url = imageRepository.upload(file);
-                    if (url == null) {
-                        log.warn("patch group with id: " + data.getId() + " failed: cant upload image");
+                    if (file.getContentType() != null && file.getContentType().split("/")[0].equals("image")) {
+                        String url = imageRepository.upload(file);
+                        if (url == null) {
+                            log.warn("patch group with id: " + data.getId() + " failed: cant upload image");
+                            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+                        }
+                        if (u.getAvaUrl() != null && !u.getAvaUrl().isEmpty())
+                            imageRepository.delete(urlService.getNameFromImageUrl(u.getAvaUrl()));
+                        u.setAvaUrl(url);
+                    }
+                    else {
+                        log.warn("patch group with id: " + data.getId() + " failed: unsupported image type: " + file.getContentType());
                         return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
                     }
-                    if (u.getAvaUrl() != null && !u.getAvaUrl().isEmpty())
-                        imageRepository.delete(urlService.getNameFromImageUrl(u.getAvaUrl()));
-                    u.setAvaUrl(url);
                 }
                 Group g = groupRepository.save(data);
                 log.info("patch group with id " + g.getId() + " success");

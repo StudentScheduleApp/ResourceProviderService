@@ -180,14 +180,20 @@ public class OutlineMediaController {
             }
             if (authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.PATCH, Collections.singletonList(data.getId()), Entity.OUTLINE_MEDIA, ps)))) {
                 if (file != null && !file.isEmpty()) {
-                    String url = imageRepository.upload(file);
-                    if (url == null) {
-                        log.warn("patch outlineMedia with id: " + data.getId() + " failed: cant upload image");
+                    if (file.getContentType() != null && file.getContentType().split("/")[0].equals("image")) {
+                        String url = imageRepository.upload(file);
+                        if (url == null) {
+                            log.warn("patch outlineMedia with id: " + data.getId() + " failed: cant upload image");
+                            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+                        }
+                        if (u.getImageUrl() != null && !u.getImageUrl().isEmpty())
+                            imageRepository.delete(urlService.getNameFromImageUrl(u.getImageUrl()));
+                        data.setImageUrl(url);
+                    }
+                    else {
+                        log.warn("patch outlineMedia with id: " + data.getId() + " failed: unsupported image type: " + file.getContentType());
                         return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
                     }
-                    if (u.getImageUrl() != null && !u.getImageUrl().isEmpty())
-                        imageRepository.delete(urlService.getNameFromImageUrl(u.getImageUrl()));
-                    data.setImageUrl(url);
                 }
                 OutlineMedia c = outlineMediaRepository.save(u);
                 log.info("patch outlineMedia with id " + data.getId() + " success");
