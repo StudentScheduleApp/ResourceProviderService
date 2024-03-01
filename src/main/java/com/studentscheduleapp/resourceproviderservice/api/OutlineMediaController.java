@@ -187,7 +187,7 @@ public class OutlineMediaController {
                             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
                         }
                         if (u.getImageUrl() != null && !u.getImageUrl().isEmpty())
-                            imageRepository.delete(urlService.getNameFromImageUrl(u.getImageUrl()));
+                            imageRepository.delete(u.getImageUrl());
                         data.setImageUrl(url);
                     }
                     else {
@@ -230,7 +230,7 @@ public class OutlineMediaController {
             if (authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.DELETE, ids, Entity.OUTLINE_MEDIA, null)))) {
                 for (Long l : ids) {
                     OutlineMedia m = outlineMediaRepository.getById(l);
-                    imageRepository.delete(urlService.getNameFromImageUrl(m.getImageUrl()));
+                    imageRepository.delete(m.getImageUrl());
                     for (OutlineMediaComment omc : outlineMediaCommentRepository.getByOutlineMediaId(m.getId()))
                         outlineMediaCommentRepository.delete(omc.getMediaId());
                     outlineMediaRepository.delete(l);

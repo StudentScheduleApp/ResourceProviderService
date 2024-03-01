@@ -164,7 +164,7 @@ public class GroupController {
                             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
                         }
                         if (u.getAvaUrl() != null && !u.getAvaUrl().isEmpty())
-                            imageRepository.delete(urlService.getNameFromImageUrl(u.getAvaUrl()));
+                            imageRepository.delete(u.getAvaUrl());
                         u.setAvaUrl(url);
                     }
                     else {
@@ -208,7 +208,7 @@ public class GroupController {
                 for (Long l : ids) {
                     Group u = groupRepository.getById(l);
                     if (u.getAvaUrl() != null && !u.getAvaUrl().isEmpty())
-                        imageRepository.delete(urlService.getNameFromImageUrl(u.getAvaUrl()));
+                        imageRepository.delete(u.getAvaUrl());
                     for (CustomLesson lt : customLessonRepository.getByGroupId(l))
                         customLessonRepository.delete(lt.getId());
                     for (Member m : memberRepository.getByGroupId(l))

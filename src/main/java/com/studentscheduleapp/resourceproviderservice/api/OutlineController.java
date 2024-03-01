@@ -252,7 +252,7 @@ public class OutlineController {
                             outlineMediaCommentRepository.delete(omc.getId());
                         }
                         if (om.getImageUrl() != null && !om.getImageUrl().isEmpty())
-                            imageRepository.delete(urlService.getNameFromImageUrl(om.getImageUrl()));
+                            imageRepository.delete(om.getImageUrl());
                         outlineMediaRepository.delete(om.getId());
                     }
                     outlineRepository.delete(l);

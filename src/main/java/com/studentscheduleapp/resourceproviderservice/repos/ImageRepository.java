@@ -36,9 +36,9 @@ public class ImageRepository {
         throw new Exception("request to " + imageServiceProperties.getUri() + " return code " + r.getStatusCode());
     }
 
-    public void delete(String id) throws Exception {
-        ResponseEntity<Void> r = restTemplate.exchange(imageServiceProperties.getUri() + imageServiceProperties.getGetDeletePath() + "/" + id, HttpMethod.DELETE, null, Void.class);
-        if (!r.getStatusCode().is2xxSuccessful())
+    public void delete(String url) throws Exception {
+        ResponseEntity<Void> r = restTemplate.exchange(imageServiceProperties.getUri() + imageServiceProperties.getGetDeletePath() + "?downloadUrl={url}", HttpMethod.DELETE, null, Void.class, url);
+        if (!r.getStatusCode().is2xxSuccessful() || !r.getStatusCode().equals(HttpStatus.NOT_FOUND))
             throw new Exception("request to " + imageServiceProperties.getUri() + " return code " + r.getStatusCode());
     }
 }

@@ -243,7 +243,7 @@ public class UserController {
                                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
                             }
                             if (u.getAvaUrl() != null && !u.getAvaUrl().isEmpty())
-                                imageRepository.delete(urlService.getNameFromImageUrl(u.getAvaUrl()));
+                                imageRepository.delete(u.getAvaUrl());
                             data.setAvaUrl(url);
                         }
                     }
@@ -288,7 +288,7 @@ public class UserController {
                 for (Long l : ids) {
                     User u = userRepository.getById(l);
                     if (u.getAvaUrl() != null && !u.getAvaUrl().isEmpty())
-                        imageRepository.delete(urlService.getNameFromImageUrl(u.getAvaUrl()));
+                        imageRepository.delete(u.getAvaUrl());
                     for (Member m : memberRepository.getByUserId(l))
                         memberRepository.delete(m.getId());
                     userRepository.delete(l);
