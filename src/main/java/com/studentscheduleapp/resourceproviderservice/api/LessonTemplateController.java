@@ -189,8 +189,8 @@ public class LessonTemplateController {
                 return ResponseEntity.status(HttpStatus.CONFLICT).build();
             }
             if (authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.PATCH, Collections.singletonList(data.getId()), Entity.LESSON_TEMPLATE, ps)))) {
-                LessonTemplate lt = lessonTemplateRepository.save(data);
-                scheduleService.updateSchedule(data.getScheduleTemplateId());
+                LessonTemplate lt = lessonTemplateRepository.save(u);
+                scheduleService.updateSchedule(u.getScheduleTemplateId());
                 log.info("patch lessonTemplate with id " + data.getId() + " success");
                 return ResponseEntity.ok(lt);
             }

@@ -1,9 +1,6 @@
 package com.studentscheduleapp.resourceproviderservice.api;
 
-import com.studentscheduleapp.resourceproviderservice.models.AuthorizeEntity;
-import com.studentscheduleapp.resourceproviderservice.models.AuthorizeType;
-import com.studentscheduleapp.resourceproviderservice.models.Entity;
-import com.studentscheduleapp.resourceproviderservice.models.OutlineMediaComment;
+import com.studentscheduleapp.resourceproviderservice.models.*;
 import com.studentscheduleapp.resourceproviderservice.models.api.AuthorizeUserRequest;
 import com.studentscheduleapp.resourceproviderservice.repos.OutlineMediaCommentRepository;
 import com.studentscheduleapp.resourceproviderservice.repos.OutlineMediaRepository;
@@ -64,15 +61,15 @@ public class OutlineMediaCommentController {
                 for (Long l : ids) {
                     ls.add(outlineMediaCommentRepository.getById(l));
                 }
-                log.info("get user with ids: " + id + " success");
+                log.info("get outlineMediaComment with ids: " + id + " success");
                 return ResponseEntity.ok(ls);
             }
-            log.warn("get user with ids: " + id + " failed: unauthorized");
+            log.warn("get outlineMediaComment with ids: " + id + " failed: unauthorized");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         } catch (Exception e) {
             StringWriter errors = new StringWriter();
             e.printStackTrace(new PrintWriter(errors));
-            log.error("get user failed: " + errors);
+            log.error("get outlineMediaComment failed: " + errors);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
@@ -95,7 +92,7 @@ public class OutlineMediaCommentController {
         } catch (Exception e) {
             StringWriter errors = new StringWriter();
             e.printStackTrace(new PrintWriter(errors));
-            log.error("get member with groupId " + id + " failed: " + errors);
+            log.error("get outlineMediaComment with mediaId " + id + " failed: " + errors);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
         ArrayList<String> ps = new ArrayList<>();
@@ -107,15 +104,15 @@ public class OutlineMediaCommentController {
         ps.add("mediaId");
         try {
             if (authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.GET, ids, Entity.OUTLINE_MEDIA_COMMENT, ps)))) {
-                log.info("get member with groupId: " + id + " success");
+                log.info("get outlineMediaComment with mediaId: " + id + " success");
                 return ResponseEntity.ok(cs);
             }
-            log.warn("get member with groupId: " + id + " failed: unauthorized");
+            log.warn("get outlineMediaComment with mediaId: " + id + " failed: unauthorized");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         } catch (Exception e) {
             StringWriter errors = new StringWriter();
             e.printStackTrace(new PrintWriter(errors));
-            log.error("get member with groupId " + id + " failed: " + errors);
+            log.error("get outlineMediaComment with mediaId " + id + " failed: " + errors);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
@@ -135,23 +132,22 @@ public class OutlineMediaCommentController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
         try {
-            if (userRepository.getById(data.getUserId()) == null) {
-                log.warn("bad request: user not exist");
-                return ResponseEntity.status(HttpStatus.CONFLICT).build();
-            }
-            if (outlineMediaRepository.getById(data.getMediaId()) != null) {
-                log.warn("bad request: outline media not exist");
+            if (outlineMediaRepository.getById(data.getMediaId()) == null) {
+                log.warn("bad request: outlineMedia not exist");
                 return ResponseEntity.status(HttpStatus.CONFLICT).build();
             }
             if (authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.CREATE, Collections.singletonList(data.getMediaId()), Entity.OUTLINE_MEDIA_COMMENT, null)))) {
-
+                data.setUserId(authorizeUserService.getUserIdByToken(token));
                 data.setTimestamp(System.currentTimeMillis());
                 data.setId(0);
+                log.info("create outlineMediaComment with mediaId: " + data.getMediaId() + " success");
                 return ResponseEntity.ok(outlineMediaCommentRepository.save(data));
             }
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         } catch (Exception e) {
-            e.printStackTrace();
+            StringWriter errors = new StringWriter();
+            e.printStackTrace(new PrintWriter(errors));
+            log.error("create outlineMedia with mediaId " + data.getMediaId() + " failed: " + errors);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
@@ -188,7 +184,7 @@ public class OutlineMediaCommentController {
             if (ps.contains("questionCommentId"))
                 u.setQuestionCommentId(data.getQuestionCommentId());
             if (authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.PATCH, Collections.singletonList(data.getId()), Entity.OUTLINE_MEDIA_COMMENT, ps)))) {
-                return ResponseEntity.ok(outlineMediaCommentRepository.save(data));
+                return ResponseEntity.ok(outlineMediaCommentRepository.save(u));
             }
             log.warn("patch member with id: " + data.getId() + " failed: unauthorized");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
@@ -222,15 +218,15 @@ public class OutlineMediaCommentController {
                 for (Long l : ids) {
                     outlineMediaCommentRepository.delete(l);
                 }
-                log.info("delete member with ids: " + id + " success");
+                log.info("delete outlineMediaComment with ids: " + id + " success");
                 return ResponseEntity.ok().build();
             }
-            log.warn("delete member with ids: " + id + " failed: unauthorized");
+            log.warn("delete outlineMediaComment with ids: " + id + " failed: unauthorized");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         } catch (Exception e) {
             StringWriter errors = new StringWriter();
             e.printStackTrace(new PrintWriter(errors));
-            log.error("delete member with ids: " + id + " failed: " + errors);
+            log.error("delete outlineMediaComment with ids: " + id + " failed: " + errors);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }

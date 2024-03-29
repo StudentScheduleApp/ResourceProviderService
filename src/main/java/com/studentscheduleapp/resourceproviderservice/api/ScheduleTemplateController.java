@@ -166,11 +166,11 @@ public class ScheduleTemplateController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
         List<String> ps = Arrays.asList(params.split(","));
-        if (data.getName() == null || data.getName().isEmpty()) {
+        if ((data.getName() == null || data.getName().isEmpty()) && ps.contains("name")) {
             log.warn("bad request: scheduleTemplate name is null or empty");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
-        if (data.getName().length() > 255) {
+        if (data.getName() != null && data.getName().length() > 255 && ps.contains("name")) {
             log.warn("bad request: scheduleTemplate name length > 255");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
@@ -199,7 +199,7 @@ public class ScheduleTemplateController {
                 return ResponseEntity.status(HttpStatus.CONFLICT).build();
             }
             if (authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.PATCH, Collections.singletonList(data.getId()), Entity.SCHEDULE_TEMPLATE, ps)))) {
-                ScheduleTemplate t = scheduleTemplateRepository.save(data);
+                ScheduleTemplate t = scheduleTemplateRepository.save(u);
                 scheduleService.updateSchedule(t.getId());
                 log.info("patch scheduleTemplate with id " + data.getId() + " success");
                 return ResponseEntity.ok(t);

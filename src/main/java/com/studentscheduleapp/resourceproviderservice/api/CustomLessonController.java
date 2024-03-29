@@ -73,7 +73,7 @@ public class CustomLessonController {
     }
 
     @GetMapping("${mapping.customLesson.getByGroupId}/{id}")
-    public ResponseEntity<List<CustomLesson>> getByGroupId(@PathVariable("id") long id, @RequestHeader("User-Token") String token, @RequestParam("params") String params) {
+    public ResponseEntity<List<CustomLesson>> getByGroupId(@PathVariable("id") long id, @RequestHeader("User-Token") String token) {
         if (token == null || token.isEmpty()) {
             log.warn("bad request: token is null or empty");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();

@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -30,7 +31,7 @@ public class ScheduleTemplateRepository {
     public List<ScheduleTemplate> getByGroupId(long id) throws Exception {
         ResponseEntity<ScheduleTemplate[]> r = restTemplate.getForEntity(databaseServiceProperties.getUri() + databaseServiceProperties.getGetScheduleTemplateByGroupIdPath() + "/" + id, ScheduleTemplate[].class);
         if (r.getStatusCode().is2xxSuccessful())
-            return r.getBody() == null ? null : Arrays.asList(r.getBody());
+            return r.getBody() == null ? null : new ArrayList<>(Arrays.asList(r.getBody()));
         throw new Exception("request to " + databaseServiceProperties.getUri() + " return code " + r.getStatusCode());
     }
 
