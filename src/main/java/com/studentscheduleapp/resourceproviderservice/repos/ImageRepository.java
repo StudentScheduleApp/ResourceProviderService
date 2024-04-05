@@ -26,7 +26,7 @@ public class ImageRepository {
     public String upload(MultipartFile file) throws Exception {
         Resource multipartFile = file.getResource();
         MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
-        body.add("file", multipartFile);
+        body.add("image", multipartFile);
         HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, null);
         ResponseEntity<String> r = restTemplate.postForEntity(imageServiceProperties.getUri() + imageServiceProperties.getGetUploadPath(), requestEntity, String.class);
         if (r.getStatusCode().is2xxSuccessful())
@@ -38,7 +38,7 @@ public class ImageRepository {
 
     public void delete(String url) throws Exception {
         ResponseEntity<Void> r = restTemplate.exchange(imageServiceProperties.getUri() + imageServiceProperties.getGetDeletePath() + "?downloadUrl={url}", HttpMethod.DELETE, null, Void.class, url);
-        if (!r.getStatusCode().is2xxSuccessful() || !r.getStatusCode().equals(HttpStatus.NOT_FOUND))
+        if (!(r.getStatusCode().is2xxSuccessful() || r.getStatusCode().equals(HttpStatus.NOT_FOUND)))
             throw new Exception("request to " + imageServiceProperties.getUri() + " return code " + r.getStatusCode());
     }
 }

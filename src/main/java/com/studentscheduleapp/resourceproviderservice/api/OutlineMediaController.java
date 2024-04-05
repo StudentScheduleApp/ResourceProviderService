@@ -120,7 +120,7 @@ public class OutlineMediaController {
     }
 
     @PostMapping("${mapping.outlineMedia.create}")
-    public ResponseEntity<OutlineMedia> create(@RequestBody OutlineMedia data, @RequestHeader("User-Token") String token, @RequestParam("image") MultipartFile file) {
+    public ResponseEntity<OutlineMedia> create(@RequestPart("data") OutlineMedia data, @RequestHeader("User-Token") String token, @RequestPart("image") MultipartFile file) {
         if (token == null || token.isEmpty()) {
             log.warn("bad request: token is null or empty");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
@@ -157,7 +157,7 @@ public class OutlineMediaController {
     }
 
     @PatchMapping("${mapping.outlineMedia.patch}")
-    public ResponseEntity<OutlineMedia> patch(@RequestBody OutlineMedia data, @RequestHeader("User-Token") String token, @RequestParam("image") MultipartFile file, @RequestParam("params") String params) {
+    public ResponseEntity<OutlineMedia> patch(@RequestPart("data") OutlineMedia data, @RequestHeader("User-Token") String token, @RequestPart("image") MultipartFile file, @RequestParam("params") String params) {
         if (token == null || token.isEmpty()) {
             log.warn("bad request: token is null or empty");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();

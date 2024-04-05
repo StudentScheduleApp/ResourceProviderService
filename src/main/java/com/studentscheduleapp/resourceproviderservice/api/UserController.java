@@ -177,7 +177,7 @@ public class UserController {
     }
 
     @PatchMapping("${mapping.user.patch}")
-    public ResponseEntity<User> patch(@RequestBody User data, @RequestHeader("User-Token") String token, @RequestParam(value = "image", required = false) MultipartFile file, @RequestParam("params") String params) {
+    public ResponseEntity<User> patch(@RequestPart("data") User data, @RequestHeader("User-Token") String token, @RequestPart(value = "ava", required = false) MultipartFile file, @RequestParam("params") String params) {
         if (token == null || token.isEmpty()) {
             log.warn("bad request: token is null or empty");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
@@ -234,22 +234,35 @@ public class UserController {
             if (ps.contains("roles"))
                 u.setRoles(data.getRoles());
             if (authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.PATCH, Collections.singletonList(data.getId()), Entity.USER, ps)))) {
-                if (file != null && !file.isEmpty()) {
-                    if (file.getContentType() != null && file.getContentType().split("/")[0].equals("image")) {
+                if(params.contains("avaUrl")){
+                    if (file != null && !file.isEmpty()) {
                         String url = imageRepository.upload(file);
-                        if (url != null) {
-                            if (url == null) {
-                                log.warn("patch user with id: " + data.getId() + " failed: cant upload image");
-                                return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-                            }
-                            if (u.getAvaUrl() != null && !u.getAvaUrl().isEmpty())
-                                imageRepository.delete(u.getAvaUrl());
-                            data.setAvaUrl(url);
+                        if (url == null) {
+                            log.warn("patch user with id: " + data.getId() + " failed: cant upload image");
+                            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
                         }
-                    }
-                    else {
-                        log.warn("patch user with id: " + data.getId() + " failed: unsupported image type: " + file.getContentType());
-                        return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+                        else {
+                            if (u.getAvaUrl() != null && !u.getAvaUrl().isEmpty())
+                                try{
+                                    imageRepository.delete(u.getAvaUrl());
+                                } catch (Exception e){
+                                    StringWriter errors = new StringWriter();
+                                    e.printStackTrace(new PrintWriter(errors));
+                                    log.warn("delete user ava failed: " + errors);
+                                }
+                            u.setAvaUrl(url);
+                        }
+                    } else {
+                        if (u.getAvaUrl() != null && !u.getAvaUrl().isEmpty()) {
+                            try {
+                                imageRepository.delete(u.getAvaUrl());
+                            } catch (Exception e) {
+                                StringWriter errors = new StringWriter();
+                                e.printStackTrace(new PrintWriter(errors));
+                                log.warn("delete user ava failed: " + errors);
+                            }
+                        }
+                        u.setAvaUrl(null);
                     }
                 }
                 User d = userRepository.save(u);
