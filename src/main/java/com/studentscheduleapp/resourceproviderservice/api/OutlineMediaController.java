@@ -130,7 +130,7 @@ public class OutlineMediaController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
         try {
-            if (outlineRepository.getById(data.getOutlineId()) != null) {
+            if (outlineRepository.getById(data.getOutlineId()) == null) {
                 log.warn("bad request: outlineMedia outline not exist");
                 return ResponseEntity.status(HttpStatus.CONFLICT).build();
             }
