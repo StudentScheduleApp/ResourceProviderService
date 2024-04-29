@@ -234,18 +234,17 @@ public class UserController {
             if (ps.contains("roles"))
                 u.setRoles(data.getRoles());
             if (authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.PATCH, Collections.singletonList(data.getId()), Entity.USER, ps)))) {
-                if(params.contains("avaUrl")){
+                if (params.contains("avaUrl")) {
                     if (file != null && !file.isEmpty()) {
                         String url = imageRepository.upload(file);
                         if (url == null) {
                             log.warn("patch user with id: " + data.getId() + " failed: cant upload image");
                             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-                        }
-                        else {
+                        } else {
                             if (u.getAvaUrl() != null && !u.getAvaUrl().isEmpty())
-                                try{
+                                try {
                                     imageRepository.delete(u.getAvaUrl());
-                                } catch (Exception e){
+                                } catch (Exception e) {
                                     StringWriter errors = new StringWriter();
                                     e.printStackTrace(new PrintWriter(errors));
                                     log.warn("delete user ava failed: " + errors);

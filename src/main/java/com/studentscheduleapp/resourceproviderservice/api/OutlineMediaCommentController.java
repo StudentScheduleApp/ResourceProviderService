@@ -1,6 +1,9 @@
 package com.studentscheduleapp.resourceproviderservice.api;
 
-import com.studentscheduleapp.resourceproviderservice.models.*;
+import com.studentscheduleapp.resourceproviderservice.models.AuthorizeEntity;
+import com.studentscheduleapp.resourceproviderservice.models.AuthorizeType;
+import com.studentscheduleapp.resourceproviderservice.models.Entity;
+import com.studentscheduleapp.resourceproviderservice.models.OutlineMediaComment;
 import com.studentscheduleapp.resourceproviderservice.models.api.AuthorizeUserRequest;
 import com.studentscheduleapp.resourceproviderservice.repos.OutlineMediaCommentRepository;
 import com.studentscheduleapp.resourceproviderservice.repos.OutlineMediaRepository;

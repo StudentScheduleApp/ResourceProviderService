@@ -166,8 +166,7 @@ public class GroupController {
                         if (u.getAvaUrl() != null && !u.getAvaUrl().isEmpty())
                             imageRepository.delete(u.getAvaUrl());
                         u.setAvaUrl(url);
-                    }
-                    else {
+                    } else {
                         log.warn("patch group with id: " + data.getId() + " failed: unsupported image type: " + file.getContentType());
                         return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
                     }

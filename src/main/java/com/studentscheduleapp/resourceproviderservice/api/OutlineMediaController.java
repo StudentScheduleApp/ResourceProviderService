@@ -189,8 +189,7 @@ public class OutlineMediaController {
                         if (u.getImageUrl() != null && !u.getImageUrl().isEmpty())
                             imageRepository.delete(u.getImageUrl());
                         data.setImageUrl(url);
-                    }
-                    else {
+                    } else {
                         log.warn("patch outlineMedia with id: " + data.getId() + " failed: unsupported image type: " + file.getContentType());
                         return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
                     }
