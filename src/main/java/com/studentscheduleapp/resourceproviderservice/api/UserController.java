@@ -37,7 +37,7 @@ public class UserController {
     private UrlService urlService;
 
     @GetMapping("${mapping.user.getById}/{ids}")
-    public ResponseEntity<List<User>> getById(@PathVariable("ids") String id, @RequestHeader("User-Token") String token) {
+    public ResponseEntity<List<User>> getById(@PathVariable("ids") String id, @RequestHeader("User-Token") String token, @RequestParam(value = "private_access", defaultValue = "false") boolean isPrivateAccess) {
         if (token == null || token.isEmpty()) {
             log.warn("bad request: token is null or empty");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
@@ -58,13 +58,19 @@ public class UserController {
         ps.add("banned");
         ps.add("avaUrl");
         ps.add("roles");
+        if(isPrivateAccess){
+            ps.add("email");
+            ps.add("password");
+        }
         try {
             if (authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.GET, ids, Entity.USER, ps)))) {
                 ArrayList<User> ls = new ArrayList<>();
                 for (Long l : ids) {
                     User u = userRepository.getById(l);
-                    u.setEmail(null);
-                    u.setPassword(null);
+                    if(!isPrivateAccess){
+                        u.setEmail(null);
+                        u.setPassword(null);
+                    }
                     ls.add(u);
                 }
                 log.info("get user with ids: " + id + " success");
@@ -81,7 +87,7 @@ public class UserController {
     }
 
     @GetMapping("${mapping.user.getByEmail}/{email}")
-    public ResponseEntity<User> getByEmail(@PathVariable("email") String email, @RequestHeader("User-Token") String token) {
+    public ResponseEntity<User> getByEmail(@PathVariable("email") String email, @RequestHeader("User-Token") String token, @RequestParam(value = "private_access", defaultValue = "false") boolean isPrivateAccess) {
         if (token == null || token.isEmpty()) {
             log.warn("bad request: token is null or empty");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
@@ -89,8 +95,10 @@ public class UserController {
         User u;
         try {
             u = userRepository.getByEmail(email);
-            u.setEmail(null);
-            u.setPassword(null);
+            if(!isPrivateAccess){
+                u.setEmail(null);
+                u.setPassword(null);
+            }
         } catch (Exception e) {
             log.warn("get user with email: " + email + " success");
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
@@ -102,9 +110,12 @@ public class UserController {
         ps.add("banned");
         ps.add("avaUrl");
         ps.add("roles");
+        if(isPrivateAccess){
+            ps.add("email");
+            ps.add("password");
+        }
         try {
             if (authorizeUserService.authorize(new AuthorizeUserRequest(token, new AuthorizeEntity(AuthorizeType.GET, Collections.singletonList(u.getId()), Entity.USER, ps)))) {
-                u.setPassword(null);
                 log.warn("get user with email: " + email + " success");
                 return ResponseEntity.ok(u);
             }
